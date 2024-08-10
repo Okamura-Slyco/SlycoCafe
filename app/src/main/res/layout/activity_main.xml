@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:ems="3"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula5"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem5Plus" />
 
@@ -51,6 +52,7 @@
         android:layout_height="wrap_content"
         android:ems="3"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula6"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem6Plus" />
 
@@ -88,6 +90,7 @@
         android:layout_height="wrap_content"
         android:ems="3"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula4"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem4Plus" />
 
@@ -126,6 +129,7 @@
         android:layout_height="wrap_content"
         android:ems="3"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula3"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem3Plus" />
 
@@ -144,6 +148,7 @@
         android:layout_height="wrap_content"
         android:ems="3"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula2"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem2Plus" />
 
@@ -173,6 +178,7 @@
         android:layout_marginTop="1dp"
         android:ems="3"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula1"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem1Plus" />
 
@@ -266,6 +272,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Limpar"
+        android:backgroundTint="#FF0000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

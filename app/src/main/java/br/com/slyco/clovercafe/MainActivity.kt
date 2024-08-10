@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.w3c.dom.Text
 
 enum class NESPRESSO_FLAVORS (val index:Int){
     NONE (0),
@@ -93,12 +95,12 @@ class shoppingCart {
     private var total = 0.0
 
     constructor() {
-        this.itens[0] = cartItem(NESPRESSO_FLAVORS.RISTRETTO,50,2.7)
-        this.itens[1] = cartItem(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,50,3.0)
-        this.itens[2] = cartItem(NESPRESSO_FLAVORS.LEGGERO,50,2.7)
-        this.itens[3] = cartItem(NESPRESSO_FLAVORS.DESCAFFEINADO,50,2.7)
-        this.itens[4] = cartItem(NESPRESSO_FLAVORS.INDIA,50,2.7)
-        this.itens[5] = cartItem(NESPRESSO_FLAVORS.CAFFE_VANILIO,50,2.7)
+        this.itens[0] = cartItem(NESPRESSO_FLAVORS.RISTRETTO,0,2.7)
+        this.itens[1] = cartItem(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,0,3.0)
+        this.itens[2] = cartItem(NESPRESSO_FLAVORS.LEGGERO,0,2.7)
+        this.itens[3] = cartItem(NESPRESSO_FLAVORS.DESCAFFEINADO,0,2.7)
+        this.itens[4] = cartItem(NESPRESSO_FLAVORS.INDIA,0,2.7)
+        this.itens[5] = cartItem(NESPRESSO_FLAVORS.CAFFE_VANILIO,0,2.7)
     }
 
     fun calculateTotal() {
@@ -106,20 +108,20 @@ class shoppingCart {
         for(item in itens)
         {
             this.total += item!!.getQty() * item.getCost()
-
-            Log.i ("total", "${total}")
         }
+        Log.i ("total", "${total}")
     }
     fun cleanCart(){
 
     }
     fun addItemToCart(item:NESPRESSO_FLAVORS,qty: Int){
         var myItem = itens.find{ it?.getFlavor() == item }
-
+        myItem!!.setQty(myItem!!.getQty() + qty)
         Log.i("teste","${item} ${qty}")
     }
-    fun getCartItem(){
-
+    fun getCartItemQuantity(flavor:NESPRESSO_FLAVORS):Int{
+        var myItem = itens.find{ it?.getFlavor() == flavor }
+        return myItem!!.getQty()
     }
     fun clearCart(){
         for (item in itens)
@@ -184,6 +186,8 @@ class MainActivity : AppCompatActivity() {
 
         button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem6Minus)
         button.setOnClickListener(listener)
+
+        updateView()
 // set on-click listener for ImageView
 //        image_view.setOnClickListener {
 // your code here
@@ -262,6 +266,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
         shoppingCart.calculateTotal()
-        shoppingCart.returnTotal()
+
+        updateView()
+    }
+    fun updateView()
+    {
+        var textView = findViewById<EditText>(R.id.editTextNumberItem1)
+        textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO).toString())
+        textView = findViewById<EditText>(R.id.editTextNumberItem2)
+        textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC).toString())
+        textView = findViewById<EditText>(R.id.editTextNumberItem3)
+        textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO).toString())
+        textView = findViewById<EditText>(R.id.editTextNumberItem4)
+        textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO).toString())
+        textView = findViewById<EditText>(R.id.editTextNumberItem5)
+        textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA).toString())
+        textView = findViewById<EditText>(R.id.editTextNumberItem6)
+        textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO).toString())
+
+        var textView1 = findViewById<TextView>(R.id.textViewTotal)
+        textView1.setText(String.format("%2f",shoppingCart.returnTotal()))
+
+
     }
 }
