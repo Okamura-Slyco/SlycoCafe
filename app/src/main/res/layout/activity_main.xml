@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem5Plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula5"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem2Minus"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem5Minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula5"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem5"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <EditText
+        android:id="@+id/editTextNumberItem5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="3"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula5"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem5Plus" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem6Plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula6"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem3Minus"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <EditText
+        android:id="@+id/editTextNumberItem6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="3"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula6"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem6Plus" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem6Minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula6"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem6"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem4Plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula4"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem1Minus"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem4Minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula4"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem4"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <EditText
+        android:id="@+id/editTextNumberItem4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="3"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula4"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem4Plus" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem2Plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem3Plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem3Minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula3"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem3"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <EditText
+        android:id="@+id/editTextNumberItem3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="3"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula3"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem3Plus" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem2Minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula2"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem2"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <EditText
+        android:id="@+id/editTextNumberItem2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="3"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula2"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem2Plus" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem1Minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula1"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem1"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonItem1Plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:clickable="true"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <EditText
+        android:id="@+id/editTextNumberItem1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:ems="3"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula1"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem1Plus" />
+
+    <TextView
+        android:id="@+id/textViewTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="33dp"
+        android:layout_marginBottom="61dp"
+        android:text="0,00"
+        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="376dp"
+        android:layout_marginBottom="61dp"
+        android:text="Total: R$"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="131dp"
+        android:layout_height="73dp"
+        android:layout_marginEnd="300dp"
+        android:backgroundTint="#228800"
+        android:text="Comprar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewCapsula1"
+        android:layout_width="225dp"
+        android:layout_height="225dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ristretto" />
+
+    <ImageView
+        android:id="@+id/imageViewCapsula2"
+        android:layout_width="225dp"
+        android:layout_height="225dp"
+        android:layout_marginStart="80dp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/brazilorganic" />
+
+    <ImageView
+        android:id="@+id/imageViewCapsula3"
+        android:layout_width="225dp"
+        android:layout_height="225dp"
+        android:layout_marginStart="80dp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/leggero" />
+
+    <ImageView
+        android:id="@+id/imageViewCapsula4"
+        android:layout_width="225dp"
+        android:layout_height="225dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula1"
+        app:srcCompat="@drawable/descafeinado" />
+
+    <ImageView
+        android:id="@+id/imageViewCapsula5"
+        android:layout_width="225dp"
+        android:layout_height="225dp"
+        android:layout_marginStart="80dp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula4"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula2"
+        app:srcCompat="@drawable/india" />
+
+    <ImageView
+        android:id="@+id/imageViewCapsula6"
+        android:layout_width="225dp"
+        android:layout_height="225dp"
+        android:layout_marginStart="80dp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula5"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula3"
+        app:srcCompat="@drawable/caffevanilio" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Limpar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
