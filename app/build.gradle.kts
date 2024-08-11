@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "br.com.slyco.clovercafe"
+    namespace = "br.com.slyco.slycocafe"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "br.com.slyco.clovercafe"
+        applicationId = "br.com.slyco.slycocafe"
         minSdk = 29
         targetSdk = 34
         versionCode = 1
