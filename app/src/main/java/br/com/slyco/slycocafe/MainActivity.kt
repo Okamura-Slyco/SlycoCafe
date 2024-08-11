@@ -17,6 +17,10 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.w3c.dom.Text
 
+object AppConstants {
+    const val MAX_DISPENSER_CAPACITY = 50
+}
+
 enum class NESPRESSO_FLAVORS (val index:Int){
     NONE (0),
 
@@ -43,12 +47,12 @@ enum class NESPRESSO_FLAVORS (val index:Int){
 open class item {
     private var flavor : NESPRESSO_FLAVORS = NESPRESSO_FLAVORS.NONE
     private var qty = 0
-    private var cost = 0.0
+    private var price = 0.0
 
-    constructor(type: NESPRESSO_FLAVORS, qty: Int, cost: Double) {
+    constructor(type: NESPRESSO_FLAVORS, qty: Int, price: Double) {
         this.flavor = type
         this.qty = qty
-        this.cost = cost
+        this.price = price
     }
 
     fun setQty(qty: Int)
@@ -58,8 +62,8 @@ open class item {
     fun setFlavor(flavor:NESPRESSO_FLAVORS){
         this.flavor = flavor
     }
-    fun setCost(cost:Double){
-        this.cost = cost
+    fun setPrice(price:Double){
+        this.price = price
     }
     fun getQty():Int {
         return this.qty
@@ -67,8 +71,8 @@ open class item {
     fun getFlavor():NESPRESSO_FLAVORS {
         return this.flavor
     }
-    fun getCost():Double {
-        return this.cost
+    fun getPrice():Double {
+        return this.price
     }
 }
 
@@ -76,14 +80,17 @@ class inventory {
     private var itens = arrayOfNulls<item>(6)
 
     constructor() {
-        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,50,2.7)
-        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,50,3.0)
-        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,50,2.7)
-        this.itens[3] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,50,2.7)
-        this.itens[4] = item(NESPRESSO_FLAVORS.INDIA,50,2.7)
-        this.itens[5] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,50,2.7)
+        this.reset()
     }
 
+    fun reset(){
+        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,1.7)
+        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,2.0)
+        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,3.7)
+        this.itens[3] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,4.7)
+        this.itens[4] = item(NESPRESSO_FLAVORS.INDIA,AppConstants.MAX_DISPENSER_CAPACITY,5.7)
+        this.itens[5] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,6.7)
+    }
     fun getQty(flavor: NESPRESSO_FLAVORS) : Int{
         var myItem = itens.find{ it?.getFlavor() == flavor }
 
@@ -96,10 +103,15 @@ class inventory {
         myItem!!.setQty(qty)
     }
 
-    fun setCost(flavor: NESPRESSO_FLAVORS,cost:Double) {
+    fun setPrice(flavor: NESPRESSO_FLAVORS,price:Double) {
         var myItem = itens.find{ it?.getFlavor() == flavor }
 
-        myItem!!.setCost(cost)
+        myItem!!.setPrice(price)
+    }
+    fun getPrice(flavor: NESPRESSO_FLAVORS):Double {
+        var myItem = itens.find{ it?.getFlavor() == flavor }
+
+        return myItem!!.getPrice()
     }
 }
 
@@ -114,19 +126,19 @@ class shoppingCart {
     private var itens = arrayOfNulls<cartItem>(6)
     private var total = 0.0
 
-    constructor() {
-        this.itens[0] = cartItem(NESPRESSO_FLAVORS.RISTRETTO, 0, 2.7)
-        this.itens[1] = cartItem(NESPRESSO_FLAVORS.BRAZIL_ORGANIC, 0, 3.0)
-        this.itens[2] = cartItem(NESPRESSO_FLAVORS.LEGGERO, 0, 2.7)
-        this.itens[3] = cartItem(NESPRESSO_FLAVORS.DESCAFFEINADO, 0, 2.7)
-        this.itens[4] = cartItem(NESPRESSO_FLAVORS.INDIA, 0, 2.7)
-        this.itens[5] = cartItem(NESPRESSO_FLAVORS.CAFFE_VANILIO, 0, 2.7)
+    constructor(inventory: inventory) {
+        this.itens[0] = cartItem(NESPRESSO_FLAVORS.RISTRETTO, 0, inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO))
+        this.itens[1] = cartItem(NESPRESSO_FLAVORS.BRAZIL_ORGANIC, 0, inventory.getPrice(NESPRESSO_FLAVORS.BRAZIL_ORGANIC))
+        this.itens[2] = cartItem(NESPRESSO_FLAVORS.LEGGERO, 0, inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO))
+        this.itens[3] = cartItem(NESPRESSO_FLAVORS.DESCAFFEINADO, 0, inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO))
+        this.itens[4] = cartItem(NESPRESSO_FLAVORS.INDIA, 0, inventory.getPrice(NESPRESSO_FLAVORS.INDIA))
+        this.itens[5] = cartItem(NESPRESSO_FLAVORS.CAFFE_VANILIO, 0, inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO))
     }
 
     fun calculateTotal() {
         this.total = 0.0
         for (item in itens) {
-            this.total += item!!.getQty() * item.getCost()
+            this.total += item!!.getQty() * item.getPrice()
         }
         Log.i("total", "${total}")
     }
@@ -193,7 +205,7 @@ fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
 class MainActivity : AppCompatActivity() {
     var inventory : inventory = inventory()
 
-    var shoppingCart : shoppingCart = shoppingCart();
+    var shoppingCart : shoppingCart = shoppingCart(inventory);
     var easterEgg = 0
     var easterEgg1 = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -206,7 +218,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        var capsulas = 0;
+
+        updatePriceTags()
+
         var button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem1Plus)
         button.setOnClickListener(listener)
 
@@ -368,18 +382,24 @@ class MainActivity : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 12)
                 {
+                    inventory.reset()
                     var textView = findViewById<EditText>(R.id.editTextNumberItem1)
-                    inventory.setQty(NESPRESSO_FLAVORS.RISTRETTO,50)
+                    textView.setText("0")
                     textView = findViewById<EditText>(R.id.editTextNumberItem2)
-                    inventory.setQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,50)
+                    textView.setText("0")
                     textView = findViewById<EditText>(R.id.editTextNumberItem3)
-                    inventory.setQty(NESPRESSO_FLAVORS.LEGGERO,50)
+                    textView.setText("0")
                     textView = findViewById<EditText>(R.id.editTextNumberItem4)
-                    inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,50)
+                    textView.setText("0")
                     textView = findViewById<EditText>(R.id.editTextNumberItem5)
-                    inventory.setQty(NESPRESSO_FLAVORS.INDIA,50)
+                    textView.setText("0")
                     textView = findViewById<EditText>(R.id.editTextNumberItem6)
-                    inventory.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,50)
+                    textView.setText("0")
+
+                    updatePriceTags()
+
+
+                    
                     Log.i("INVENTORY","RESET")
                 }
                 easterEgg1 = 0
@@ -402,6 +422,7 @@ class MainActivity : AppCompatActivity() {
 
         updateView()
     }
+
     fun updateView()
     {
         var textView = findViewById<EditText>(R.id.editTextNumberItem1)
@@ -421,5 +442,21 @@ class MainActivity : AppCompatActivity() {
         textView1.setText(String.format("%.2f",shoppingCart.returnTotal()))
 
 
+    }
+
+    fun updatePriceTags(){
+
+        var textView1 = findViewById<TextView>(R.id.textViewPrice1)
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO)))
+        textView1 = findViewById<TextView>(R.id.textViewPrice2)
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)))
+        textView1 = findViewById<TextView>(R.id.textViewPrice3)
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO)))
+        textView1 = findViewById<TextView>(R.id.textViewPrice4)
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO)))
+        textView1 = findViewById<TextView>(R.id.textViewPrice5)
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.INDIA)))
+        textView1 = findViewById<TextView>(R.id.textViewPrice6)
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO)))
     }
 }

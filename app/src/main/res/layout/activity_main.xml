@@ -305,4 +305,64 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/textViewPrice1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="180dp"
+        android:text="R$0,00"
+        app:layout_constraintStart_toStartOf="@id/imageViewCapsula1"
+        app:layout_constraintTop_toTopOf="@id/imageViewCapsula1" />
+
+    <TextView
+        android:id="@+id/textViewPrice2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="180dp"
+        android:text="R$0,00"
+        app:layout_constraintStart_toStartOf="@id/imageViewCapsula2"
+        app:layout_constraintTop_toTopOf="@id/imageViewCapsula2"/>
+
+    <TextView
+        android:id="@+id/textViewPrice3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="180dp"
+        android:text="R$0,00"
+        app:layout_constraintStart_toStartOf="@id/imageViewCapsula3"
+        app:layout_constraintTop_toTopOf="@id/imageViewCapsula3"/>
+
+    <TextView
+        android:id="@+id/textViewPrice4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="180dp"
+        android:text="R$0,00"
+        app:layout_constraintStart_toStartOf="@id/imageViewCapsula4"
+        app:layout_constraintTop_toTopOf="@id/imageViewCapsula4"/>
+
+    <TextView
+        android:id="@+id/textViewPrice5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="180dp"
+        android:text="R$0,00"
+        app:layout_constraintStart_toStartOf="@id/imageViewCapsula5"
+        app:layout_constraintTop_toTopOf="@id/imageViewCapsula5"/>
+
+    <TextView
+        android:id="@+id/textViewPrice6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="180dp"
+        android:text="R$0,00"
+        app:layout_constraintStart_toStartOf="@id/imageViewCapsula6"
+        app:layout_constraintTop_toTopOf="@id/imageViewCapsula6"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
