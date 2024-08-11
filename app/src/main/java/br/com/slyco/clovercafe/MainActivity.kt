@@ -72,7 +72,7 @@ open class item {
     }
 }
 
-class inventary {
+class inventory {
     private var itens = arrayOfNulls<item>(6)
 
     constructor() {
@@ -131,11 +131,11 @@ class shoppingCart {
         Log.i("total", "${total}")
     }
 
-    fun addItemToCart(item: NESPRESSO_FLAVORS, qty: Int, inventary: inventary) {
+    fun addItemToCart(item: NESPRESSO_FLAVORS, qty: Int, inventory: inventory) {
         var myItem = itens.find { it?.getFlavor() == item }
         var myQty = myItem!!.getQty() + qty
         if (myQty >= 0) {
-            if (myQty <= inventary.getQty(item)) {
+            if (myQty <= inventory.getQty(item)) {
                 myItem!!.setQty(myQty)
             }
         }
@@ -159,7 +159,7 @@ class shoppingCart {
         return total
     }
 
-    fun checkout(inventary: inventary) :Int {
+    fun checkout(inventory: inventory) :Int {
 //            val i = Intent("br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF")
 //            i.putExtra("empresaSitef", "00000001")
 //            i.putExtra("enderecoSitef", "127.0.0.1;127.0.0.1:20036")
@@ -177,10 +177,10 @@ class shoppingCart {
 //            startActivity(i)
         Log.i("Call", "m-SiTef")
         for (item in itens) {
-            if (item!!.getQty() <= inventary.getQty(item!!.getFlavor())) {
-                inventary!!.setQty(
+            if (item!!.getQty() <= inventory.getQty(item!!.getFlavor())) {
+                inventory!!.setQty(
                     item!!.getFlavor(),
-                    inventary!!.getQty(item!!.getFlavor()) - item!!.getQty()
+                    inventory!!.getQty(item!!.getFlavor()) - item!!.getQty()
                 )
             }
         }
@@ -191,7 +191,7 @@ fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
 }
 class MainActivity : AppCompatActivity() {
-    var inventary : inventary = inventary()
+    var inventory : inventory = inventory()
 
     var shoppingCart : shoppingCart = shoppingCart();
     var easterEgg = 0
@@ -258,42 +258,42 @@ class MainActivity : AppCompatActivity() {
         when (view.getId()) {
             R.id.floatingActionButtonItem1Plus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.RISTRETTO,1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.RISTRETTO,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 0) easterEgg1 = 1
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem2Plus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 1) easterEgg1 = 2
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem3Plus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.LEGGERO,1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.LEGGERO,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 2) easterEgg1 = 3
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem4Plus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 3) easterEgg1 = 4
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem5Plus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.INDIA,1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.INDIA,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 4) easterEgg1 = 5
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem6Plus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 5) easterEgg1 = 6
                 else easterEgg1 = 0
@@ -301,42 +301,42 @@ class MainActivity : AppCompatActivity() {
 
             R.id.floatingActionButtonItem1Minus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.RISTRETTO,-1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.RISTRETTO,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 6) easterEgg1 = 7
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem2Minus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,-1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 7) easterEgg1 = 8
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem3Minus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.LEGGERO,-1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.LEGGERO,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 8) easterEgg1 = 9
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem4Minus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,-1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 9) easterEgg1 = 10
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem5Minus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.INDIA,-1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.INDIA,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 10) easterEgg1 = 11
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem6Minus -> {
                 // Do some work here
-                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,-1, inventary)
+                shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 11) easterEgg1 = 12
                 else easterEgg1 = 0
@@ -348,18 +348,19 @@ class MainActivity : AppCompatActivity() {
                 if (easterEgg == 20) {
                     easterEgg = 0
                     var textView = findViewById<EditText>(R.id.editTextNumberItem1)
-                    inventary.setQty(NESPRESSO_FLAVORS.RISTRETTO,Integer.valueOf(textView.text.toString()))
+                    inventory.setQty(NESPRESSO_FLAVORS.RISTRETTO,Integer.valueOf(textView.text.toString()))
                     textView = findViewById<EditText>(R.id.editTextNumberItem2)
-                    inventary.setQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,Integer.valueOf(textView.text.toString()))
+                    inventory.setQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,Integer.valueOf(textView.text.toString()))
                     textView = findViewById<EditText>(R.id.editTextNumberItem3)
-                    inventary.setQty(NESPRESSO_FLAVORS.LEGGERO,Integer.valueOf(textView.text.toString()))
+                    inventory.setQty(NESPRESSO_FLAVORS.LEGGERO,Integer.valueOf(textView.text.toString()))
                     textView = findViewById<EditText>(R.id.editTextNumberItem4)
-                    inventary.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,Integer.valueOf(textView.text.toString()))
+                    inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,Integer.valueOf(textView.text.toString()))
                     textView = findViewById<EditText>(R.id.editTextNumberItem5)
-                    inventary.setQty(NESPRESSO_FLAVORS.INDIA,Integer.valueOf(textView.text.toString()))
+                    inventory.setQty(NESPRESSO_FLAVORS.INDIA,Integer.valueOf(textView.text.toString()))
                     textView = findViewById<EditText>(R.id.editTextNumberItem6)
-                    inventary.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,Integer.valueOf(textView.text.toString()))
+                    inventory.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,Integer.valueOf(textView.text.toString()))
                     Log.i("INVENTORY","SET")
+                    toast("Inventory SET",Toast.LENGTH_LONG)
                 }
             }
             R.id.buttonEmpty -> {
@@ -368,23 +369,24 @@ class MainActivity : AppCompatActivity() {
                 if (easterEgg1 == 12)
                 {
                     var textView = findViewById<EditText>(R.id.editTextNumberItem1)
-                    inventary.setQty(NESPRESSO_FLAVORS.RISTRETTO,50)
+                    inventory.setQty(NESPRESSO_FLAVORS.RISTRETTO,50)
                     textView = findViewById<EditText>(R.id.editTextNumberItem2)
-                    inventary.setQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,50)
+                    inventory.setQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,50)
                     textView = findViewById<EditText>(R.id.editTextNumberItem3)
-                    inventary.setQty(NESPRESSO_FLAVORS.LEGGERO,50)
+                    inventory.setQty(NESPRESSO_FLAVORS.LEGGERO,50)
                     textView = findViewById<EditText>(R.id.editTextNumberItem4)
-                    inventary.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,50)
+                    inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,50)
                     textView = findViewById<EditText>(R.id.editTextNumberItem5)
-                    inventary.setQty(NESPRESSO_FLAVORS.INDIA,50)
+                    inventory.setQty(NESPRESSO_FLAVORS.INDIA,50)
                     textView = findViewById<EditText>(R.id.editTextNumberItem6)
-                    inventary.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,50)
+                    inventory.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,50)
                     Log.i("INVENTORY","RESET")
                 }
                 easterEgg1 = 0
+                toast("Inventory Reset",Toast.LENGTH_LONG)
             }
             R.id.buttonCheckout -> {
-                if (shoppingCart.checkout(inventary) == 0) {
+                if (shoppingCart.checkout(inventory) == 0) {
                     shoppingCart.clearCart()
                 }
 
