@@ -217,6 +217,7 @@
         android:text="0,00"
         android:textAlignment="viewStart"
         android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonCheckout" />
 
@@ -224,10 +225,11 @@
         android:id="@+id/textViewTotalFix"
         android:layout_width="169dp"
         android:layout_height="41dp"
-        android:layout_marginStart="390dp"
+        android:layout_marginStart="382dp"
         android:layout_marginBottom="16dp"
         android:text="Total: R$"
         android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/buttonEmpty" />
 
@@ -312,6 +314,7 @@
         android:layout_marginStart="164dp"
         android:layout_marginTop="180dp"
         android:text="R$0,00"
+        android:textStyle="italic"
         app:layout_constraintStart_toStartOf="@id/imageViewCapsula1"
         app:layout_constraintTop_toTopOf="@id/imageViewCapsula1" />
 
@@ -322,6 +325,7 @@
         android:layout_marginStart="164dp"
         android:layout_marginTop="180dp"
         android:text="R$0,00"
+        android:textStyle="italic"
         app:layout_constraintStart_toStartOf="@id/imageViewCapsula2"
         app:layout_constraintTop_toTopOf="@id/imageViewCapsula2"/>
 
@@ -332,6 +336,7 @@
         android:layout_marginStart="164dp"
         android:layout_marginTop="180dp"
         android:text="R$0,00"
+        android:textStyle="italic"
         app:layout_constraintStart_toStartOf="@id/imageViewCapsula3"
         app:layout_constraintTop_toTopOf="@id/imageViewCapsula3"/>
 
@@ -342,6 +347,7 @@
         android:layout_marginStart="164dp"
         android:layout_marginTop="180dp"
         android:text="R$0,00"
+        android:textStyle="italic"
         app:layout_constraintStart_toStartOf="@id/imageViewCapsula4"
         app:layout_constraintTop_toTopOf="@id/imageViewCapsula4"/>
 
@@ -352,6 +358,7 @@
         android:layout_marginStart="164dp"
         android:layout_marginTop="180dp"
         android:text="R$0,00"
+        android:textStyle="italic"
         app:layout_constraintStart_toStartOf="@id/imageViewCapsula5"
         app:layout_constraintTop_toTopOf="@id/imageViewCapsula5"/>
 
@@ -362,6 +369,7 @@
         android:layout_marginStart="164dp"
         android:layout_marginTop="180dp"
         android:text="R$0,00"
+        android:textStyle="italic"
         app:layout_constraintStart_toStartOf="@id/imageViewCapsula6"
         app:layout_constraintTop_toTopOf="@id/imageViewCapsula6"/>
 
