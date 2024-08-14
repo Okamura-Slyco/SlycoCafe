@@ -1,6 +1,9 @@
 package br.com.slyco.slycocafe
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,9 +14,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.w3c.dom.Text
 
@@ -179,21 +185,33 @@ class shoppingCart {
     }
 
     fun checkout(inventory: inventory) :Int {
-//            val i = Intent("br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF")
-//            i.putExtra("empresaSitef", "00000001")
-//            i.putExtra("enderecoSitef", "127.0.0.1;127.0.0.1:20036")
-//            i.putExtra("operador", "0001")
-//            i.putExtra("data", "20140312")
-//            i.putExtra("hora", "150000")
-//            i.putExtra("numeroCupom", "1")
-//            i.putExtra("numParcelas", "3")
-//            i.putExtra("modalidade", "0")
-//            i.putExtra("valor", "9000")
-//            i.putExtra("CNPJ_CPF", "12345678912345")
-//            i.putExtra("timeoutColeta", "30")
-//            i.putExtra("acessibilidadeVisual", "0")
-//            i.putExtra("comExterna", "1")
-//            startActivity(i)
+
+//        val i = Intent("br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF")
+//        i.putExtra("empresaSitef", "00000001")
+//        i.putExtra("enderecoSitef", "127.0.0.1;127.0.0.1:20036")
+//        i.putExtra("operador", "0001")
+//        i.putExtra("data", "20140312")
+//        i.putExtra("hora", "150000")
+//        i.putExtra("numeroCupom", "1")
+//        i.putExtra("numParcelas", "3")
+//        i.putExtra("modalidade", "0")
+//        i.putExtra("valor", "9000")
+//        i.putExtra("CNPJ_CPF", "12345678912345")
+//        i.putExtra("timeoutColeta", "30")
+//        i.putExtra("acessibilidadeVisual", "0")
+//        i.putExtra("comExterna", "1")
+//        startPagamentoIntent.launch(i)
+//
+//        ActivityResultLauncher<Intent> startPagamentoIntent = registerForActivityResult(
+//                new ActivityResultContracts.StartActivityForResult(), result -> {
+//            if (result.getResultCode() == RESULT_OK) {
+//                Intent data = result.getData();
+//                log.d("msitef", "CODRESP: " + data.getExtras().getString("CODRESP"));
+//                log.d("msitef", "VIA_ESTABELECIMENTO: " + data.getExtras().getString("VIA_ESTABELECIMENTO"));
+//                log.d("msitef", "VIA_CLIENTE: " + data.getExtras().getString("VIA_CLIENTE"));
+//            }
+//        });
+
         Log.i("Call", "m-SiTef")
         for (item in itens) {
             if (item!!.getQty() <= inventory.getQty(item!!.getFlavor())) {
@@ -209,12 +227,15 @@ class shoppingCart {
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
 }
+
+
 class MainActivity : AppCompatActivity() {
     var inventory : inventory = inventory()
 
     var shoppingCart : shoppingCart = shoppingCart(inventory);
     var easterEgg = 0
     var easterEgg1 = 0
+    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -228,40 +249,40 @@ class MainActivity : AppCompatActivity() {
 
         updatePriceTags()
 
-        var button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem1Plus)
+        var button = findViewById<MaterialButton>(R.id.floatingActionButtonItem1Plus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem2Plus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem2Plus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem3Plus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem3Plus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem4Plus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem4Plus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem5Plus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem5Plus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem6Plus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem6Plus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem1Minus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem1Minus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem2Minus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem2Minus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem3Minus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem3Minus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem4Minus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem4Minus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem5Minus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem5Minus)
         button.setOnClickListener(listener)
 
-        button = findViewById<FloatingActionButton>(R.id.floatingActionButtonItem6Minus)
+        button = findViewById<MaterialButton>(R.id.floatingActionButtonItem6Minus)
         button.setOnClickListener(listener)
 
         var button1 = findViewById<Button>(R.id.buttonEmpty)
