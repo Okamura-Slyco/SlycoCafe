@@ -2,9 +2,12 @@ package br.com.slyco.slycocafe
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Bundle
+import android.provider.ContactsContract.Intents.Insert.ACTION
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -15,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.ViewCompat
@@ -22,6 +26,16 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.w3c.dom.Text
+
+import androidx.activity.ComponentActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.startActivityForResult
+
+import br.com.slyco.slycocafe.model.Payment
+import br.com.slyco.slycocafe.model.Caller
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object AppConstants {
     const val MAX_DISPENSER_CAPACITY = 50
@@ -90,12 +104,12 @@ class inventory {
     }
 
     fun reset(){
-        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,1.7)
-        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,2.0)
-        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,3.7)
-        this.itens[3] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,4.7)
-        this.itens[4] = item(NESPRESSO_FLAVORS.INDIA,AppConstants.MAX_DISPENSER_CAPACITY,5.7)
-        this.itens[5] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,6.7)
+        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,2.5)
+        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
+        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,2.5)
+        this.itens[3] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,2.5)
+        this.itens[4] = item(NESPRESSO_FLAVORS.INDIA,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
+        this.itens[5] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
     }
     fun getQty(flavor: NESPRESSO_FLAVORS) : Int{
         var myItem = itens.find{ it?.getFlavor() == flavor }
@@ -131,6 +145,11 @@ class cartItem :item {
 class shoppingCart {
     private var itens = arrayOfNulls<cartItem>(6)
     private var total = 0.0
+
+    private val customDateFormat: String
+        get() = SimpleDateFormat("yyMMdd", Locale.ROOT).format(Date())
+    private val customTimeFormat: String
+        get() = SimpleDateFormat("HHmmss",Locale.ROOT).format(Date())
 
     constructor(inventory: inventory) {
         this.itens[0] = cartItem(NESPRESSO_FLAVORS.RISTRETTO, 0, inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO))
@@ -184,46 +203,10 @@ class shoppingCart {
         return total
     }
 
-    fun checkout(inventory: inventory) :Int {
-
-//        val i = Intent("br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF")
-//        i.putExtra("empresaSitef", "00000001")
-//        i.putExtra("enderecoSitef", "127.0.0.1;127.0.0.1:20036")
-//        i.putExtra("operador", "0001")
-//        i.putExtra("data", "20140312")
-//        i.putExtra("hora", "150000")
-//        i.putExtra("numeroCupom", "1")
-//        i.putExtra("numParcelas", "3")
-//        i.putExtra("modalidade", "0")
-//        i.putExtra("valor", "9000")
-//        i.putExtra("CNPJ_CPF", "12345678912345")
-//        i.putExtra("timeoutColeta", "30")
-//        i.putExtra("acessibilidadeVisual", "0")
-//        i.putExtra("comExterna", "1")
-//        startPagamentoIntent.launch(i)
-//
-//        ActivityResultLauncher<Intent> startPagamentoIntent = registerForActivityResult(
-//                new ActivityResultContracts.StartActivityForResult(), result -> {
-//            if (result.getResultCode() == RESULT_OK) {
-//                Intent data = result.getData();
-//                log.d("msitef", "CODRESP: " + data.getExtras().getString("CODRESP"));
-//                log.d("msitef", "VIA_ESTABELECIMENTO: " + data.getExtras().getString("VIA_ESTABELECIMENTO"));
-//                log.d("msitef", "VIA_CLIENTE: " + data.getExtras().getString("VIA_CLIENTE"));
-//            }
-//        });
-
-        Log.i("Call", "m-SiTef")
-        for (item in itens) {
-            if (item!!.getQty() <= inventory.getQty(item!!.getFlavor())) {
-                inventory!!.setQty(
-                    item!!.getFlavor(),
-                    inventory!!.getQty(item!!.getFlavor()) - item!!.getQty()
-                )
-            }
-        }
-        return 0
-    }
 }
+
+
+
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
 }
@@ -435,9 +418,21 @@ class MainActivity : AppCompatActivity() {
                 toast("Inventory Reset",Toast.LENGTH_LONG)
             }
             R.id.buttonCheckout -> {
-                if (shoppingCart.checkout(inventory) == 0) {
+                val totalStr = (shoppingCart.returnTotal()*100).toInt().toString()
+
+                val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
+                intent.putExtra("merchantSiTef", "DEVRELBR")
+                intent.putExtra("sitefIP", "https://tls-uat.fiservapp.com")
+                intent.putExtra("merchantTaxId", "04988631000111")
+                intent.putExtra("functionId", "0")
+                intent.putExtra("transactionAmount", totalStr)
+                intent.putExtra("transactionInstallments", "1")
+                intent.putExtra("enabledTransactions", "16")
+                startActivityForResult(intent, 1)
+
+                //if (shoppingCart.checkout(inventory) == 0) {
                     shoppingCart.clearCart()
-                }
+                //}
 
                 easterEgg = 0
                 easterEgg1 = 0
@@ -450,6 +445,10 @@ class MainActivity : AppCompatActivity() {
         Log.i("easterEgg1","${easterEgg1}")
 
         updateView(res)
+    }
+
+    fun intentCallback(){
+
     }
 
     fun updateView(res:Int)

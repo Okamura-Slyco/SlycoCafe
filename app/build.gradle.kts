@@ -9,16 +9,26 @@ android {
 
     defaultConfig {
         applicationId = "br.com.slyco.slycocafe"
-        minSdk = 29
-        targetSdk = 34
+        minSdk = 26
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk = 29
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
+            isDebuggable = false
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            isDebuggable = true
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
