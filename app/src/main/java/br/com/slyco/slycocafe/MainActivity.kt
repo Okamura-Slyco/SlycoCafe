@@ -1,22 +1,9 @@
 package br.com.slyco.slycocafe
 
-import android.accounts.Account
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.Rect
-import android.graphics.Typeface
-import android.graphics.drawable.Icon
-import android.media.Image
 import android.os.Bundle
-import android.print.PrintJob
-import android.provider.ContactsContract.Intents.Insert.ACTION
-import android.text.Layout
-import android.text.StaticLayout
-import android.text.TextPaint
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -26,23 +13,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.w3c.dom.Text
-
-import androidx.activity.ComponentActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
-
-import br.com.slyco.slycocafe.model.Payment
-import br.com.slyco.slycocafe.model.Caller
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
