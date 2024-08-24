@@ -23,6 +23,10 @@ import java.util.Locale
 
 object AppConstants {
     const val MAX_DISPENSER_CAPACITY = 50
+    const val ON_STOCK_ALPHA = 255
+    const val OUT_OF_STOCK_ALPHA = 25
+    const val ON_STOCK_ALPHA_FLOAT = 1.0f
+    const val OUT_OF_STOCK_ALPHA_FLOAT = OUT_OF_STOCK_ALPHA.toFloat()/ON_STOCK_ALPHA.toFloat()
 }
 
 enum class NESPRESSO_FLAVORS (val index:Int){
@@ -486,23 +490,71 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             textView1.setText(String.format("%.2f", shoppingCart.returnTotal()))
 
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) <=0 ) findViewById<ImageView>(R.id.imageViewCapsula1).imageAlpha = 100
-            else findViewById<ImageView>(R.id.imageViewCapsula1).imageAlpha = 255
+            if ((inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) <=0 ) {
+                findViewById<ImageView>(R.id.imageViewCapsula1).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem1Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            }
+            else {
+                findViewById<ImageView>(R.id.imageViewCapsula1).imageAlpha = AppConstants.ON_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem1Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            }
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO) <=0) findViewById<Button>(R.id.floatingActionButtonItem1Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            else findViewById<Button>(R.id.floatingActionButtonItem1Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) <=0 ) findViewById<ImageView>(R.id.imageViewCapsula2).imageAlpha = 100
-            else findViewById<ImageView>(R.id.imageViewCapsula2).imageAlpha = 255
+            if ((inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) <=0 ) {
+                findViewById<ImageView>(R.id.imageViewCapsula2).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem2Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            }
+            else {
+                findViewById<ImageView>(R.id.imageViewCapsula2).imageAlpha = AppConstants.ON_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem2Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            }
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC) <=0) findViewById<Button>(R.id.floatingActionButtonItem2Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            else findViewById<Button>(R.id.floatingActionButtonItem2Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.LEGGERO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) <=0 ) findViewById<ImageView>(R.id.imageViewCapsula3).imageAlpha = 100
-            else findViewById<ImageView>(R.id.imageViewCapsula3).imageAlpha = 255
+            if ((inventory.getQty(NESPRESSO_FLAVORS.LEGGERO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) <=0 ) {
+                findViewById<ImageView>(R.id.imageViewCapsula3).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem3Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            }
+            else {
+                findViewById<ImageView>(R.id.imageViewCapsula3).imageAlpha = AppConstants.ON_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem3Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            }
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO) <=0) findViewById<Button>(R.id.floatingActionButtonItem3Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            else findViewById<Button>(R.id.floatingActionButtonItem3Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) <=0 ) findViewById<ImageView>(R.id.imageViewCapsula4).imageAlpha = 100
-            else findViewById<ImageView>(R.id.imageViewCapsula4).imageAlpha = 255
+            if ((inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) <=0 ) {
+                findViewById<ImageView>(R.id.imageViewCapsula4).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem4Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            }
+            else {
+                findViewById<ImageView>(R.id.imageViewCapsula4).imageAlpha = AppConstants.ON_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem4Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            }
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO) <=0) findViewById<Button>(R.id.floatingActionButtonItem4Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            else findViewById<Button>(R.id.floatingActionButtonItem4Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.INDIA) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA)) <=0 ) findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = 100
-            else findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = 255
+            if ((inventory.getQty(NESPRESSO_FLAVORS.INDIA) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA)) <=0 ) {
+                findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem4Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            }
+            else {
+                findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = AppConstants.ON_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem5Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            }
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA) <=0) findViewById<Button>(R.id.floatingActionButtonItem5Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            else findViewById<Button>(R.id.floatingActionButtonItem5Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) <=0 ) findViewById<ImageView>(R.id.imageViewCapsula6).imageAlpha = 127
-            else findViewById<ImageView>(R.id.imageViewCapsula6).imageAlpha = 255
+            if ((inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) <=0 ) {
+                findViewById<ImageView>(R.id.imageViewCapsula6).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem6Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            }
+            else {
+                findViewById<ImageView>(R.id.imageViewCapsula6).imageAlpha = AppConstants.ON_STOCK_ALPHA
+                findViewById<Button>(R.id.floatingActionButtonItem6Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            }
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO) <=0) findViewById<Button>(R.id.floatingActionButtonItem6Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            else findViewById<Button>(R.id.floatingActionButtonItem6Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
         }
         else if (res == -1)
         {
