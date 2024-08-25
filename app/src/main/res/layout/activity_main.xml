@@ -132,6 +132,7 @@
         android:id="@+id/imageViewCapsula1"
         android:layout_width="225dp"
         android:layout_height="225dp"
+        android:layout_marginStart="60dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ristretto" />

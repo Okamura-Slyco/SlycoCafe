@@ -2,9 +2,18 @@ package br.com.slyco.slycocafe
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbDeviceConnection
+import android.hardware.usb.UsbEndpoint
+import android.hardware.usb.UsbInterface
+import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.util.Log
+import android.util.NoSuchPropertyException
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -27,6 +36,9 @@ object AppConstants {
     const val OUT_OF_STOCK_ALPHA = 25
     const val ON_STOCK_ALPHA_FLOAT = 1.0f
     const val OUT_OF_STOCK_ALPHA_FLOAT = OUT_OF_STOCK_ALPHA.toFloat()/ON_STOCK_ALPHA.toFloat()
+    const val DISPENSER_PID = 51459
+    const val DISPENSER_VID = 5971
+    const val ACTION_USB_PERMISSION = "com.android.pinpad.USB_PERMISSION"
 }
 
 enum class NESPRESSO_FLAVORS (val index:Int){
@@ -208,6 +220,14 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var shoppingCart : shoppingCart = shoppingCart(inventory);
     var easterEgg = 0
     var easterEgg1 = 0
+    var dispenserUsbDevice: UsbDevice? = null
+    var dispenserUsbConnection: UsbDeviceConnection? = null
+    var dispenserUsbInterface: UsbInterface? =  null
+    var dispenserUsbInterfaceIndex: Int = 0
+    var dispenserUsbEndpointIn: UsbEndpoint? = null
+    var dispenserUsbEndpointOut: UsbEndpoint? = null
+
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -286,7 +306,59 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
         updateView(0)
 
+        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        val deviceList = usbManager.getDeviceList()
+        val device = deviceList["deviceName"]
+        var iterator = 0
+// OR
+        for (device in deviceList.values) {
+            // Process each connected device
+            Log.i("Slyco-USB","${iterator} - Device Name: ${device.deviceName.toString()}")
+            Log.i("Slyco-USB","${iterator} - Product Name: ${device.productName.toString()}")
+            Log.i("Slyco-USB","${iterator} - Manufacturer Name: ${device.manufacturerName.toString()}")
+            Log.i("Slyco-USB","${iterator} - Product Id: ${device.productId.toString()}")
+            Log.i("Slyco-USB","${iterator} - Vendor Id: ${device.vendorId.toString()}")
+            if ((device.productId == AppConstants.DISPENSER_PID) &&
+                (device.vendorId == AppConstants.DISPENSER_VID))
+            {
+                Log.i("Slyco-USB", "${iterator} - Match!!!")
+                dispenserUsbDevice = device
+                break
+            }
+            iterator++
         }
+        if (dispenserUsbDevice != null){
+            if (!usbManager.hasPermission(dispenserUsbDevice)) {
+                Log.i("Slyco-USB","Setando permissoes do dispenser")
+//                var pendingIntentFlags = 0
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//                    pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE
+//                }
+//                val dispenserPermissionIntent = PendingIntent.getBroadcast(this,0,Intent(AppConstants.ACTION_USB_PERMISSION),pendingIntentFlags)
+//                val filter = IntentFilter(AppConstants.ACTION_USB_PERMISSION)
+//
+            }
+            else {
+                Log.i("Slyco-USB", "Permissoes OK!")
+            }
+            dispenserUsbConnection = usbManager.openDevice(dispenserUsbDevice)
+
+            if (dispenserUsbConnection == null) {
+                throw NoSuchPropertyException ("Slyco-USB - nao conseguiu abrir conexao com dispositivo")
+            }
+            else {
+                Log.i("Slyco-USB", "Conexao OK!")
+                val counter = dispenserUsbDevice?.getInterfaceCount()
+                Log.i( "Slyco-USB", "Interfaces: ${counter}")
+                if (counter == 0) throw NoSuchPropertyException("Slyco-USB - Sem interfaces")
+
+            }
+        }
+        else {
+            Log.w("Slyco-USB", "Sem dispenser USB identificado. Trabalhando no modo nao integrado.")
+        }
+    }
+
     val listener= View.OnClickListener { view ->
         var res:Int = 0
         var bUpdateView = true
@@ -536,7 +608,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             if ((inventory.getQty(NESPRESSO_FLAVORS.INDIA) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA)) <=0 ) {
                 findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
-                findViewById<Button>(R.id.floatingActionButtonItem4Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+                findViewById<Button>(R.id.floatingActionButtonItem5Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             }
             else {
                 findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = AppConstants.ON_STOCK_ALPHA
