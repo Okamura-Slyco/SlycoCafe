@@ -492,7 +492,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     updatePriceTags()
 
 
-                    
+
                     Log.i("INVENTORY","RESET")
                 }
                 easterEgg1 = 0
@@ -504,9 +504,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
 
                     val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-                    intent.putExtra("merchantSiTef", "DEVRELBR")
+                    intent.putExtra("merchantSiTef", "SLYCOCCF")
                     intent.putExtra("sitefIP", "https://tls-uat.fiservapp.com")
-                    intent.putExtra("merchantTaxId", "04988631000111")
+                    intent.putExtra("merchantTaxId", "55833084000136")
                     intent.putExtra("functionId", "0")
                     intent.putExtra("transactionAmount", totalStr)
                     intent.putExtra("transactionInstallments", "1")
