@@ -315,19 +315,23 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         if (availableDrivers.isEmpty()) {
             Log.i("Slyco-USB","No USB Driver found")
         }
+        else {
+            // Open a connection to the first available driver.
+            val driver = availableDrivers[0]
+            val connection = manager.openDevice(driver.device)
+                ?: // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
+                return
 
 
-        // Open a connection to the first available driver.
-        val driver = availableDrivers[0]
-        val connection = manager.openDevice(driver.device)
-            ?: // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
-            return
-
-
-        dispenserPort = driver.ports[0] // Most devices have just one port (port 0)
-        dispenserPort?.open(connection)
-        dispenserPort?.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE)
-
+            dispenserPort = driver.ports[0] // Most devices have just one port (port 0)
+            dispenserPort?.open(connection)
+            dispenserPort?.setParameters(
+                115200,
+                8,
+                UsbSerialPort.STOPBITS_1,
+                UsbSerialPort.PARITY_NONE
+            )
+        }
 
     }
 
