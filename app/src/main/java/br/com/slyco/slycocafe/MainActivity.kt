@@ -2,10 +2,7 @@ package br.com.slyco.slycocafe
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbEndpoint
@@ -13,7 +10,6 @@ import android.hardware.usb.UsbInterface
 import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.util.Log
-import android.util.NoSuchPropertyException
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -26,9 +22,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
+import com.hoho.android.usbserial.driver.UsbSerialDriver
+import com.hoho.android.usbserial.driver.UsbSerialPort
+import com.hoho.android.usbserial.driver.UsbSerialProber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
 
 object AppConstants {
     const val MAX_DISPENSER_CAPACITY = 50
@@ -226,6 +226,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var dispenserUsbInterfaceIndex: Int = 0
     var dispenserUsbEndpointIn: UsbEndpoint? = null
     var dispenserUsbEndpointOut: UsbEndpoint? = null
+    var dispenserPort: UsbSerialPort? = null
 
 
     @SuppressLint("WrongViewCast")
@@ -306,61 +307,28 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
         updateView(0)
 
-        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-        val deviceList = usbManager.getDeviceList()
-        val device = deviceList["deviceName"]
-        var iterator = 0
-// OR
-        for (device in deviceList.values) {
-            // Process each connected device
-            Log.i("Slyco-USB","${iterator} - Device Name: ${device.deviceName.toString()}")
-            Log.i("Slyco-USB","${iterator} - Product Name: ${device.productName.toString()}")
-            Log.i("Slyco-USB","${iterator} - Manufacturer Name: ${device.manufacturerName.toString()}")
-            Log.i("Slyco-USB","${iterator} - Product Id: ${device.productId.toString()}")
-            Log.i("Slyco-USB","${iterator} - Vendor Id: ${device.vendorId.toString()}")
-            Log.i("Slyco-USB","${iterator} - Interface Count: ${device.interfaceCount.toString()}")
-            Log.i("Slyco-USB","${iterator} - Device Protocol: ${device.deviceProtocol.toString()}")
-            if ((device.productId == AppConstants.DISPENSER_PID) &&
-                (device.vendorId == AppConstants.DISPENSER_VID))
-            {
-                Log.i("Slyco-USB", "${iterator} - Match!!!")
-                dispenserUsbDevice = device
-                break
-            }
-            iterator++
-        }
-        if (dispenserUsbDevice != null){
-            if (!usbManager.hasPermission(dispenserUsbDevice)) {
-                Log.i("Slyco-USB","Setando permissoes do dispenser")
-                var pendingIntentFlags = 0
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE
-                }
-                val dispenserPermissionIntent = PendingIntent.getBroadcast(this,0,Intent(AppConstants.ACTION_USB_PERMISSION),pendingIntentFlags)
-                val filter = IntentFilter(AppConstants.ACTION_USB_PERMISSION)
 
-            }
-            else {
-                Log.i("Slyco-USB", "Permissoes OK!")
-            }
-            dispenserUsbConnection = usbManager.openDevice(dispenserUsbDevice)
-
-            if (dispenserUsbConnection == null) {
-                throw NoSuchPropertyException ("Slyco-USB - nao conseguiu abrir conexao com dispositivo")
-            }
-            else {
-                Log.i("Slyco-USB", "Conexao OK!")
-                val counter = dispenserUsbDevice?.getInterfaceCount()
-                Log.i( "Slyco-USB", "Interfaces: ${counter}")
-                //como existem devices com só 1 endpoint, precisamos tratar de forma diferente
-                if (counter == 0) throw NoSuchPropertyException("Slyco-USB - Sem interfaces")
-
-                //dispenserUsbConnection.controlTransfer()
-            }
+        // Find all available drivers from attached devices.
+        val manager = getSystemService(USB_SERVICE) as UsbManager
+        val availableDrivers: List<UsbSerialDriver> =
+            UsbSerialProber.getDefaultProber().findAllDrivers(manager)
+        if (availableDrivers.isEmpty()) {
+            Log.i("Slyco-USB","No USB Driver found")
         }
-        else {
-            Log.w("Slyco-USB", "Sem dispenser USB identificado. Trabalhando no modo nao integrado.")
-        }
+
+
+        // Open a connection to the first available driver.
+        val driver = availableDrivers[0]
+        val connection = manager.openDevice(driver.device)
+            ?: // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
+            return
+
+
+        dispenserPort = driver.ports[0] // Most devices have just one port (port 0)
+        dispenserPort?.open(connection)
+        dispenserPort?.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE)
+
+
     }
 
     val listener= View.OnClickListener { view ->
@@ -697,6 +665,18 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             this.inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
             this.inventory.setQty(NESPRESSO_FLAVORS.INDIA,inventory.getQty(NESPRESSO_FLAVORS.INDIA) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA))
             this.inventory.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO))
+
+
+            val dispenserBufferString = "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
+                    "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
+                    "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
+                    "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) +
+                    "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA)) +
+                    "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) + "\n"
+
+            Log.i("Slyco-Dispenser SND","${dispenserBufferString.toString()}")
+
+            dispenserPort?.write(dispenserBufferString.toByteArray(),100)
 
             shoppingCart.clearCart()
 
