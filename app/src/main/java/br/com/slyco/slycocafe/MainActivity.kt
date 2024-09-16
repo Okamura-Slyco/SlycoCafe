@@ -36,8 +36,8 @@ object AppConstants {
     const val OUT_OF_STOCK_ALPHA = 25
     const val ON_STOCK_ALPHA_FLOAT = 1.0f
     const val OUT_OF_STOCK_ALPHA_FLOAT = OUT_OF_STOCK_ALPHA.toFloat()/ON_STOCK_ALPHA.toFloat()
-    const val DISPENSER_PID = 51459
-    const val DISPENSER_VID = 5971
+    const val DISPENSER_PID = 60000
+    const val DISPENSER_VID = 4292
     const val ACTION_USB_PERMISSION = "com.android.pinpad.USB_PERMISSION"
 }
 
@@ -318,6 +318,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             Log.i("Slyco-USB","${iterator} - Manufacturer Name: ${device.manufacturerName.toString()}")
             Log.i("Slyco-USB","${iterator} - Product Id: ${device.productId.toString()}")
             Log.i("Slyco-USB","${iterator} - Vendor Id: ${device.vendorId.toString()}")
+            Log.i("Slyco-USB","${iterator} - Interface Count: ${device.interfaceCount.toString()}")
+            Log.i("Slyco-USB","${iterator} - Device Protocol: ${device.deviceProtocol.toString()}")
             if ((device.productId == AppConstants.DISPENSER_PID) &&
                 (device.vendorId == AppConstants.DISPENSER_VID))
             {
@@ -330,13 +332,13 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         if (dispenserUsbDevice != null){
             if (!usbManager.hasPermission(dispenserUsbDevice)) {
                 Log.i("Slyco-USB","Setando permissoes do dispenser")
-//                var pendingIntentFlags = 0
-//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-//                    pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE
-//                }
-//                val dispenserPermissionIntent = PendingIntent.getBroadcast(this,0,Intent(AppConstants.ACTION_USB_PERMISSION),pendingIntentFlags)
-//                val filter = IntentFilter(AppConstants.ACTION_USB_PERMISSION)
-//
+                var pendingIntentFlags = 0
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE
+                }
+                val dispenserPermissionIntent = PendingIntent.getBroadcast(this,0,Intent(AppConstants.ACTION_USB_PERMISSION),pendingIntentFlags)
+                val filter = IntentFilter(AppConstants.ACTION_USB_PERMISSION)
+
             }
             else {
                 Log.i("Slyco-USB", "Permissoes OK!")
@@ -350,8 +352,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 Log.i("Slyco-USB", "Conexao OK!")
                 val counter = dispenserUsbDevice?.getInterfaceCount()
                 Log.i( "Slyco-USB", "Interfaces: ${counter}")
+                //como existem devices com só 1 endpoint, precisamos tratar de forma diferente
                 if (counter == 0) throw NoSuchPropertyException("Slyco-USB - Sem interfaces")
 
+                //dispenserUsbConnection.controlTransfer()
             }
         }
         else {
