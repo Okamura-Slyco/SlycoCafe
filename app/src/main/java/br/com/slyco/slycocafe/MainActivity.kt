@@ -685,6 +685,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             shoppingCart.clearCart()
 
             updateView(0)
+            val intent: Intent = Intent(this, DispenserProgress::class.java)
+            startActivityForResult(intent, 2)
 
         }
             //printTextAsImage("", cupom, "", applicationContext, account)

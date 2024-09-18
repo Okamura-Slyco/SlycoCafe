@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- needed for search Bluetooth devices -->
-
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SlycoCafé"
         tools:targetApi="31">
+        <activity
+            android:name=".DispenserProgress"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
