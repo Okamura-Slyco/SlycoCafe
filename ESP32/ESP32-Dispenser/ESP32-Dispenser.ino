@@ -19,8 +19,8 @@
 #define MODULO_LED1 16
 #define MODULO_LED2 17
 
-#define LED_ON 1
-#define LED_OFF 0
+#define LED_ON 0
+#define LED_OFF 1
 
 #define DISPENSER_QTY 6
 #define DISPENSER_STOCK 50
@@ -30,14 +30,14 @@
 #define SERVO_MAX 2400
 
 #define DOOR_CLOSE 45
-#define DOOR_OPEN DOOR_CLOSE+80
+#define DOOR_OPEN DOOR_CLOSE + 80
 #define DOOR_ZERO 0
 
 #define RELEASE_DOORS 0x01
 #define CONTROL_DOORS 0x02
 
 #define DELAY_DROP 500
-#define DELAY_BLINK 100
+#define DELAY_BLINK 500
 #define DELAY_WAIT 250
 
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
@@ -80,12 +80,12 @@ char buf[BUFFER_SIZE];
 char release[DISPENSER_STOCK];
 
 void setup() {
-  pinMode(MODULO_LED1,OUTPUT);
-  pinMode(MODULO_LED2,OUTPUT);
+  pinMode(MODULO_LED1, OUTPUT);
+  pinMode(MODULO_LED2, OUTPUT);
 
-  digitalWrite(MODULO_LED1,LED_ON);
-  digitalWrite(MODULO_LED2,LED_ON);
-  
+  digitalWrite(MODULO_LED1, LED_ON);
+  digitalWrite(MODULO_LED2, LED_ON);
+
 
   servo_A_ps.attach(MODULO_A_PS, SERVO_MIN, SERVO_MAX);
   servo_A_pc.attach(MODULO_A_PC, SERVO_MIN, SERVO_MAX);
@@ -134,9 +134,8 @@ void setup() {
   SerialBT.begin(device_name);
   SerialBT.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
 
-  delay(DELAY_DROP*2);
-  digitalWrite(MODULO_LED2,LED_OFF);
-  
+  delay(DELAY_DROP * 2);
+  digitalWrite(MODULO_LED2, LED_OFF);
 }
 
 
@@ -147,39 +146,36 @@ void loop() {
 
     // prints the received data
     SerialBT.print("I received (");
-    SerialBT.print(rlen,DEC);
+    SerialBT.print(rlen, DEC);
     SerialBT.print(": ");
-    for(int i = 0; i < rlen; i++)
+    for (int i = 0; i < rlen; i++)
       SerialBT.print(buf[i]);
     SerialBT.println();
-    release_items(buf,rlen);
+    release_items(buf, rlen);
   }
   delay(DOOR_OPEN);
 }
 
-void release_items(char * buffer,int qty)
-{
+void release_items(char* buffer, int qty) {
   int i;
   SerialBT.println("--- INICIO ---");
-  
+
   int int_releases = 0;
   int releases = 0;
   int item;
-  
-  
-  for(i=0;i<DISPENSER_STOCK;i++) release[i] = 0;
 
-  for (i = 0; i<qty; i++)
-  {
-    switch (buffer[i])
-    {
+
+  for (i = 0; i < DISPENSER_STOCK; i++) release[i] = 0;
+
+  for (i = 0; i < qty; i++) {
+    switch (buffer[i]) {
       case 'A':
       case 'B':
       case 'C':
       case 'D':
       case 'E':
       case 'F':
-      //case 'Z':
+        //case 'Z':
         item = buffer[i] - 0x40;
         int_releases = 0;
         //SerialBT.print("item: ");
@@ -190,19 +186,19 @@ void release_items(char * buffer,int qty)
         //SerialBT.print("AND: ");
         //SerialBT.println(release[int_releases] & (0x01<<(item-1)),HEX);
 
-        while (0 != (release[int_releases] & (0x01<<(item-1)))) {
+        while (0 != (release[int_releases] & (0x01 << (item - 1)))) {
           int_releases++;
-          
+
           //SerialBT.print("release[int_releases]: ");
           //SerialBT.println(release[int_releases],HEX);
         }
-        release[int_releases] |= 0x01<<(item-1);
+        release[int_releases] |= 0x01 << (item - 1);
 
         //SerialBT.print("release[");
         //SerialBT.print(int_releases,DEC);
         //SerialBT.print("]: ");
         //SerialBT.println(item,release[int_releases]);
-        
+
 
         if (int_releases > releases) releases = int_releases;
 
@@ -217,7 +213,7 @@ void release_items(char * buffer,int qty)
         SetDoorState(DOOR_CLOSE, RELEASE_DOORS);
         return;
       case 't':
-        SetDoorState(DOOR_CLOSE,CONTROL_DOORS);
+        SetDoorState(DOOR_CLOSE, CONTROL_DOORS);
         return;
       case 'R':
         SetDoorState(DOOR_OPEN, RELEASE_DOORS);
@@ -226,7 +222,7 @@ void release_items(char * buffer,int qty)
         SetDoorState(DOOR_OPEN, CONTROL_DOORS);
         return;
       case 'z':
-        SetDoorState(DOOR_ZERO, CONTROL_DOORS|RELEASE_DOORS);
+        SetDoorState(DOOR_ZERO, CONTROL_DOORS | RELEASE_DOORS);
         return;
       default:
         SerialBT.print("Sabor desconhecido... ");
@@ -235,69 +231,95 @@ void release_items(char * buffer,int qty)
     }
   }
 
-  digitalWrite(MODULO_LED2,LED_ON);
-
-  for (item = 0; release[item]; item++)
-  {
-    SerialBT.print("release[");
-    SerialBT.print(item,DEC);
-    SerialBT.print("]: ");
-    SerialBT.println(release[item],HEX);
-    Release(release[item]);
-  }
-
-  digitalWrite(MODULO_LED2,LED_OFF);
-  SerialBT.println("--- FIM ---");
-} 
-
-void Release(char comando) {
-  if (comando & 0x01) servo_A_pc.write(DOOR_OPEN);
-  if (comando & 0x02) servo_B_pc.write(DOOR_OPEN);
-  if (comando & 0x04) servo_C_pc.write(DOOR_OPEN);
-  if (comando & 0x08) servo_D_pc.write(DOOR_OPEN);
-  if (comando & 0x10) servo_E_pc.write(DOOR_OPEN);
-  if (comando & 0x20) servo_F_pc.write(DOOR_OPEN);
-
-  delay(DELAY_DROP);
   
-  if (comando & 0x01) {servo_A_pc.write(DOOR_CLOSE); delay (DELAY_WAIT); servo_A_ps.write(DOOR_OPEN);}
-  if (comando & 0x02) {servo_B_pc.write(DOOR_CLOSE); delay (DELAY_WAIT); servo_B_ps.write(DOOR_OPEN);}
-  if (comando & 0x04) {servo_C_pc.write(DOOR_CLOSE); delay (DELAY_WAIT); servo_C_ps.write(DOOR_OPEN);}
-  if (comando & 0x08) {servo_D_pc.write(DOOR_CLOSE); delay (DELAY_WAIT); servo_D_ps.write(DOOR_OPEN);}
-  if (comando & 0x10) {servo_E_pc.write(DOOR_CLOSE); delay (DELAY_WAIT); servo_E_ps.write(DOOR_OPEN);}
-  if (comando & 0x20) {servo_F_pc.write(DOOR_CLOSE); delay (DELAY_WAIT); servo_F_ps.write(DOOR_OPEN);}
+  Serial.print("Ri");
+  Serial.print(int_releases,DEC);
+  Serial.print("\n");
+  for (item = 0; release[item] && (item < int_releases) && (item < DISPENSER_STOCK); item++) {
+    Serial.print("ri");
+    Serial.print(item,DEC);
+    Serial.print("\n");
+    SerialBT.print("release[");
+    SerialBT.print(item, DEC);
+    SerialBT.print("]: ");
+    SerialBT.println(release[item], HEX);
+    Release(release[item]);
+    release[item] = 0x00;
+    Serial.print("ri");
+    Serial.print(item,DEC);
+    Serial.print("\n");
+  }
+  Serial.print("Rf");
+  Serial.print(int_releases,DEC);
+  Serial.print("\n");
 
-  delay(DELAY_DROP);
-
-  if (comando & 0x01) servo_A_ps.write(DOOR_CLOSE);
-  if (comando & 0x02) servo_B_ps.write(DOOR_CLOSE);
-  if (comando & 0x04) servo_C_ps.write(DOOR_CLOSE);
-  if (comando & 0x08) servo_D_ps.write(DOOR_CLOSE);
-  if (comando & 0x10) servo_E_ps.write(DOOR_CLOSE);
-  if (comando & 0x20) servo_F_ps.write(DOOR_CLOSE);
-
+  SerialBT.println("--- FIM ---");
 }
 
-void SetDoorState(int state, int doors)
-{
-  if (doors == RELEASE_DOORS){
+void Release(char comando) {
+
+  digitalWrite(MODULO_LED2, LED_ON);
+  if (comando & 0x01) { servo_A_pc.write(DOOR_OPEN); Serial.print("Ai\n");}
+  if (comando & 0x02) { servo_B_pc.write(DOOR_OPEN); Serial.print("Bi\n");}
+  if (comando & 0x04) { servo_C_pc.write(DOOR_OPEN); Serial.print("Ci\n");}
+  if (comando & 0x08) { servo_D_pc.write(DOOR_OPEN); Serial.print("Di\n");}
+  if (comando & 0x10) { servo_E_pc.write(DOOR_OPEN); Serial.print("Ei\n");}
+  if (comando & 0x20) { servo_F_pc.write(DOOR_OPEN); Serial.print("Fi\n");}
+
+  delay(DELAY_DROP);
+
+  if (comando & 0x01) { servo_A_pc.write(DOOR_CLOSE); }
+  if (comando & 0x02) { servo_B_pc.write(DOOR_CLOSE); }
+  if (comando & 0x04) { servo_C_pc.write(DOOR_CLOSE); }
+  if (comando & 0x08) { servo_D_pc.write(DOOR_CLOSE); }
+  if (comando & 0x10) { servo_E_pc.write(DOOR_CLOSE); }
+  if (comando & 0x20) { servo_F_pc.write(DOOR_CLOSE); }
+
+  delay(DELAY_WAIT);
+
+  if (comando & 0x01) { servo_A_ps.write(DOOR_OPEN); }
+  if (comando & 0x02) { servo_B_ps.write(DOOR_OPEN); }
+  if (comando & 0x04) { servo_C_ps.write(DOOR_OPEN); }
+  if (comando & 0x08) { servo_D_ps.write(DOOR_OPEN); }
+  if (comando & 0x10) { servo_E_ps.write(DOOR_OPEN); }
+  if (comando & 0x20) { servo_F_ps.write(DOOR_OPEN); }
+
+  digitalWrite(MODULO_LED2, LED_OFF);
+  delay(DELAY_DROP);
+
+  if (comando & 0x01) { servo_A_ps.write(DOOR_CLOSE); Serial.print("Af\n");}
+  if (comando & 0x02) { servo_B_ps.write(DOOR_CLOSE); Serial.print("Bf\n");}
+  if (comando & 0x04) { servo_C_ps.write(DOOR_CLOSE); Serial.print("Cf\n");}
+  if (comando & 0x08) { servo_D_ps.write(DOOR_CLOSE); Serial.print("Df\n");}
+  if (comando & 0x10) { servo_E_ps.write(DOOR_CLOSE); Serial.print("Ef\n");}
+  if (comando & 0x20) { servo_F_ps.write(DOOR_CLOSE); Serial.print("Ff\n");}
+}
+
+void SetDoorState(int state, int doors) {
+  if (doors == RELEASE_DOORS) {
     servo_A_ps.write(state);
     servo_B_ps.write(state);
     servo_C_ps.write(state);
     servo_D_ps.write(state);
     servo_E_ps.write(state);
     servo_F_ps.write(state);
-    digitalWrite(MODULO_LED2,LED_ON);
+    digitalWrite(MODULO_LED1, LED_OFF);
+    digitalWrite(MODULO_LED2, LED_ON);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_OFF);
+    digitalWrite(MODULO_LED1, LED_ON);
+    digitalWrite(MODULO_LED2, LED_OFF);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_ON);
+    digitalWrite(MODULO_LED1, LED_OFF);
+    digitalWrite(MODULO_LED2, LED_ON);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_OFF);
+    digitalWrite(MODULO_LED1, LED_ON);
+    digitalWrite(MODULO_LED2, LED_OFF);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_ON);
+    digitalWrite(MODULO_LED1, LED_OFF);
+    digitalWrite(MODULO_LED2, LED_ON);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_OFF);
+    digitalWrite(MODULO_LED1, LED_ON);
+    digitalWrite(MODULO_LED2, LED_OFF);
   }
 
   if (doors == CONTROL_DOORS) {
@@ -307,13 +329,17 @@ void SetDoorState(int state, int doors)
     servo_D_pc.write(state);
     servo_E_pc.write(state);
     servo_F_pc.write(state);
-    
-    digitalWrite(MODULO_LED2,LED_ON);
+
+    digitalWrite(MODULO_LED1, LED_OFF);
+    digitalWrite(MODULO_LED2, LED_ON);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_OFF);
+    digitalWrite(MODULO_LED1, LED_ON);
+    digitalWrite(MODULO_LED2, LED_OFF);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_ON);
+    digitalWrite(MODULO_LED1, LED_OFF);
+    digitalWrite(MODULO_LED2, LED_ON);
     delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED2,LED_OFF);
+    digitalWrite(MODULO_LED1, LED_ON);
+    digitalWrite(MODULO_LED2, LED_OFF);
   }
 }
