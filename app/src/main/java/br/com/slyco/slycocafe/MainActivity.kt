@@ -486,7 +486,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     intent.putExtra("functionId", "0")
                     intent.putExtra("transactionAmount", totalStr)
                     intent.putExtra("transactionInstallments", "1")
-                    intent.putExtra("enabledTransactions", "16")
+                    //intent.putExtra("enabledTransactions", "16,26")
                     intent.putExtra("tokenRegiistroTls","8977316332439824")
                     startActivityForResult(intent, 1)
 
