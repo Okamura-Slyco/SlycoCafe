@@ -109,7 +109,7 @@
         android:progressBackgroundTintMode="src_atop"
         android:progressTint="#228800"
         android:progressTintMode="src_atop"
-        android:scaleY="4"
+        android:scaleY="6"
         android:secondaryProgressTint="#228800"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
