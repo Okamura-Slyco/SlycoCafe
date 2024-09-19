@@ -26,11 +26,21 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.max
 
 class DispenserProgress : AppCompatActivity()
 {
     var dispenserPort: UsbSerialPort? = null
-    var dispenserBufferString = ""
+
+    var thisIntent: Intent? = null
+
+    var countA:Int = 0
+    var countB:Int = 0
+    var countC:Int = 0
+    var countD:Int = 0
+    var countE:Int = 0
+    var countF:Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -41,6 +51,18 @@ class DispenserProgress : AppCompatActivity()
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        thisIntent = Intent()
+
+        countA = intent.getIntExtra("A_itemQty", 0)
+        countB = intent.getIntExtra("B_itemQty", 0)
+        countC = intent.getIntExtra("C_itemQty", 0)
+        countD = intent.getIntExtra("D_itemQty", 0)
+        countE = intent.getIntExtra("E_itemQty", 0)
+        countF = intent.getIntExtra("F_itemQty", 0)
+
+        Log.d("DispenserProgress","A: ${countA}; B: ${countB}; C: ${countC}; D: ${countD}; E: ${countE}; F: ${countF}")
+
         findViewById<ImageView>(R.id.imgRistretto).alpha = 0.0f
         findViewById<ImageView>(R.id.imgBrasilOrganic).alpha = 0.0f
         findViewById<ImageView>(R.id.imgLeggero).alpha = 0.0f
@@ -73,7 +95,16 @@ class DispenserProgress : AppCompatActivity()
                 UsbSerialPort.PARITY_NONE
             )
 
-            dispenserPort?.write(dispenserBufferString.toByteArray(),100)
+            val dispenserBufferString = "A".repeat(countA) +
+                    "B".repeat(countB) +
+                    "C".repeat(countC) +
+                    "D".repeat(countD) +
+                    "E".repeat(countE) +
+                    "F".repeat(countF) + "\n"
+
+            Log.d("DispenserProgress","Buffer: ${dispenserBufferString}")
+
+            dispenserPort?.write(dispenserBufferString!!.toByteArray(),100)
 
         }
 
@@ -93,27 +124,24 @@ class DispenserProgress : AppCompatActivity()
             progressBar.max = 100
             progressBar.progress = 0
 
-            dispenserAnimation(findViewById<ImageView>(R.id.imgRistretto))
-            dispenserAnimation(findViewById<ImageView>(R.id.imgBrasilOrganic))
-            dispenserAnimation(findViewById<ImageView>(R.id.imgLeggero))
-            dispenserAnimation(findViewById<ImageView>(R.id.imgDescafeinado))
-            dispenserAnimation(findViewById<ImageView>(R.id.imgIndia))
-            dispenserAnimation(findViewById<ImageView>(R.id.imgCaffeVanilio))
+            val maxIt = max(countA,max(countB,max(countC,max(countD,max(countE,countF)))))
+            var myIt = 0
 
-            delay(500L)
+            while (myIt++ < maxIt){
 
-            ObjectAnimator.ofInt(progressBar,"progress",50)
-                .setDuration(500L)
-                .start()
+                if (countA > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgRistretto)); countA -- }
+                if (countB > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgBrasilOrganic)); countB -- }
+                if (countC > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgLeggero)); countC -- }
+                if (countD > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgDescafeinado)); countD -- }
+                if (countE > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgIndia)); countE -- }
+                if (countF > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgCaffeVanilio)); countF -- }
 
-            ObjectAnimator.ofInt(progressBar,"progress",100)
-                .setDuration(1000L)
-                .start()
-
-            while (progressBar.progress != 100)
-            {
-                delay(500)
+                ObjectAnimator.ofInt(progressBar,"progress",(100*(myIt.toFloat()/maxIt.toFloat())).toInt())
+                    .setDuration(1000L)
+                    .start()
+                delay(1000L)
             }
+
             var bomCafeLabel = findViewById<TextView>(R.id.obrigadoLabel)
 
             bomCafeLabel.visibility = View.VISIBLE
@@ -122,8 +150,8 @@ class DispenserProgress : AppCompatActivity()
 
             dispenserPort?.close()
 
-            val resultIntent = Intent()
-            setResult(Activity.RESULT_OK, resultIntent)
+
+            setResult(Activity.RESULT_OK, thisIntent)
             finish()
 
         }
@@ -134,7 +162,7 @@ class DispenserProgress : AppCompatActivity()
                 coffeeImageView.alpha = 0.0f
                 coffeeImageView.translationY = 0.0f
                 ObjectAnimator.ofFloat(coffeeImageView,"alpha",1.0f)
-                    .setDuration(500L)
+                    .setDuration(100L)
                     .start()
 
                 //delay(500L)

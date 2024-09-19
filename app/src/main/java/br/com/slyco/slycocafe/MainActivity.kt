@@ -646,15 +646,19 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA)) +
                     "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) + "\n"
 
-            Log.i("Slyco-Dispenser SND","${dispenserBufferString.toString()}")
+            val intent: Intent = Intent(this, DispenserProgress::class.java)
+            intent.putExtra("A_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO))
+            intent.putExtra("B_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC))
+            intent.putExtra("C_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO))
+            intent.putExtra("D_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
+            intent.putExtra("E_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA))
+            intent.putExtra("F_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO))
+
+            startActivityForResult(intent, 2)
 
             shoppingCart.clearCart()
 
             updateView(0)
-            val intent: Intent = Intent(this, DispenserProgress::class.java)
-            intent.putExtras("outputBudffer",dispenserBufferString.toString())
-            startActivityForResult(intent, 2)
-
         }
             //printTextAsImage("", cupom, "", applicationContext, account)
 
