@@ -3,7 +3,9 @@ package br.com.slyco.slycocafe
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
+import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -14,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.hoho.android.usbserial.driver.UsbSerialDriver
+import com.hoho.android.usbserial.driver.UsbSerialPort
+import com.hoho.android.usbserial.driver.UsbSerialProber
 import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,7 +27,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DispenserProgress : AppCompatActivity() {
+class DispenserProgress : AppCompatActivity()
+{
+    var dispenserPort: UsbSerialPort? = null
+    var dispenserBufferString = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -39,6 +47,36 @@ class DispenserProgress : AppCompatActivity() {
         findViewById<ImageView>(R.id.imgDescafeinado).alpha = 0.0f
         findViewById<ImageView>(R.id.imgIndia).alpha = 0.0f
         findViewById<ImageView>(R.id.imgCaffeVanilio).alpha = 0.0f
+
+
+        // Find all available drivers from attached devices.
+        val manager = getSystemService(USB_SERVICE) as UsbManager
+        val availableDrivers: List<UsbSerialDriver> =
+            UsbSerialProber.getDefaultProber().findAllDrivers(manager)
+        if (availableDrivers.isEmpty()) {
+            Log.i("Slyco-USB","No USB Driver found")
+        }
+        else {
+            // Open a connection to the first available driver.
+            val driver = availableDrivers[0]
+            val connection = manager.openDevice(driver.device)
+                ?: // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
+                return
+
+
+            dispenserPort = driver.ports[0] // Most devices have just one port (port 0)
+            dispenserPort?.open(connection)
+            dispenserPort?.setParameters(
+                115200,
+                8,
+                UsbSerialPort.STOPBITS_1,
+                UsbSerialPort.PARITY_NONE
+            )
+
+            dispenserPort?.write(dispenserBufferString.toByteArray(),100)
+
+        }
+
         // Run a function after the UI has loaded
         lifecycleScope.launch {
             // Perform any UI-related tasks here
@@ -81,6 +119,9 @@ class DispenserProgress : AppCompatActivity() {
             bomCafeLabel.visibility = View.VISIBLE
 
             delay(1000)
+
+            dispenserPort?.close()
+
             val resultIntent = Intent()
             setResult(Activity.RESULT_OK, resultIntent)
             finish()

@@ -220,14 +220,6 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var shoppingCart : shoppingCart = shoppingCart(inventory);
     var easterEgg = 0
     var easterEgg1 = 0
-    var dispenserUsbDevice: UsbDevice? = null
-    var dispenserUsbConnection: UsbDeviceConnection? = null
-    var dispenserUsbInterface: UsbInterface? =  null
-    var dispenserUsbInterfaceIndex: Int = 0
-    var dispenserUsbEndpointIn: UsbEndpoint? = null
-    var dispenserUsbEndpointOut: UsbEndpoint? = null
-    var dispenserPort: UsbSerialPort? = null
-
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -308,30 +300,6 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         updateView(0)
 
 
-        // Find all available drivers from attached devices.
-        val manager = getSystemService(USB_SERVICE) as UsbManager
-        val availableDrivers: List<UsbSerialDriver> =
-            UsbSerialProber.getDefaultProber().findAllDrivers(manager)
-        if (availableDrivers.isEmpty()) {
-            Log.i("Slyco-USB","No USB Driver found")
-        }
-        else {
-            // Open a connection to the first available driver.
-            val driver = availableDrivers[0]
-            val connection = manager.openDevice(driver.device)
-                ?: // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
-                return
-
-
-            dispenserPort = driver.ports[0] // Most devices have just one port (port 0)
-            dispenserPort?.open(connection)
-            dispenserPort?.setParameters(
-                115200,
-                8,
-                UsbSerialPort.STOPBITS_1,
-                UsbSerialPort.PARITY_NONE
-            )
-        }
 
     }
 
@@ -680,12 +648,11 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             Log.i("Slyco-Dispenser SND","${dispenserBufferString.toString()}")
 
-            dispenserPort?.write(dispenserBufferString.toByteArray(),100)
-
             shoppingCart.clearCart()
 
             updateView(0)
             val intent: Intent = Intent(this, DispenserProgress::class.java)
+            intent.putExtras("outputBudffer",dispenserBufferString.toString())
             startActivityForResult(intent, 2)
 
         }
