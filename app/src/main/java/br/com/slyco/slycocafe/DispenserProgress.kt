@@ -162,12 +162,12 @@ class DispenserProgress : AppCompatActivity()
                 coffeeImageView.alpha = 0.0f
                 coffeeImageView.translationY = 0.0f
                 ObjectAnimator.ofFloat(coffeeImageView,"alpha",1.0f)
-                    .setDuration(100L)
+                    .setDuration(50L)
                     .start()
 
                 //delay(500L)
 
-                ObjectAnimator.ofFloat(coffeeImageView,"translationY",800.0f)
+                ObjectAnimator.ofFloat(coffeeImageView,"translationY",1000.0f)
                     .setDuration(1000L)
                     .start()
             }
