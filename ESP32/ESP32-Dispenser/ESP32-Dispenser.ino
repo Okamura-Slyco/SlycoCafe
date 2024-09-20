@@ -235,23 +235,35 @@ void release_items(char* buffer, int qty) {
   Serial.print("Ri");
   Serial.print(int_releases,DEC);
   Serial.print("\n");
-  for (item = 0; release[item] && (item < int_releases) && (item < DISPENSER_STOCK); item++) {
+  SerialBT.print("Ri");
+  SerialBT.print(int_releases,DEC);
+  SerialBT.print("\n");
+  for (item = 0; release[item] && (item <= int_releases) && (item < DISPENSER_STOCK); item++) {
     Serial.print("ri");
     Serial.print(item,DEC);
+    Serial.print(":");
+    Serial.print(release[item],BIN);
     Serial.print("\n");
-    SerialBT.print("release[");
-    SerialBT.print(item, DEC);
-    SerialBT.print("]: ");
-    SerialBT.println(release[item], HEX);
+    SerialBT.print("ri");
+    SerialBT.print(item,DEC);
+    SerialBT.print(":");
+    SerialBT.print(release[item],BIN);
+    SerialBT.print("\n");
     Release(release[item]);
     release[item] = 0x00;
-    Serial.print("ri");
+    Serial.print("rf");
     Serial.print(item,DEC);
     Serial.print("\n");
+    SerialBT.print("rf");
+    SerialBT.print(item,DEC);
+    SerialBT.print("\n");
   }
   Serial.print("Rf");
   Serial.print(int_releases,DEC);
   Serial.print("\n");
+  SerialBT.print("Rf");
+  SerialBT.print(int_releases,DEC);
+  SerialBT.print("\n");
 
   SerialBT.println("--- FIM ---");
 }
@@ -293,6 +305,9 @@ void Release(char comando) {
   if (comando & 0x08) { servo_D_ps.write(DOOR_CLOSE); Serial.print("Df\n");}
   if (comando & 0x10) { servo_E_ps.write(DOOR_CLOSE); Serial.print("Ef\n");}
   if (comando & 0x20) { servo_F_ps.write(DOOR_CLOSE); Serial.print("Ff\n");}
+
+  delay(DELAY_DROP);
+
 }
 
 void SetDoorState(int state, int doors) {
