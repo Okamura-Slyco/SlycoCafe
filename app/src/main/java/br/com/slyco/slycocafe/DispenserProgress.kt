@@ -115,6 +115,7 @@ class DispenserProgress : AppCompatActivity()
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private suspend fun processAfterUILoad() {
         withContext(Dispatchers.Main) {
             // Your code to run after UI load
@@ -126,6 +127,10 @@ class DispenserProgress : AppCompatActivity()
 
             val maxIt = max(countA,max(countB,max(countC,max(countD,max(countE,countF)))))
             var myIt = 0
+
+            val inBuffer:ByteArray = ByteArray(500)
+            dispenserPort?.read(inBuffer,1000)
+            Log.d("DispenserProgress USB IB", inBuffer.toHexString(0,500))
 
             while (myIt++ < maxIt){
 
