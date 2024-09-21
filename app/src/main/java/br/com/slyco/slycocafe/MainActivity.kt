@@ -107,9 +107,9 @@ class inventory {
         this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,2.5)
         this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
         this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,2.5)
-        this.itens[3] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,2.5)
-        this.itens[4] = item(NESPRESSO_FLAVORS.INDIA,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
-        this.itens[5] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
+        this.itens[3] = item(NESPRESSO_FLAVORS.FORTE,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
+        this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,2.75)
+        this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,2.5)
     }
     fun getQty(flavor: NESPRESSO_FLAVORS) : Int{
         var myItem = itens.find{ it?.getFlavor() == flavor }
@@ -155,9 +155,9 @@ class shoppingCart {
         this.itens[0] = cartItem(NESPRESSO_FLAVORS.RISTRETTO, 0, inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO))
         this.itens[1] = cartItem(NESPRESSO_FLAVORS.BRAZIL_ORGANIC, 0, inventory.getPrice(NESPRESSO_FLAVORS.BRAZIL_ORGANIC))
         this.itens[2] = cartItem(NESPRESSO_FLAVORS.LEGGERO, 0, inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO))
-        this.itens[3] = cartItem(NESPRESSO_FLAVORS.DESCAFFEINADO, 0, inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO))
-        this.itens[4] = cartItem(NESPRESSO_FLAVORS.INDIA, 0, inventory.getPrice(NESPRESSO_FLAVORS.INDIA))
-        this.itens[5] = cartItem(NESPRESSO_FLAVORS.CAFFE_VANILIO, 0, inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO))
+        this.itens[3] = cartItem(NESPRESSO_FLAVORS.FORTE, 0, inventory.getPrice(NESPRESSO_FLAVORS.FORTE))
+        this.itens[4] = cartItem(NESPRESSO_FLAVORS.CAFFE_VANILIO, 0, inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO))
+        this.itens[5] = cartItem(NESPRESSO_FLAVORS.DESCAFFEINADO, 0, inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO))
     }
 
     fun calculateTotal() {
@@ -330,21 +330,21 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             R.id.floatingActionButtonItem4Plus, R.id.imageViewCapsula4 -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,1, inventory)
+                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.FORTE,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 3) easterEgg1 = 4
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem5Plus, R.id.imageViewCapsula5 -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.INDIA,1, inventory)
+                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 4) easterEgg1 = 5
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem6Plus, R.id.imageViewCapsula6 -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,1, inventory)
+                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 5) easterEgg1 = 6
                 else easterEgg1 = 0
@@ -373,21 +373,21 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             R.id.floatingActionButtonItem4Minus -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,-1, inventory)
+                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.FORTE,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 9) easterEgg1 = 10
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem5Minus -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.INDIA,-1, inventory)
+                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 10) easterEgg1 = 11
                 else easterEgg1 = 0
             }
             R.id.floatingActionButtonItem6Minus -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,-1, inventory)
+                res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,-1, inventory)
                 easterEgg = 0
                 if (easterEgg1 == 11) easterEgg1 = 12
                 else easterEgg1 = 0
@@ -405,11 +405,11 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     textView = findViewById<EditText>(R.id.editTextNumberItem3)
                     inventory.setQty(NESPRESSO_FLAVORS.LEGGERO,Integer.valueOf(textView.text.toString()))
                     textView = findViewById<EditText>(R.id.editTextNumberItem4)
-                    inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,Integer.valueOf(textView.text.toString()))
+                    inventory.setQty(NESPRESSO_FLAVORS.FORTE,Integer.valueOf(textView.text.toString()))
                     textView = findViewById<EditText>(R.id.editTextNumberItem5)
-                    inventory.setQty(NESPRESSO_FLAVORS.INDIA,Integer.valueOf(textView.text.toString()))
-                    textView = findViewById<EditText>(R.id.editTextNumberItem6)
                     inventory.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,Integer.valueOf(textView.text.toString()))
+                    textView = findViewById<EditText>(R.id.editTextNumberItem6)
+                    inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,Integer.valueOf(textView.text.toString()))
                     Log.i("INVENTORY","SET")
                     toast("Inventory SET")
                 }
@@ -494,13 +494,13 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO).toString())
             textView = findViewById<EditText>(R.id.editTextNumberItem4)
             textView.setText(
-                shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO).toString()
+                shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE).toString()
             )
             textView = findViewById<EditText>(R.id.editTextNumberItem5)
-            textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA).toString())
+            textView.setText(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO).toString())
             textView = findViewById<EditText>(R.id.editTextNumberItem6)
             textView.setText(
-                shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO).toString()
+                shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO).toString()
             )
 
             var textView1 = findViewById<TextView>(R.id.textViewTotal)
@@ -540,7 +540,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO) <=0) findViewById<Button>(R.id.floatingActionButtonItem3Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             else findViewById<Button>(R.id.floatingActionButtonItem3Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) <=0 ) {
+            if ((inventory.getQty(NESPRESSO_FLAVORS.FORTE) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE)) <=0 ) {
                 findViewById<ImageView>(R.id.imageViewCapsula4).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
                 findViewById<Button>(R.id.floatingActionButtonItem4Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             }
@@ -548,10 +548,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 findViewById<ImageView>(R.id.imageViewCapsula4).imageAlpha = AppConstants.ON_STOCK_ALPHA
                 findViewById<Button>(R.id.floatingActionButtonItem4Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
             }
-            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO) <=0) findViewById<Button>(R.id.floatingActionButtonItem4Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE) <=0) findViewById<Button>(R.id.floatingActionButtonItem4Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             else findViewById<Button>(R.id.floatingActionButtonItem4Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.INDIA) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA)) <=0 ) {
+            if ((inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) <=0 ) {
                 findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
                 findViewById<Button>(R.id.floatingActionButtonItem5Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             }
@@ -559,10 +559,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 findViewById<ImageView>(R.id.imageViewCapsula5).imageAlpha = AppConstants.ON_STOCK_ALPHA
                 findViewById<Button>(R.id.floatingActionButtonItem5Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
             }
-            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA) <=0) findViewById<Button>(R.id.floatingActionButtonItem5Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO) <=0) findViewById<Button>(R.id.floatingActionButtonItem5Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             else findViewById<Button>(R.id.floatingActionButtonItem5Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
 
-            if ((inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) <=0 ) {
+            if ((inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) <=0 ) {
                 findViewById<ImageView>(R.id.imageViewCapsula6).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
                 findViewById<Button>(R.id.floatingActionButtonItem6Plus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             }
@@ -570,7 +570,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 findViewById<ImageView>(R.id.imageViewCapsula6).imageAlpha = AppConstants.ON_STOCK_ALPHA
                 findViewById<Button>(R.id.floatingActionButtonItem6Plus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
             }
-            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO) <=0) findViewById<Button>(R.id.floatingActionButtonItem6Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO) <=0) findViewById<Button>(R.id.floatingActionButtonItem6Minus).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             else findViewById<Button>(R.id.floatingActionButtonItem6Minus).alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
         }
         else if (res == -1)
@@ -595,11 +595,11 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         textView1 = findViewById<TextView>(R.id.textViewPrice3)
         textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO)))
         textView1 = findViewById<TextView>(R.id.textViewPrice4)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO)))
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.FORTE)))
         textView1 = findViewById<TextView>(R.id.textViewPrice5)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.INDIA)))
-        textView1 = findViewById<TextView>(R.id.textViewPrice6)
         textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO)))
+        textView1 = findViewById<TextView>(R.id.textViewPrice6)
+        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO)))
     }
 
 
@@ -634,25 +634,25 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             this.inventory.setQty(NESPRESSO_FLAVORS.RISTRETTO,inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO))
             this.inventory.setQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC))
             this.inventory.setQty(NESPRESSO_FLAVORS.LEGGERO,inventory.getQty(NESPRESSO_FLAVORS.LEGGERO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO))
-            this.inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
-            this.inventory.setQty(NESPRESSO_FLAVORS.INDIA,inventory.getQty(NESPRESSO_FLAVORS.INDIA) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA))
+            this.inventory.setQty(NESPRESSO_FLAVORS.FORTE,inventory.getQty(NESPRESSO_FLAVORS.FORTE) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE))
             this.inventory.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO))
+            this.inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
 
 
             val dispenserBufferString = "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
                     "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
                     "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
-                    "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) +
-                    "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA)) +
-                    "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) + "\n"
+                    "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE)) +
+                    "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) +
+                    "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) + "\n"
 
             val intent: Intent = Intent(this, DispenserProgress::class.java)
             intent.putExtra("A_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO))
             intent.putExtra("B_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC))
             intent.putExtra("C_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO))
-            intent.putExtra("D_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
-            intent.putExtra("E_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.INDIA))
-            intent.putExtra("F_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO))
+            intent.putExtra("D_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE))
+            intent.putExtra("E_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO))
+            intent.putExtra("F_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
 
             startActivityForResult(intent, 2)
 

@@ -38,7 +38,7 @@
         app:srcCompat="@drawable/brasil_organic_trn" />
 
     <ImageView
-        android:id="@+id/imgCaffeVanilio"
+        android:id="@+id/imgDescafeinado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="-330dp"
@@ -46,10 +46,10 @@
         android:alpha="1"
         app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/caffe_vanilio_trn" />
+        app:srcCompat="@drawable/descafeinado_trn" />
 
     <ImageView
-        android:id="@+id/imgDescafeinado"
+        android:id="@+id/imgForte"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="-250dp"
@@ -57,18 +57,18 @@
         android:alpha="1"
         app:layout_constraintStart_toEndOf="@id/imgLeggero"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/descafeinado_trn" />
+        app:srcCompat="@drawable/forte_trn" />
 
     <ImageView
-        android:id="@+id/imgIndia"
+        android:id="@+id/imgCaffeVanilio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="-300dp"
         android:layout_marginStart="-200dp"
         android:alpha="1"
-        app:layout_constraintStart_toEndOf="@id/imgDescafeinado"
+        app:layout_constraintStart_toEndOf="@id/imgForte"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/india_trn" />
+        app:srcCompat="@drawable/caffe_vanilio_trn" />
 
     <ImageView
         android:id="@+id/imgRistretto"

@@ -66,9 +66,9 @@ class DispenserProgress : AppCompatActivity()
         findViewById<ImageView>(R.id.imgRistretto).alpha = 0.0f
         findViewById<ImageView>(R.id.imgBrasilOrganic).alpha = 0.0f
         findViewById<ImageView>(R.id.imgLeggero).alpha = 0.0f
-        findViewById<ImageView>(R.id.imgDescafeinado).alpha = 0.0f
-        findViewById<ImageView>(R.id.imgIndia).alpha = 0.0f
+        findViewById<ImageView>(R.id.imgForte).alpha = 0.0f
         findViewById<ImageView>(R.id.imgCaffeVanilio).alpha = 0.0f
+        findViewById<ImageView>(R.id.imgDescafeinado).alpha = 0.0f
 
 
         // Find all available drivers from attached devices.
@@ -137,9 +137,9 @@ class DispenserProgress : AppCompatActivity()
                 if (countA > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgRistretto)); countA -- }
                 if (countB > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgBrasilOrganic)); countB -- }
                 if (countC > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgLeggero)); countC -- }
-                if (countD > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgDescafeinado)); countD -- }
-                if (countE > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgIndia)); countE -- }
-                if (countF > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgCaffeVanilio)); countF -- }
+                if (countD > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgForte)); countD -- }
+                if (countE > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgCaffeVanilio)); countE -- }
+                if (countF > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgDescafeinado)); countF -- }
 
                 ObjectAnimator.ofInt(progressBar,"progress",(100*(myIt.toFloat()/maxIt.toFloat())).toInt())
                     .setDuration(1000L)

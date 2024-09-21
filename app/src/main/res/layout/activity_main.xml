@@ -160,7 +160,7 @@
         android:layout_height="225dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula1"
-        app:srcCompat="@drawable/descafeinado" />
+        app:srcCompat="@drawable/forte" />
 
     <ImageView
         android:id="@+id/imageViewCapsula5"
@@ -169,7 +169,7 @@
         android:layout_marginStart="80dp"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula4"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula2"
-        app:srcCompat="@drawable/india" />
+        app:srcCompat="@drawable/caffevanilio" />
 
     <ImageView
         android:id="@+id/imageViewCapsula6"
@@ -178,7 +178,7 @@
         android:layout_marginStart="80dp"
         app:layout_constraintStart_toEndOf="@+id/imageViewCapsula5"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula3"
-        app:srcCompat="@drawable/caffevanilio" />
+        app:srcCompat="@drawable/descafeinado" />
 
     <Button
         android:id="@+id/buttonEmpty"
