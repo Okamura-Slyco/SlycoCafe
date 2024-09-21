@@ -13,14 +13,16 @@
 #define MODULO_D_PC 23
 #define MODULO_E_PS 4
 #define MODULO_E_PC 21
-#define MODULO_F_PS 15
-#define MODULO_F_PC 2
+#define MODULO_F_PS 2
+#define MODULO_F_PC 15
 
 #define MODULO_LED1 16
 #define MODULO_LED2 17
 
-#define LED_ON 0
-#define LED_OFF 1
+#define MODULO_VCC  5
+
+#define LED_ON 1
+#define LED_OFF 0
 
 #define DISPENSER_QTY 6
 #define DISPENSER_STOCK 50
@@ -82,9 +84,11 @@ char release[DISPENSER_STOCK];
 void setup() {
   pinMode(MODULO_LED1, OUTPUT);
   pinMode(MODULO_LED2, OUTPUT);
+  pinMode(MODULO_VCC, OUTPUT);
 
   digitalWrite(MODULO_LED1, LED_ON);
   digitalWrite(MODULO_LED2, LED_ON);
+  digitalWrite(MODULO_VCC, LED_ON);
 
 
   servo_A_ps.attach(MODULO_A_PS, SERVO_MIN, SERVO_MAX);
@@ -135,7 +139,9 @@ void setup() {
   SerialBT.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
 
   delay(DELAY_DROP * 2);
+  //digitalWrite(MODULO_LED1, LED_OFF);
   digitalWrite(MODULO_LED2, LED_OFF);
+  digitalWrite(MODULO_VCC,LED_OFF);
 }
 
 
@@ -231,6 +237,7 @@ void release_items(char* buffer, int qty) {
     }
   }
 
+  digitalWrite(MODULO_VCC, LED_ON);
   
   Serial.print("Ri");
   Serial.print(int_releases,DEC);
@@ -264,13 +271,17 @@ void release_items(char* buffer, int qty) {
   SerialBT.print("Rf");
   SerialBT.print(int_releases,DEC);
   SerialBT.print("\n");
+  
+  digitalWrite(MODULO_VCC, LED_OFF);
 
   SerialBT.println("--- FIM ---");
 }
 
 void Release(char comando) {
 
+  digitalWrite(MODULO_LED1, LED_OFF);
   digitalWrite(MODULO_LED2, LED_ON);
+  //digitalWrite(MODULO_VCC, LED_ON);
   if (comando & 0x01) { servo_A_pc.write(DOOR_OPEN); Serial.print("Ai\n");}
   if (comando & 0x02) { servo_B_pc.write(DOOR_OPEN); Serial.print("Bi\n");}
   if (comando & 0x04) { servo_C_pc.write(DOOR_OPEN); Serial.print("Ci\n");}
@@ -296,7 +307,6 @@ void Release(char comando) {
   if (comando & 0x10) { servo_E_ps.write(DOOR_OPEN); }
   if (comando & 0x20) { servo_F_ps.write(DOOR_OPEN); }
 
-  digitalWrite(MODULO_LED2, LED_OFF);
   delay(DELAY_DROP);
 
   if (comando & 0x01) { servo_A_ps.write(DOOR_CLOSE); Serial.print("Af\n");}
@@ -306,6 +316,10 @@ void Release(char comando) {
   if (comando & 0x10) { servo_E_ps.write(DOOR_CLOSE); Serial.print("Ef\n");}
   if (comando & 0x20) { servo_F_ps.write(DOOR_CLOSE); Serial.print("Ff\n");}
 
+
+  digitalWrite(MODULO_LED1,LED_ON);
+  digitalWrite(MODULO_LED2, LED_OFF);
+  //digitalWrite(MODULO_VCC, LED_OFF);
   delay(DELAY_DROP);
 
 }
