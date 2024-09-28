@@ -1,20 +1,13 @@
 #include "BluetoothSerial.h"
-#include <ESP32Servo.h>
+
+#include <Adafruit_PWMServoDriver.h>
+
+Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);       // called this way, it uses the default address 0x40   
+
+#define SERVOMIN  125                                                 // this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  625                                                 // this is the 'maximum' pulse length count (out of 4096)
 
 #define INIT_CLOSE 1
-
-#define MODULO_A_PS 12
-#define MODULO_A_PC 14
-#define MODULO_B_PS 27
-#define MODULO_B_PC 26
-#define MODULO_C_PS 25
-#define MODULO_C_PC 33
-#define MODULO_D_PS 32
-#define MODULO_D_PC 23
-#define MODULO_E_PS 4
-#define MODULO_E_PC 21
-#define MODULO_F_PS 2
-#define MODULO_F_PC 15
 
 #define MODULO_LED1 16
 #define MODULO_LED2 17
@@ -35,27 +28,34 @@
 #define DOOR_OPEN DOOR_CLOSE + 80
 #define DOOR_ZERO 0
 
-#define RELEASE_DOORS 0x01
-#define CONTROL_DOORS 0x02
-
-#define DELAY_DROP 500
+#define DELAY_DROP 2*500
 #define DELAY_BLINK 500
-#define DELAY_WAIT 250
+#define DELAY_SERVO 500
 
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
 
-Servo servo_A_ps;
-Servo servo_A_pc;
-Servo servo_B_ps;
-Servo servo_B_pc;
-Servo servo_C_ps;
-Servo servo_C_pc;
-Servo servo_D_ps;
-Servo servo_D_pc;
-Servo servo_E_ps;
-Servo servo_E_pc;
-Servo servo_F_ps;
-Servo servo_F_pc;
+#define DISPENSER(X) (1<<X)
+#define DISPENSER_PWM(X,Y)  (2*X+Y)
+#define DISPENSER_A   0
+#define DISPENSER_B   1
+#define DISPENSER_C   2
+#define DISPENSER_D   3
+#define DISPENSER_E   4
+#define DISPENSER_F   5
+
+#define CONTROL_DOOR  0
+#define RELEASE_DOOR  1
+
+#define CONTROL_DOOR_OPEN_ANGLE   180
+#define CONTROL_DOOR_CLOSE_ANGLE  0
+#define RELEASE_DOOR_OPEN_ANGLE      180
+#define RELEASE_DOOR_CLOSE_ANGLE     0
+
+
+#define CONTROL_DOOR_OPEN   CONTROL_DOOR,CONTROL_DOOR_OPEN_ANGLE
+#define CONTROL_DOOR_CLOSE  CONTROL_DOOR,CONTROL_DOOR_CLOSE_ANGLE
+#define RELEASE_DOOR_OPEN   RELEASE_DOOR,RELEASE_DOOR_OPEN_ANGLE
+#define RELEASE_DOOR_CLOSE  RELEASE_DOOR,RELEASE_DOOR_CLOSE_ANGLE
 
 String device_name = "Slyco Dispenser Monitor";
 
@@ -89,54 +89,16 @@ void setup() {
   digitalWrite(MODULO_LED1, LED_ON);
   digitalWrite(MODULO_LED2, LED_ON);
   digitalWrite(MODULO_VCC, LED_ON);
-
-
-  servo_A_ps.attach(MODULO_A_PS, SERVO_MIN, SERVO_MAX);
-  servo_A_pc.attach(MODULO_A_PC, SERVO_MIN, SERVO_MAX);
-  servo_B_ps.attach(MODULO_B_PS, SERVO_MIN, SERVO_MAX);
-  servo_B_pc.attach(MODULO_B_PC, SERVO_MIN, SERVO_MAX);
-  servo_C_ps.attach(MODULO_C_PS, SERVO_MIN, SERVO_MAX);
-  servo_C_pc.attach(MODULO_C_PC, SERVO_MIN, SERVO_MAX);
-  servo_D_ps.attach(MODULO_D_PS, SERVO_MIN, SERVO_MAX);
-  servo_D_pc.attach(MODULO_D_PC, SERVO_MIN, SERVO_MAX);
-  servo_E_ps.attach(MODULO_E_PS, SERVO_MIN, SERVO_MAX);
-  servo_E_pc.attach(MODULO_E_PC, SERVO_MIN, SERVO_MAX);
-  servo_F_ps.attach(MODULO_F_PS, SERVO_MIN, SERVO_MAX);
-  servo_F_pc.attach(MODULO_F_PC, SERVO_MIN, SERVO_MAX);
-
-#ifdef INIT_CLOSE
-  servo_A_ps.write(DOOR_CLOSE);
-  servo_A_pc.write(DOOR_CLOSE);
-  servo_B_ps.write(DOOR_CLOSE);
-  servo_B_pc.write(DOOR_CLOSE);
-  servo_C_ps.write(DOOR_CLOSE);
-  servo_C_pc.write(DOOR_CLOSE);
-  servo_D_ps.write(DOOR_CLOSE);
-  servo_D_pc.write(DOOR_CLOSE);
-  servo_E_ps.write(DOOR_CLOSE);
-  servo_E_pc.write(DOOR_CLOSE);
-  servo_F_ps.write(DOOR_CLOSE);
-  servo_F_pc.write(DOOR_CLOSE);
-#else
-  servo_A_ps.write(DOOR_OPEN);
-  servo_A_pc.write(DOOR_OPEN);
-  servo_B_ps.write(DOOR_OPEN);
-  servo_B_pc.write(DOOR_OPEN);
-  servo_C_ps.write(DOOR_OPEN);
-  servo_C_pc.write(DOOR_OPEN);
-  servo_D_ps.write(DOOR_OPEN);
-  servo_D_pc.write(DOOR_OPEN);
-  servo_E_ps.write(DOOR_OPEN);
-  servo_E_pc.write(DOOR_OPEN);
-  servo_F_ps.write(DOOR_OPEN);
-  servo_F_pc.write(DOOR_OPEN);
-#endif
-
-  RESET_RELEASE;
+    RESET_RELEASE;
 
   Serial.begin(115200);
   SerialBT.begin(device_name);
   SerialBT.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
+
+  board1.begin();
+  board1.setPWMFreq(60);                  // Analog servos run at ~60 Hz updates
+  
+  release_items("Z\n",2);
 
   delay(DELAY_DROP * 2);
   //digitalWrite(MODULO_LED1, LED_OFF);
@@ -184,51 +146,94 @@ void release_items(char* buffer, int qty) {
         //case 'Z':
         item = buffer[i] - 0x40;
         int_releases = 0;
-        //SerialBT.print("item: ");
-        //SerialBT.println(item,HEX);
-        //SerialBT.print("release[int_releases]: ");
-        //SerialBT.println(release[int_releases],HEX);
-
-        //SerialBT.print("AND: ");
-        //SerialBT.println(release[int_releases] & (0x01<<(item-1)),HEX);
 
         while (0 != (release[int_releases] & (0x01 << (item - 1)))) {
           int_releases++;
-
-          //SerialBT.print("release[int_releases]: ");
-          //SerialBT.println(release[int_releases],HEX);
-        }
+       }
         release[int_releases] |= 0x01 << (item - 1);
-
-        //SerialBT.print("release[");
-        //SerialBT.print(int_releases,DEC);
-        //SerialBT.print("]: ");
-        //SerialBT.println(item,release[int_releases]);
 
 
         if (int_releases > releases) releases = int_releases;
 
-        //SerialBT.print("(");
-        //SerialBT.print(i,DEC);
-        //SerialBT.print("/");
-        //SerialBT.print(qty,DEC);
-        //SerialBT.print(") ");
-        //RecebeComando(buffer[i]);
         break;
       case 'r':
-        SetDoorState(DOOR_CLOSE, RELEASE_DOORS);
+        digitalWrite(MODULO_VCC, LED_ON);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), RELEASE_DOOR_OPEN);
+        delay(DELAY_SERVO);
+        digitalWrite(MODULO_VCC, LED_OFF);
         return;
       case 't':
-        SetDoorState(DOOR_CLOSE, CONTROL_DOORS);
+        digitalWrite(MODULO_VCC, LED_ON);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), CONTROL_DOOR_OPEN);
+        delay(DELAY_SERVO);
+        digitalWrite(MODULO_VCC, LED_OFF);
+        return;
+        
+      case 'z':
+        digitalWrite(MODULO_VCC, LED_ON);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), CONTROL_DOOR_OPEN);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), RELEASE_DOOR_OPEN);
+        delay(DELAY_SERVO);
+        digitalWrite(MODULO_VCC, LED_OFF);
         return;
       case 'R':
-        SetDoorState(DOOR_OPEN, RELEASE_DOORS);
+        digitalWrite(MODULO_VCC, LED_ON);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), RELEASE_DOOR_CLOSE);
+        delay(DELAY_SERVO);
+        digitalWrite(MODULO_VCC, LED_OFF);
         return;
       case 'T':
-        SetDoorState(DOOR_OPEN, CONTROL_DOORS);
+        digitalWrite(MODULO_VCC, LED_ON);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), CONTROL_DOOR_CLOSE);
+        delay(DELAY_SERVO);
+        digitalWrite(MODULO_VCC, LED_OFF);
         return;
-      case 'z':
-        SetDoorState(DOOR_ZERO, CONTROL_DOORS | RELEASE_DOORS);
+      case 'Z':
+        digitalWrite(MODULO_VCC, LED_ON);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), CONTROL_DOOR_CLOSE);
+        SetDoorState(DISPENSER(DISPENSER_A)|\
+                     DISPENSER(DISPENSER_B)|\
+                     DISPENSER(DISPENSER_C)|\
+                     DISPENSER(DISPENSER_D)|\
+                     DISPENSER(DISPENSER_E)|\
+                     DISPENSER(DISPENSER_F), RELEASE_DOOR_CLOSE);
+        delay(DELAY_SERVO);
+        digitalWrite(MODULO_VCC, LED_OFF);
         return;
       default:
         SerialBT.print("Sabor desconhecido... ");
@@ -271,104 +276,43 @@ void release_items(char* buffer, int qty) {
   SerialBT.print("Rf");
   SerialBT.print(int_releases,DEC);
   SerialBT.print("\n");
-  
+
+  delay(DELAY_SERVO);
   digitalWrite(MODULO_VCC, LED_OFF);
 
   SerialBT.println("--- FIM ---");
 }
 
 void Release(char comando) {
-
+  int door = 0;
   digitalWrite(MODULO_LED1, LED_OFF);
   digitalWrite(MODULO_LED2, LED_ON);
-  //digitalWrite(MODULO_VCC, LED_ON);
-  if (comando & 0x01) { servo_A_pc.write(DOOR_OPEN); Serial.print("Ai\n");}
-  if (comando & 0x02) { servo_B_pc.write(DOOR_OPEN); Serial.print("Bi\n");}
-  if (comando & 0x04) { servo_C_pc.write(DOOR_OPEN); Serial.print("Ci\n");}
-  if (comando & 0x08) { servo_D_pc.write(DOOR_OPEN); Serial.print("Di\n");}
-  if (comando & 0x10) { servo_E_pc.write(DOOR_OPEN); Serial.print("Ei\n");}
-  if (comando & 0x20) { servo_F_pc.write(DOOR_OPEN); Serial.print("Fi\n");}
 
-  delay(DELAY_DROP);
+  SetDoorState(comando,CONTROL_DOOR_OPEN);
+  SetDoorState(comando,CONTROL_DOOR_CLOSE);  
+  
+  delay(DELAY_SERVO);
 
-  if (comando & 0x01) { servo_A_pc.write(DOOR_CLOSE); }
-  if (comando & 0x02) { servo_B_pc.write(DOOR_CLOSE); }
-  if (comando & 0x04) { servo_C_pc.write(DOOR_CLOSE); }
-  if (comando & 0x08) { servo_D_pc.write(DOOR_CLOSE); }
-  if (comando & 0x10) { servo_E_pc.write(DOOR_CLOSE); }
-  if (comando & 0x20) { servo_F_pc.write(DOOR_CLOSE); }
-
-  delay(DELAY_WAIT);
-
-  if (comando & 0x01) { servo_A_ps.write(DOOR_OPEN); }
-  if (comando & 0x02) { servo_B_ps.write(DOOR_OPEN); }
-  if (comando & 0x04) { servo_C_ps.write(DOOR_OPEN); }
-  if (comando & 0x08) { servo_D_ps.write(DOOR_OPEN); }
-  if (comando & 0x10) { servo_E_ps.write(DOOR_OPEN); }
-  if (comando & 0x20) { servo_F_ps.write(DOOR_OPEN); }
-
-  delay(DELAY_DROP);
-
-  if (comando & 0x01) { servo_A_ps.write(DOOR_CLOSE); Serial.print("Af\n");}
-  if (comando & 0x02) { servo_B_ps.write(DOOR_CLOSE); Serial.print("Bf\n");}
-  if (comando & 0x04) { servo_C_ps.write(DOOR_CLOSE); Serial.print("Cf\n");}
-  if (comando & 0x08) { servo_D_ps.write(DOOR_CLOSE); Serial.print("Df\n");}
-  if (comando & 0x10) { servo_E_ps.write(DOOR_CLOSE); Serial.print("Ef\n");}
-  if (comando & 0x20) { servo_F_ps.write(DOOR_CLOSE); Serial.print("Ff\n");}
-
+  SetDoorState(comando,RELEASE_DOOR_OPEN);
+  SetDoorState(comando,RELEASE_DOOR_CLOSE);
 
   digitalWrite(MODULO_LED1,LED_ON);
   digitalWrite(MODULO_LED2, LED_OFF);
-  //digitalWrite(MODULO_VCC, LED_OFF);
-  delay(DELAY_DROP);
-
+  
 }
 
-void SetDoorState(int state, int doors) {
-  if (doors == RELEASE_DOORS) {
-    servo_A_ps.write(state);
-    servo_B_ps.write(state);
-    servo_C_ps.write(state);
-    servo_D_ps.write(state);
-    servo_E_ps.write(state);
-    servo_F_ps.write(state);
-    digitalWrite(MODULO_LED1, LED_OFF);
-    digitalWrite(MODULO_LED2, LED_ON);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_ON);
-    digitalWrite(MODULO_LED2, LED_OFF);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_OFF);
-    digitalWrite(MODULO_LED2, LED_ON);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_ON);
-    digitalWrite(MODULO_LED2, LED_OFF);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_OFF);
-    digitalWrite(MODULO_LED2, LED_ON);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_ON);
-    digitalWrite(MODULO_LED2, LED_OFF);
+int angleToPulse(int ang)                             //gets angle in degree and returns the pulse width
+  {  int pulse = map(ang,0, 180, SERVOMIN,SERVOMAX);  // map angle of 0 to 180 to Servo min and Servo max 
+     return pulse;
   }
 
-  if (doors == CONTROL_DOORS) {
-    servo_A_pc.write(state);
-    servo_B_pc.write(state);
-    servo_C_pc.write(state);
-    servo_D_pc.write(state);
-    servo_E_pc.write(state);
-    servo_F_pc.write(state);
-
-    digitalWrite(MODULO_LED1, LED_OFF);
-    digitalWrite(MODULO_LED2, LED_ON);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_ON);
-    digitalWrite(MODULO_LED2, LED_OFF);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_OFF);
-    digitalWrite(MODULO_LED2, LED_ON);
-    delay(DELAY_BLINK);
-    digitalWrite(MODULO_LED1, LED_ON);
-    digitalWrite(MODULO_LED2, LED_OFF);
+void SetDoorState(int doors, int rel_ctl, int angle) {
+  int i;
+  
+  for (i=0; i < DISPENSER_QTY; i++) {
+    if (doors & (0x01<<i)) {
+      board1.setPWM(DISPENSER_PWM(i,rel_ctl), 0, angleToPulse(angle));
+    }
   }
+  delay(DELAY_SERVO);
 }
