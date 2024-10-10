@@ -36,19 +36,19 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);       // called 
 
 #define DISPENSER(X) (1<<X)
 #define DISPENSER_PWM(X,Y)  (2*X+Y)
-#define DISPENSER_A   0
-#define DISPENSER_B   1
-#define DISPENSER_C   2
-#define DISPENSER_D   3
-#define DISPENSER_E   4
-#define DISPENSER_F   5
+#define DISPENSER_A   5
+#define DISPENSER_B   4
+#define DISPENSER_C   3
+#define DISPENSER_D   2
+#define DISPENSER_E   1
+#define DISPENSER_F   0
 
 #define CONTROL_DOOR  0
 #define RELEASE_DOOR  1
 
-#define CONTROL_DOOR_OPEN_ANGLE   180
+#define CONTROL_DOOR_OPEN_ANGLE   90
 #define CONTROL_DOOR_CLOSE_ANGLE  0
-#define RELEASE_DOOR_OPEN_ANGLE      180
+#define RELEASE_DOOR_OPEN_ANGLE      90
 #define RELEASE_DOOR_CLOSE_ANGLE     0
 
 
