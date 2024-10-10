@@ -1,1 +1,1 @@
-apksigner sign --ks D:\Slyco\TopSecret\KeyStore.jks --v1-signing-enabled=true --v2-signing-enabled=false --v3-signing-enabled=false --v1-signer-name Slyco --out app-release-signed.apk D:\AndroidStudioProjects\SlycoCafe\app\build\outputs\apk\release\app-release-unsigned.apk
+apksigner sign --ks D:\Slyco\TopSecret\KeyStore.jks --v1-signing-enabled=true --v2-signing-enabled=false --v3-signing-enabled=false --out app-release-signed.apk D:\AndroidStudioProjects\SlycoCafe\app\build\outputs\apk\release\app-release-unsigned.apk
