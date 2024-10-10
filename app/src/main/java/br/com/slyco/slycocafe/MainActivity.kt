@@ -220,6 +220,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var shoppingCart : shoppingCart = shoppingCart(inventory);
     var easterEgg = 0
     var easterEgg1 = 0
+    var easterEgg2 = 0
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -313,6 +314,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 0) easterEgg1 = 1
                 else easterEgg1 = 0
+
+                if (easterEgg2 == 0) easterEgg2 = 1
+                else easterEgg2 = 0
             }
             R.id.floatingActionButtonItem2Plus,R.id.imageViewCapsula2 -> {
                 // Do some work here
@@ -320,6 +324,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 1) easterEgg1 = 2
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
             R.id.floatingActionButtonItem3Plus, R.id.imageViewCapsula3 -> {
                 // Do some work here
@@ -327,6 +332,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 2) easterEgg1 = 3
                 else easterEgg1 = 0
+
+                if (easterEgg2 == 1) easterEgg2 = 2
+                else easterEgg2 = 0
             }
             R.id.floatingActionButtonItem4Plus, R.id.imageViewCapsula4 -> {
                 // Do some work here
@@ -334,6 +342,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 3) easterEgg1 = 4
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
             R.id.floatingActionButtonItem5Plus, R.id.imageViewCapsula5 -> {
                 // Do some work here
@@ -341,6 +350,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 4) easterEgg1 = 5
                 else easterEgg1 = 0
+
+                if (easterEgg2 == 2) easterEgg2 = 3
+                else easterEgg2 = 0
             }
             R.id.floatingActionButtonItem6Plus, R.id.imageViewCapsula6 -> {
                 // Do some work here
@@ -348,6 +360,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 5) easterEgg1 = 6
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
 
             R.id.floatingActionButtonItem1Minus -> {
@@ -356,6 +369,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 6) easterEgg1 = 7
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
             R.id.floatingActionButtonItem2Minus -> {
                 // Do some work here
@@ -363,6 +377,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 7) easterEgg1 = 8
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
             R.id.floatingActionButtonItem3Minus -> {
                 // Do some work here
@@ -370,6 +385,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 8) easterEgg1 = 9
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
             R.id.floatingActionButtonItem4Minus -> {
                 // Do some work here
@@ -377,6 +393,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 9) easterEgg1 = 10
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
             R.id.floatingActionButtonItem5Minus -> {
                 // Do some work here
@@ -384,6 +401,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 10) easterEgg1 = 11
                 else easterEgg1 = 0
+                easterEgg2 = 0
             }
             R.id.floatingActionButtonItem6Minus -> {
                 // Do some work here
@@ -391,7 +409,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 11) easterEgg1 = 12
                 else easterEgg1 = 0
-
+                easterEgg2 = 0
             }
             R.id.textViewTotalFix -> {
                 easterEgg++
@@ -413,6 +431,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     Log.i("INVENTORY","SET")
                     toast("Inventory SET")
                 }
+                easterEgg2 = 0
             }
             R.id.buttonEmpty -> {
                 shoppingCart.clearCart()
@@ -439,6 +458,13 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                     Log.i("INVENTORY","RESET")
                 }
+
+                if (easterEgg2 == 3) {
+                    sendDmp()
+                    toast("Send DMP")
+                }
+
+                easterEgg2 = 0
                 easterEgg1 = 0
                 toast("Inventory Reset")
             }
@@ -448,14 +474,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
 
                     val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-                    intent.putExtra("merchantSiTef", "SLYCOCCF")
-                    intent.putExtra("sitefIP", "https://tls-uat.fiservapp.com")
                     intent.putExtra("merchantTaxId", "55833084000136")
+                    intent.putExtra("isvTaxId", "55833084000136")
                     intent.putExtra("functionId", "0")
                     intent.putExtra("transactionAmount", totalStr)
-                    intent.putExtra("transactionInstallments", "1")
-                    //intent.putExtra("enabledTransactions", "16,26")
-                    intent.putExtra("tokenRegiistroTls","8977316332439824")
                     startActivityForResult(intent, 1)
 
                     toast("Call SiTef Sales App")
@@ -467,7 +489,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 easterEgg = 0
                 easterEgg1 = 0
-
+                easterEgg2 = 0
             }
         }
         Log.i("easterEgg1","${easterEgg1}")
@@ -476,6 +498,17 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     }
 
     fun intentCallback(){
+
+    }
+
+    fun sendDmp(){
+
+        val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
+        intent.putExtra("merchantTaxId", "55833084000136")
+        intent.putExtra("isvTaxId", "55833084000136")
+        intent.putExtra("functionId", "121")
+        intent.putExtra("transactionAmount", "0")
+        startActivityForResult(intent, 1)
 
     }
 
