@@ -471,21 +471,27 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             R.id.buttonCheckout -> {
                 if (shoppingCart.returnTotal() > 0.0) {
-                    var textMessage = "";
-                    if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO) >= 1)
-                        textMessage += "\nRISTRETTO: ${shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)}";
-                    if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC) >= 1)
-                        textMessage += "\nBRAZIL_ORGANIC: ${shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)}";
-                    if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO) >= 1)
-                        textMessage += "\nLEGGERO: ${shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)}";
-                    if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE) >= 1)
-                        textMessage += "\nFORTE: ${shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE)}";
-                    if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO) >= 1)
-                        textMessage += "\nCAFFE_VANILIO: ${shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)}";
-                    if (shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO) >= 1)
-                        textMessage += "\nDESCAFFEINADO: ${shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)}";
+                    val flavors = listOf(
+                        NESPRESSO_FLAVORS.RISTRETTO to "RISTRETTO",
+                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC to "BRAZIL ORGANIC",
+                        NESPRESSO_FLAVORS.LEGGERO to "LEGGERO",
+                        NESPRESSO_FLAVORS.FORTE to "FORTE",
+                        NESPRESSO_FLAVORS.CAFFE_VANILIO to "CAFFE VANILIO",
+                        NESPRESSO_FLAVORS.DESCAFFEINADO to "DESCAFFEINADO"
+                    )
 
-                    textMessage += "\n\nValor total da compra: R\$ ${shoppingCart.returnTotal()}"
+                    var textMessage = "\n"
+
+                    flavors.forEach { (flavor, name) ->
+                        val quantity = shoppingCart.getCartItemQuantity(flavor)
+                        if (quantity >= 1) {
+                            val totalValue = inventory.getPrice(flavor) * quantity
+                            textMessage += "\nNome: $name \nQuantidade: $quantity \nValor: $totalValue\n"
+                        }
+                    }
+
+                    textMessage += "\n\nValor total da compra: R$ ${shoppingCart.returnTotal()}"
+
                     val builder = AlertDialog.Builder(this)
                     builder.setTitle("Resumo da Compra")
                     builder.setMessage(textMessage)
