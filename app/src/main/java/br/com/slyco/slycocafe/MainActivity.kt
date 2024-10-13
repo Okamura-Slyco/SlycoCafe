@@ -29,6 +29,7 @@ import com.hoho.android.usbserial.driver.UsbSerialProber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
 
 
 object AppConstants {
@@ -471,27 +472,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             R.id.buttonCheckout -> {
                 if (shoppingCart.returnTotal() > 0.0) {
-                    val flavors = listOf(
-                        NESPRESSO_FLAVORS.RISTRETTO to "RISTRETTO",
-                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC to "BRAZIL ORGANIC",
-                        NESPRESSO_FLAVORS.LEGGERO to "LEGGERO",
-                        NESPRESSO_FLAVORS.FORTE to "FORTE",
-                        NESPRESSO_FLAVORS.CAFFE_VANILIO to "CAFFE VANILIO",
-                        NESPRESSO_FLAVORS.DESCAFFEINADO to "DESCAFFEINADO"
-                    )
 
-                    var textMessage = "\n"
-
-                    flavors.forEach { (flavor, name) ->
-                        val quantity = shoppingCart.getCartItemQuantity(flavor)
-                        if (quantity >= 1) {
-                            val totalValue = inventory.getPrice(flavor) * quantity
-                            textMessage += "\nNome: $name \nQuantidade: $quantity \nValor: $totalValue\n"
-                        }
-                    }
-
-                    textMessage += "\n\nValor total da compra: R$ ${shoppingCart.returnTotal()}"
-
+                    val totalStr = (shoppingCart.returnTotal() * 100).roundToInt().toString()
                     val builder = AlertDialog.Builder(this)
                     builder.setTitle("Resumo da Compra")
                     builder.setMessage(textMessage)
@@ -499,6 +481,13 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     builder.setPositiveButton("Continuar") { dialog, _ ->
                         val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
 
+                    val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
+                    intent.putExtra("merchantTaxId", "55833084000136")
+                    intent.putExtra("isvTaxId", "55833084000136")
+                    intent.putExtra("functionId", "0")
+                    intent.putExtra("transactionAmount", totalStr)
+                    Log.d("transactionAmount", totalStr)
+                    startActivityForResult(intent, 1)
                         val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
                         intent.putExtra("merchantTaxId", "55833084000136")
                         intent.putExtra("isvTaxId", "55833084000136")
@@ -729,9 +718,11 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             updateView(0)
         }
-        //printTextAsImage("", cupom, "", applicationContext, account)
+            //printTextAsImage("", cupom, "", applicationContext, account)
 
         //val intent: Intent = Intent(this, MainActivity::class.java)
         //startActivityForResult(intent, 1)
     }
+
+
 }
