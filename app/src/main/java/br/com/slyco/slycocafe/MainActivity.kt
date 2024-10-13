@@ -472,35 +472,33 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             R.id.buttonCheckout -> {
                 if (shoppingCart.returnTotal() > 0.0) {
-
-                    val flavors = listOf(
-                        NESPRESSO_FLAVORS.RISTRETTO to "RISTRETTO",
-                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC to "BRAZIL ORGANIC",
-                        NESPRESSO_FLAVORS.LEGGERO to "LEGGERO",
-                        NESPRESSO_FLAVORS.FORTE to "FORTE",
-                        NESPRESSO_FLAVORS.CAFFE_VANILIO to "CAFFE VANILIO",
-                        NESPRESSO_FLAVORS.DESCAFFEINADO to "DESCAFFEINADO"
-                    )
-
                     var textMessage = "\n"
 
-                    flavors.forEach { (flavor, name) ->
+                    // Função para adicionar item ao texto
+                    fun addItemToTextMessage(flavor: NESPRESSO_FLAVORS) {
                         val quantity = shoppingCart.getCartItemQuantity(flavor)
                         if (quantity >= 1) {
-                            val totalValue = inventory.getPrice(flavor) * quantity
-                            textMessage += "\nNome: $name \nQuantidade: $quantity \nValor: $totalValue\n"
+                            val price = inventory.getPrice(flavor).toFloat()
+                            val total = price * quantity
+                            textMessage += "\n${flavor.name.replace("_", " ")} - ${quantity}x R$${String.format("%.2f", price)} = R$${String.format("%.2f", total)}\n"
                         }
                     }
 
-                    textMessage += "\n\nValor total da compra: R$ ${shoppingCart.returnTotal()}"
-                    val totalStr = (shoppingCart.returnTotal() * 100).roundToInt().toString()
+                    addItemToTextMessage(NESPRESSO_FLAVORS.RISTRETTO)
+                    addItemToTextMessage(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)
+                    addItemToTextMessage(NESPRESSO_FLAVORS.LEGGERO)
+                    addItemToTextMessage(NESPRESSO_FLAVORS.FORTE)
+                    addItemToTextMessage(NESPRESSO_FLAVORS.CAFFE_VANILIO)
+                    addItemToTextMessage(NESPRESSO_FLAVORS.DESCAFFEINADO)
+
+                    textMessage += "\n\nValor total da compra: R$ ${String.format("%.2f", shoppingCart.returnTotal())}"
+
                     val builder = AlertDialog.Builder(this)
                     builder.setTitle("Resumo da Compra")
                     builder.setMessage(textMessage)
 
                     builder.setPositiveButton("Continuar") { dialog, _ ->
-                        val totalStr = (shoppingCart.returnTotal() * 100).roundToInt().toString()
-
+                        val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
 
                         val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
                         intent.putExtra("merchantTaxId", "55833084000136")
@@ -732,11 +730,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             updateView(0)
         }
-            //printTextAsImage("", cupom, "", applicationContext, account)
+        //printTextAsImage("", cupom, "", applicationContext, account)
 
         //val intent: Intent = Intent(this, MainActivity::class.java)
         //startActivityForResult(intent, 1)
     }
-
-
 }
