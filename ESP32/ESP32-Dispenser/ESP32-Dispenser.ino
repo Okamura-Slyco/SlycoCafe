@@ -46,9 +46,10 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);       // called 
 #define CONTROL_DOOR  0
 #define RELEASE_DOOR  1
 
-#define CONTROL_DOOR_OPEN_ANGLE   90
+#define CONTROL_DOOR_OPEN_ANGLE   70E
+E
 #define CONTROL_DOOR_CLOSE_ANGLE  0
-#define RELEASE_DOOR_OPEN_ANGLE      90
+#define RELEASE_DOOR_OPEN_ANGLE      70
 #define RELEASE_DOOR_CLOSE_ANGLE     0
 
 
