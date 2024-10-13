@@ -2,6 +2,7 @@ package br.com.slyco.slycocafe
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
@@ -470,20 +471,55 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             R.id.buttonCheckout -> {
                 if (shoppingCart.returnTotal() > 0.0) {
+                    val flavors = listOf(
+                        NESPRESSO_FLAVORS.RISTRETTO to "RISTRETTO",
+                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC to "BRAZIL ORGANIC",
+                        NESPRESSO_FLAVORS.LEGGERO to "LEGGERO",
+                        NESPRESSO_FLAVORS.FORTE to "FORTE",
+                        NESPRESSO_FLAVORS.CAFFE_VANILIO to "CAFFE VANILIO",
+                        NESPRESSO_FLAVORS.DESCAFFEINADO to "DESCAFFEINADO"
+                    )
 
-                    val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
+                    var textMessage = "\n"
 
-                    val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-                    intent.putExtra("merchantTaxId", "55833084000136")
-                    intent.putExtra("isvTaxId", "55833084000136")
-                    intent.putExtra("functionId", "0")
-                    intent.putExtra("transactionAmount", totalStr)
-                    startActivityForResult(intent, 1)
+                    flavors.forEach { (flavor, name) ->
+                        val quantity = shoppingCart.getCartItemQuantity(flavor)
+                        if (quantity >= 1) {
+                            val totalValue = inventory.getPrice(flavor) * quantity
+                            textMessage += "\nNome: $name \nQuantidade: $quantity \nValor: $totalValue\n"
+                        }
+                    }
 
-                    toast("Call SiTef Sales App")
-                    bUpdateView = false
-                }
-                else {
+                    textMessage += "\n\nValor total da compra: R$ ${shoppingCart.returnTotal()}"
+
+                    val builder = AlertDialog.Builder(this)
+                    builder.setTitle("Resumo da Compra")
+                    builder.setMessage(textMessage)
+
+                    builder.setPositiveButton("Continuar") { dialog, _ ->
+                        val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
+
+                        val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
+                        intent.putExtra("merchantTaxId", "55833084000136")
+                        intent.putExtra("isvTaxId", "55833084000136")
+                        intent.putExtra("functionId", "0")
+                        intent.putExtra("transactionAmount", totalStr)
+                        startActivityForResult(intent, 1)
+
+                        toast("Call SiTef Sales App")
+                        bUpdateView = false
+                    }
+
+                    // Botão de Cancelar
+                    builder.setNegativeButton("Cancelar") { dialog, _ ->
+                        toast("Compra cancelada.")
+                        dialog.dismiss()
+                    }
+
+                    // Mostrar o AlertDialog
+                    val dialog = builder.create()
+                    dialog.show()
+                } else {
                     toast("Adicione itens ao carrinho.")
                 }
 
@@ -693,11 +729,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             updateView(0)
         }
-            //printTextAsImage("", cupom, "", applicationContext, account)
+        //printTextAsImage("", cupom, "", applicationContext, account)
 
         //val intent: Intent = Intent(this, MainActivity::class.java)
         //startActivityForResult(intent, 1)
     }
-
-
 }
