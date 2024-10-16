@@ -1,6 +1,7 @@
 package br.com.slyco.slycocafe
 
 import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -29,6 +30,7 @@ import com.google.android.material.button.MaterialButton
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -229,10 +231,22 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
+        val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
+        if (actionBar != null) actionBar.hide()
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -503,11 +517,18 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     builder.setPositiveButton("Pagar") { dialog, _ ->
                         val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
 
+                        val timestamp = Timestamp(System.currentTimeMillis())
+
+                        val sdf = SimpleDateFormat("yyyyMMddHHmmss")
+
                         val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
                         intent.putExtra("merchantTaxId", "55833084000136")
                         intent.putExtra("isvTaxId", "55833084000136")
                         intent.putExtra("functionId", "0")
                         intent.putExtra("transactionAmount", totalStr)
+                        intent.putExtra("invoiceNumber",sdf.format(timestamp) )
+
+                        Log.d("INVOICENUMBER",sdf.format(timestamp))
                         startActivityForResult(intent, 1)
 
                         toast("Call SiTef Sales App")
