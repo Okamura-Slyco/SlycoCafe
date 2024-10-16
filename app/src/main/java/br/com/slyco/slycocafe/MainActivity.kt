@@ -3,7 +3,9 @@ package br.com.slyco.slycocafe
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Typeface
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbEndpoint
@@ -20,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
@@ -497,7 +500,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     builder.setTitle("Resumo da Compra")
                     builder.setMessage(textMessage)
 
-                    builder.setPositiveButton("Continuar") { dialog, _ ->
+                    builder.setPositiveButton("Pagar") { dialog, _ ->
                         val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
 
                         val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
@@ -512,14 +515,21 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     }
 
                     // Botão de Cancelar
-                    builder.setNegativeButton("Cancelar") { dialog, _ ->
-                        toast("Compra cancelada.")
+                    builder.setNegativeButton("Voltar") { dialog, _ ->
+                        //toast("Compra cancelada.")
                         dialog.dismiss()
                     }
 
                     // Mostrar o AlertDialog
                     val dialog = builder.create()
                     dialog.show()
+                    val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                    positiveButton.setTextColor(ContextCompat.getColor(this, R.color.green))
+                    positiveButton.setTypeface(null, Typeface.BOLD)
+
+                    val negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                    negativeButton.setTextColor(ContextCompat.getColor(this, R.color.red))
+                    negativeButton.setTypeface(null, Typeface.BOLD)
                 } else {
                     toast("Adicione itens ao carrinho.")
                 }
