@@ -2,17 +2,17 @@
 
 #include <Adafruit_PWMServoDriver.h>
 
-Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);       // called this way, it uses the default address 0x40   
+Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);  // called this way, it uses the default address 0x40
 
-#define SERVOMIN  125                                                 // this is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  625                                                 // this is the 'maximum' pulse length count (out of 4096)
+#define SERVOMIN 125  // this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX 625  // this is the 'maximum' pulse length count (out of 4096)
 
 #define INIT_CLOSE 1
 
 #define MODULO_LED1 16
 #define MODULO_LED2 17
 
-#define MODULO_VCC  5
+#define MODULO_VCC 5
 
 #define LED_ON 1
 #define LED_OFF 0
@@ -28,35 +28,34 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);       // called 
 #define DOOR_OPEN DOOR_CLOSE + 80
 #define DOOR_ZERO 0
 
-#define DELAY_DROP 2*500
+#define DELAY_DROP 2 * 500
 #define DELAY_BLINK 500
 #define DELAY_SERVO 500
 
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
 
-#define DISPENSER(X) (1<<X)
-#define DISPENSER_PWM(X,Y)  (2*X+Y)
-#define DISPENSER_A   5
-#define DISPENSER_B   4
-#define DISPENSER_C   3
-#define DISPENSER_D   2
-#define DISPENSER_E   1
-#define DISPENSER_F   0
+#define DISPENSER(X) (1 << X)
+#define DISPENSER_PWM(X, Y) ((2*DISPENSER_QTY)-1-(2 * X + Y))
+#define DISPENSER_A 5
+#define DISPENSER_B 4
+#define DISPENSER_C 3
+#define DISPENSER_D 2
+#define DISPENSER_E 1
+#define DISPENSER_F 0
 
-#define CONTROL_DOOR  0
-#define RELEASE_DOOR  1
+#define CONTROL_DOOR 1
+#define RELEASE_DOOR 0
 
-#define CONTROL_DOOR_OPEN_ANGLE   70E
-E
-#define CONTROL_DOOR_CLOSE_ANGLE  0
-#define RELEASE_DOOR_OPEN_ANGLE      70
-#define RELEASE_DOOR_CLOSE_ANGLE     0
+#define CONTROL_DOOR_OPEN_ANGLE 75
+#define CONTROL_DOOR_CLOSE_ANGLE 10
+#define RELEASE_DOOR_OPEN_ANGLE 75
+#define RELEASE_DOOR_CLOSE_ANGLE 10
 
 
-#define CONTROL_DOOR_OPEN   CONTROL_DOOR,CONTROL_DOOR_OPEN_ANGLE
-#define CONTROL_DOOR_CLOSE  CONTROL_DOOR,CONTROL_DOOR_CLOSE_ANGLE
-#define RELEASE_DOOR_OPEN   RELEASE_DOOR,RELEASE_DOOR_OPEN_ANGLE
-#define RELEASE_DOOR_CLOSE  RELEASE_DOOR,RELEASE_DOOR_CLOSE_ANGLE
+#define CONTROL_DOOR_OPEN CONTROL_DOOR, CONTROL_DOOR_OPEN_ANGLE
+#define CONTROL_DOOR_CLOSE CONTROL_DOOR, CONTROL_DOOR_CLOSE_ANGLE
+#define RELEASE_DOOR_OPEN RELEASE_DOOR, RELEASE_DOOR_OPEN_ANGLE
+#define RELEASE_DOOR_CLOSE RELEASE_DOOR, RELEASE_DOOR_CLOSE_ANGLE
 
 String device_name = "Slyco Dispenser Monitor";
 
@@ -90,21 +89,21 @@ void setup() {
   digitalWrite(MODULO_LED1, LED_ON);
   digitalWrite(MODULO_LED2, LED_ON);
   digitalWrite(MODULO_VCC, LED_ON);
-    RESET_RELEASE;
+  RESET_RELEASE;
 
   Serial.begin(115200);
   SerialBT.begin(device_name);
   SerialBT.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
 
   board1.begin();
-  board1.setPWMFreq(60);                  // Analog servos run at ~60 Hz updates
-  
-  release_items("Z\n",2);
+  board1.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+
+  release_items("Z\n", 2);
 
   delay(DELAY_DROP * 2);
   //digitalWrite(MODULO_LED1, LED_OFF);
   digitalWrite(MODULO_LED2, LED_OFF);
-  digitalWrite(MODULO_VCC,LED_OFF);
+  digitalWrite(MODULO_VCC, LED_OFF);
 }
 
 
@@ -150,7 +149,7 @@ void release_items(char* buffer, int qty) {
 
         while (0 != (release[int_releases] & (0x01 << (item - 1)))) {
           int_releases++;
-       }
+        }
         release[int_releases] |= 0x01 << (item - 1);
 
 
@@ -159,80 +158,40 @@ void release_items(char* buffer, int qty) {
         break;
       case 'r':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), RELEASE_DOOR_OPEN);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), RELEASE_DOOR_OPEN);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
       case 't':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), CONTROL_DOOR_OPEN);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), CONTROL_DOOR_OPEN);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
-        
+
       case 'z':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), CONTROL_DOOR_OPEN);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), RELEASE_DOOR_OPEN);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), CONTROL_DOOR_OPEN);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), RELEASE_DOOR_OPEN);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
       case 'R':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), RELEASE_DOOR_CLOSE);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), RELEASE_DOOR_CLOSE);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
       case 'T':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), CONTROL_DOOR_CLOSE);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), CONTROL_DOOR_CLOSE);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
       case 'Z':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), CONTROL_DOOR_CLOSE);
-        SetDoorState(DISPENSER(DISPENSER_A)|\
-                     DISPENSER(DISPENSER_B)|\
-                     DISPENSER(DISPENSER_C)|\
-                     DISPENSER(DISPENSER_D)|\
-                     DISPENSER(DISPENSER_E)|\
-                     DISPENSER(DISPENSER_F), RELEASE_DOOR_CLOSE);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), CONTROL_DOOR_CLOSE);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), RELEASE_DOOR_CLOSE);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
@@ -244,38 +203,38 @@ void release_items(char* buffer, int qty) {
   }
 
   digitalWrite(MODULO_VCC, LED_ON);
-  
+
   Serial.print("Ri");
-  Serial.print(int_releases,DEC);
+  Serial.print(int_releases, DEC);
   Serial.print("\n");
   SerialBT.print("Ri");
-  SerialBT.print(int_releases,DEC);
+  SerialBT.print(int_releases, DEC);
   SerialBT.print("\n");
   for (item = 0; release[item] && (item <= int_releases) && (item < DISPENSER_STOCK); item++) {
     Serial.print("ri");
-    Serial.print(item,DEC);
+    Serial.print(item, DEC);
     Serial.print(":");
-    Serial.print(release[item],BIN);
+    Serial.print(release[item], BIN);
     Serial.print("\n");
     SerialBT.print("ri");
-    SerialBT.print(item,DEC);
+    SerialBT.print(item, DEC);
     SerialBT.print(":");
-    SerialBT.print(release[item],BIN);
+    SerialBT.print(release[item], BIN);
     SerialBT.print("\n");
     Release(release[item]);
     release[item] = 0x00;
     Serial.print("rf");
-    Serial.print(item,DEC);
+    Serial.print(item, DEC);
     Serial.print("\n");
     SerialBT.print("rf");
-    SerialBT.print(item,DEC);
+    SerialBT.print(item, DEC);
     SerialBT.print("\n");
   }
   Serial.print("Rf");
-  Serial.print(int_releases,DEC);
+  Serial.print(int_releases, DEC);
   Serial.print("\n");
   SerialBT.print("Rf");
-  SerialBT.print(int_releases,DEC);
+  SerialBT.print(int_releases, DEC);
   SerialBT.print("\n");
 
   delay(DELAY_SERVO);
@@ -289,30 +248,30 @@ void Release(char comando) {
   digitalWrite(MODULO_LED1, LED_OFF);
   digitalWrite(MODULO_LED2, LED_ON);
 
-  SetDoorState(comando,CONTROL_DOOR_OPEN);
-  SetDoorState(comando,CONTROL_DOOR_CLOSE);  
-  
+  SetDoorState(comando, CONTROL_DOOR_OPEN);
+  SetDoorState(comando, CONTROL_DOOR_CLOSE);
+
   delay(DELAY_SERVO);
 
-  SetDoorState(comando,RELEASE_DOOR_OPEN);
-  SetDoorState(comando,RELEASE_DOOR_CLOSE);
+  SetDoorState(comando, RELEASE_DOOR_OPEN);
+  SetDoorState(comando, RELEASE_DOOR_CLOSE);
 
-  digitalWrite(MODULO_LED1,LED_ON);
+  digitalWrite(MODULO_LED1, LED_ON);
   digitalWrite(MODULO_LED2, LED_OFF);
-  
 }
 
-int angleToPulse(int ang)                             //gets angle in degree and returns the pulse width
-  {  int pulse = map(ang,0, 180, SERVOMIN,SERVOMAX);  // map angle of 0 to 180 to Servo min and Servo max 
-     return pulse;
-  }
+int angleToPulse(int ang)  //gets angle in degree and returns the pulse width
+{
+  int pulse = map(ang, 0, 180, SERVOMIN, SERVOMAX);  // map angle of 0 to 180 to Servo min and Servo max
+  return pulse;
+}
 
 void SetDoorState(int doors, int rel_ctl, int angle) {
   int i;
-  
-  for (i=0; i < DISPENSER_QTY; i++) {
-    if (doors & (0x01<<i)) {
-      board1.setPWM(DISPENSER_PWM(i,rel_ctl), 0, angleToPulse(angle));
+
+  for (i = 0; i < DISPENSER_QTY; i++) {
+    if (doors & (0x01 << i)) {
+      board1.setPWM(DISPENSER_PWM(i, rel_ctl), 0, angleToPulse(angle));
     }
   }
   delay(DELAY_SERVO);
