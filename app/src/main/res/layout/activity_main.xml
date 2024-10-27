@@ -10,8 +10,6 @@
     android:backgroundTintMode="add"
     tools:context=".MainActivity">
 
-
-
     <EditText
         android:id="@+id/editTextNumberItem5"
         android:layout_width="wrap_content"
@@ -421,4 +419,82 @@
         app:layout_constraintStart_toStartOf="@+id/imageViewCapsula6"
         app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem6" />
 
+    <!-- activity_main.xml -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- Tela inativa -->
+        <View
+            android:id="@+id/inactiveOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F5000000"
+            android:visibility="gone" />
+
+        <!-- Imagem no canto superior esquerdo -->
+        <ImageView
+            android:id="@+id/imgViewCapsulaAnim1"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:src="@drawable/brasil_organic_trn"
+            android:visibility="gone" />
+
+        <!-- Imagem no canto superior direito -->
+        <ImageView
+            android:id="@+id/imgViewCapsulaAnim2"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:src="@drawable/caffe_vanilio_trn"
+            android:visibility="gone"
+            android:layout_gravity="top|end" />
+
+        <!-- Imagem no canto inferior esquerdo -->
+        <ImageView
+            android:id="@+id/imgViewCapsulaAnim3"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:src="@drawable/descafeinado_trn"
+            android:visibility="gone"
+            android:layout_gravity="bottom|start" />
+
+        <!-- Imagem no canto inferior direito -->
+        <ImageView
+            android:id="@+id/imgViewCapsulaAnim4"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:src="@drawable/forte_trn"
+            android:visibility="gone"
+            android:layout_gravity="bottom|end" />
+
+        <!-- Imagem centralizada no eixo horizontal (meio da tela) -->
+        <ImageView
+            android:id="@+id/imgViewCapsulaAnim5"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:src="@drawable/india_trn"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal|top" />
+
+        <!-- Imagem centralizada no eixo vertical (parte inferior central) -->
+        <ImageView
+            android:id="@+id/imgViewCapsulaAnim6"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:src="@drawable/ristretto_trn"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal|bottom" />
+
+
+        <!-- Texto de inatividade -->
+        <TextView
+            android:id="@+id/inactiveMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Toque na tela para continuar"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
