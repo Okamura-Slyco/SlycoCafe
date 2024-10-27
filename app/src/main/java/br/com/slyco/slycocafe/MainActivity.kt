@@ -16,6 +16,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -35,6 +37,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
+import android.os.Handler;
+import android.os.Looper
+import android.view.MotionEvent
 
 
 object AppConstants {
@@ -229,6 +234,26 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var easterEgg1 = 0
     var easterEgg2 = 0
 
+    private lateinit var inactivityHandler: Handler
+    private lateinit var inactiveOverlay: View // View que escurece a tela
+    private lateinit var inactiveMessage: TextView // Texto que será exibido
+    private lateinit var floatingAnimation: Animation
+    // Imagens das capsulas
+    private lateinit var imageViewCapsula1: ImageView;
+    private lateinit var imageViewCapsula2: ImageView;
+    private lateinit var imageViewCapsula3: ImageView;
+    private lateinit var imageViewCapsula4: ImageView;
+    private lateinit var imageViewCapsula5: ImageView;
+    private lateinit var imageViewCapsula6: ImageView;
+
+    private val inactivityRunnable = Runnable {
+        showInactiveScreen()
+    }
+
+    companion object {
+        const val INACTIVITY_TIMEOUT = 60000L // 1 minuto (em milissegundos)
+    }
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
@@ -317,10 +342,91 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         var text1 = findViewById<TextView>(R.id.textViewTotalFix)
         text1.setOnClickListener(listener)
 
+        floatingAnimation =
+            AnimationUtils.loadAnimation(this, R.anim.floating_capsule)
+
         updateView(0)
 
+        // Instanciando as imagens das capsulas
+        imageViewCapsula1 = findViewById(R.id.imgViewCapsulaAnim1)
+        imageViewCapsula2 = findViewById(R.id.imgViewCapsulaAnim2)
+        imageViewCapsula3 = findViewById(R.id.imgViewCapsulaAnim3)
+        imageViewCapsula4 = findViewById(R.id.imgViewCapsulaAnim4)
+        imageViewCapsula5 = findViewById(R.id.imgViewCapsulaAnim5)
+        imageViewCapsula6 = findViewById(R.id.imgViewCapsulaAnim6)
 
+        inactiveOverlay = findViewById(R.id.inactiveOverlay)
+        inactiveMessage = findViewById(R.id.inactiveMessage)
 
+        inactivityHandler = Handler(Looper.getMainLooper())
+
+        resetInactivityTimer() // Inicia o temporizador de inatividade ao criar a tela
+    }
+
+    // Reseta o temporizador sempre que houver interação
+    private fun resetInactivityTimer() {
+        inactivityHandler.removeCallbacks(inactivityRunnable)
+        inactivityHandler.postDelayed(inactivityRunnable, INACTIVITY_TIMEOUT)
+    }
+
+    // Exibe a tela de inatividade
+    private fun showInactiveScreen() {
+        inactiveOverlay.visibility = View.VISIBLE
+        inactiveMessage.visibility = View.VISIBLE
+
+        imageViewCapsula1.visibility = View.VISIBLE
+        imageViewCapsula2.visibility = View.VISIBLE
+        imageViewCapsula3.visibility = View.VISIBLE
+        imageViewCapsula4.visibility = View.VISIBLE
+        imageViewCapsula5.visibility = View.VISIBLE
+        imageViewCapsula6.visibility = View.VISIBLE
+
+        imageViewCapsula1.startAnimation(floatingAnimation);
+        imageViewCapsula2.startAnimation(floatingAnimation);
+        imageViewCapsula3.startAnimation(floatingAnimation);
+        imageViewCapsula4.startAnimation(floatingAnimation);
+        imageViewCapsula5.startAnimation(floatingAnimation);
+        imageViewCapsula6.startAnimation(floatingAnimation);
+    }
+
+    // Oculta a tela de inatividade
+    private fun hideInactiveScreen() {
+        inactiveOverlay.visibility = View.GONE
+        inactiveMessage.visibility = View.GONE
+
+        imageViewCapsula1.visibility = View.GONE
+        imageViewCapsula2.visibility = View.GONE
+        imageViewCapsula3.visibility = View.GONE
+        imageViewCapsula4.visibility = View.GONE
+        imageViewCapsula5.visibility = View.GONE
+        imageViewCapsula6.visibility = View.GONE
+
+        imageViewCapsula1.clearAnimation()
+        imageViewCapsula2.clearAnimation()
+        imageViewCapsula3.clearAnimation()
+        imageViewCapsula4.clearAnimation()
+        imageViewCapsula5.clearAnimation()
+        imageViewCapsula6.clearAnimation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        imageViewCapsula1.startAnimation(floatingAnimation);
+        imageViewCapsula2.startAnimation(floatingAnimation);
+        imageViewCapsula3.startAnimation(floatingAnimation);
+        imageViewCapsula4.startAnimation(floatingAnimation);
+        imageViewCapsula5.startAnimation(floatingAnimation);
+        imageViewCapsula6.startAnimation(floatingAnimation);
+    }
+
+    // Detecta toques na tela para redefinir o temporizador
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        resetInactivityTimer() // Reseta o temporizador a cada toque
+
+        if (inactiveOverlay.visibility == View.VISIBLE) {
+            hideInactiveScreen() // Oculta a tela de inatividade se ela estiver visível
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     val listener= View.OnClickListener { view ->
