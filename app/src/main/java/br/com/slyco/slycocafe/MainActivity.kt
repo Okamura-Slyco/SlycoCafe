@@ -51,7 +51,7 @@ object AppConstants {
     const val DISPENSER_PID = 60000
     const val DISPENSER_VID = 4292
     const val ACTION_USB_PERMISSION = "com.android.pinpad.USB_PERMISSION"
-    const val INACTIVITY_TIMEOUT = 6000L // 1 minuto (em milissegundos)
+    const val INACTIVITY_TIMEOUT = 30000L // 30s (em milissegundos)
 }
 
 enum class NESPRESSO_FLAVORS (val index:Int){
