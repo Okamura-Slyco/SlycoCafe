@@ -421,4 +421,6 @@
         app:layout_constraintStart_toStartOf="@+id/imageViewCapsula6"
         app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem6" />
 
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,6 +18,9 @@
         android:theme="@style/Theme.SlycoCafé"
         tools:targetApi="31">
         <activity
+            android:name=".ScreenSaver"
+            android:exported="false" />
+        <activity
             android:name=".DispenserProgress"
             android:exported="false" />
         <activity

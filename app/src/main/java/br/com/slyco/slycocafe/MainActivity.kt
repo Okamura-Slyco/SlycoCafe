@@ -1,5 +1,6 @@
 package br.com.slyco.slycocafe
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.app.Activity
@@ -13,6 +14,8 @@ import android.hardware.usb.UsbEndpoint
 import android.hardware.usb.UsbInterface
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.os.Looper
+import android.os.Looper.*
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -35,6 +38,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
+import android.os.Handler
+import android.widget.ProgressBar
 
 
 object AppConstants {
@@ -46,6 +51,7 @@ object AppConstants {
     const val DISPENSER_PID = 60000
     const val DISPENSER_VID = 4292
     const val ACTION_USB_PERMISSION = "com.android.pinpad.USB_PERMISSION"
+    const val INACTIVITY_TIMEOUT = 6000L // 1 minuto (em milissegundos)
 }
 
 enum class NESPRESSO_FLAVORS (val index:Int){
@@ -229,6 +235,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var easterEgg1 = 0
     var easterEgg2 = 0
 
+    private lateinit var watchDog: Handler
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
@@ -317,15 +325,30 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         var text1 = findViewById<TextView>(R.id.textViewTotalFix)
         text1.setOnClickListener(listener)
 
+        watchDog = Handler(Looper.getMainLooper())
+
+        resetWatchDog()
+
         updateView(0)
 
+    }
 
+    private val watchDogCallback = Runnable {
+        val intent: Intent = Intent(this, ScreenSaver::class.java)
+        if (shoppingCart.returnTotal() == 0.0) intent.putExtra("activateContinueButton", 0)
+        else intent.putExtra("activateContinueButton", 1)
+        startActivityForResult(intent, 3)
+    }
 
+    private fun resetWatchDog() {
+        watchDog.removeCallbacks(watchDogCallback)
+        watchDog.postDelayed(watchDogCallback, AppConstants.INACTIVITY_TIMEOUT)
     }
 
     val listener= View.OnClickListener { view ->
         var res:Int = 0
         var bUpdateView = true
+        resetWatchDog()
         when (view.getId()) {
             R.id.floatingActionButtonItem1Plus, R.id.imageViewCapsula1 -> {
                 // Do some work here
@@ -706,61 +729,161 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(
-            "@@PRE_PAYMENT_SAMPLE@@", this.javaClass.getName() + " | "
-                    + object : Any() {}.javaClass.getEnclosingMethod().name + " | "
-                    + "RequestCode: " + requestCode
-        )
 
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "requestCode: " + requestCode);
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "resultCode: " + resultCode);
+        if (requestCode == 1) {
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@", this.javaClass.getName() + " | "
+                        + object : Any() {}.javaClass.getEnclosingMethod().name + " | "
+                        + "RequestCode: " + requestCode
+            )
 
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "responseCode: " + data!!.getStringExtra("responseCode"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "transactionType: " + data!!.getStringExtra("transactionType"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "installmentType: " + data!!.getStringExtra("installmentType"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "cashbackAmount: " + data!!.getStringExtra("cashbackAmount"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "acquirerId: " + data!!.getStringExtra("acquirerId"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "cardBrand: " + data!!.getStringExtra("cardBrand"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "sitefTransactionId: " + data!!.getStringExtra("sitefTransactionId"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "hostTrasactionId: " + data!!.getStringExtra("hostTrasactionId"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "authCode: " + data!!.getStringExtra("authCode"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "transactionInstallments: " + data!!.getStringExtra("transactionInstallments"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "merchantReceipt: " + data!!.getStringExtra("merchantReceipt"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "customerReceipt: " + data!!.getStringExtra("customerReceipt"))
-        Log.d("@@PRE_PAYMENT_SAMPLE@@", "returnedFields: " + data!!.getStringExtra("returnedFields"))
+            Log.d("@@PRE_PAYMENT_SAMPLE@@", "requestCode: " + requestCode);
+            Log.d("@@PRE_PAYMENT_SAMPLE@@", "resultCode: " + resultCode);
 
-        var cupom : String? = data!!.getStringExtra("merchantReceipt")
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "responseCode: " + data!!.getStringExtra("responseCode")
+            )
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "transactionType: " + data!!.getStringExtra("transactionType")
+            )
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "installmentType: " + data!!.getStringExtra("installmentType")
+            )
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "cashbackAmount: " + data!!.getStringExtra("cashbackAmount")
+            )
+            Log.d("@@PRE_PAYMENT_SAMPLE@@", "acquirerId: " + data!!.getStringExtra("acquirerId"))
+            Log.d("@@PRE_PAYMENT_SAMPLE@@", "cardBrand: " + data!!.getStringExtra("cardBrand"))
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "sitefTransactionId: " + data!!.getStringExtra("sitefTransactionId")
+            )
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "hostTrasactionId: " + data!!.getStringExtra("hostTrasactionId")
+            )
+            Log.d("@@PRE_PAYMENT_SAMPLE@@", "authCode: " + data!!.getStringExtra("authCode"))
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "transactionInstallments: " + data!!.getStringExtra("transactionInstallments")
+            )
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "merchantReceipt: " + data!!.getStringExtra("merchantReceipt")
+            )
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "customerReceipt: " + data!!.getStringExtra("customerReceipt")
+            )
+            Log.d(
+                "@@PRE_PAYMENT_SAMPLE@@",
+                "returnedFields: " + data!!.getStringExtra("returnedFields")
+            )
 
-        if (cupom != null){
-            this.inventory.setQty(NESPRESSO_FLAVORS.RISTRETTO,inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO))
-            this.inventory.setQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC))
-            this.inventory.setQty(NESPRESSO_FLAVORS.LEGGERO,inventory.getQty(NESPRESSO_FLAVORS.LEGGERO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO))
-            this.inventory.setQty(NESPRESSO_FLAVORS.FORTE,inventory.getQty(NESPRESSO_FLAVORS.FORTE) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE))
-            this.inventory.setQty(NESPRESSO_FLAVORS.CAFFE_VANILIO,inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO))
-            this.inventory.setQty(NESPRESSO_FLAVORS.DESCAFFEINADO,inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
+            var cupom: String? = data!!.getStringExtra("merchantReceipt")
+
+            if (cupom != null) {
+                this.inventory.setQty(
+                    NESPRESSO_FLAVORS.RISTRETTO,
+                    inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO) - shoppingCart.getCartItemQuantity(
+                        NESPRESSO_FLAVORS.RISTRETTO
+                    )
+                )
+                this.inventory.setQty(
+                    NESPRESSO_FLAVORS.BRAZIL_ORGANIC,
+                    inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC) - shoppingCart.getCartItemQuantity(
+                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC
+                    )
+                )
+                this.inventory.setQty(
+                    NESPRESSO_FLAVORS.LEGGERO,
+                    inventory.getQty(NESPRESSO_FLAVORS.LEGGERO) - shoppingCart.getCartItemQuantity(
+                        NESPRESSO_FLAVORS.LEGGERO
+                    )
+                )
+                this.inventory.setQty(
+                    NESPRESSO_FLAVORS.FORTE,
+                    inventory.getQty(NESPRESSO_FLAVORS.FORTE) - shoppingCart.getCartItemQuantity(
+                        NESPRESSO_FLAVORS.FORTE
+                    )
+                )
+                this.inventory.setQty(
+                    NESPRESSO_FLAVORS.CAFFE_VANILIO,
+                    inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO) - shoppingCart.getCartItemQuantity(
+                        NESPRESSO_FLAVORS.CAFFE_VANILIO
+                    )
+                )
+                this.inventory.setQty(
+                    NESPRESSO_FLAVORS.DESCAFFEINADO,
+                    inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO) - shoppingCart.getCartItemQuantity(
+                        NESPRESSO_FLAVORS.DESCAFFEINADO
+                    )
+                )
 
 
-            val dispenserBufferString = "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
-                    "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
-                    "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
-                    "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE)) +
-                    "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) +
-                    "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) + "\n"
+                val dispenserBufferString =
+                    "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
+                            "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
+                            "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
+                            "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE)) +
+                            "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) +
+                            "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) + "\n"
 
-            val intent: Intent = Intent(this, DispenserProgress::class.java)
-            intent.putExtra("A_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO))
-            intent.putExtra("B_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC))
-            intent.putExtra("C_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO))
-            intent.putExtra("D_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE))
-            intent.putExtra("E_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO))
-            intent.putExtra("F_itemQty",shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO))
+                val intent: Intent = Intent(this, DispenserProgress::class.java)
+                intent.putExtra(
+                    "A_itemQty",
+                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)
+                )
+                intent.putExtra(
+                    "B_itemQty",
+                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)
+                )
+                intent.putExtra(
+                    "C_itemQty",
+                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)
+                )
+                intent.putExtra(
+                    "D_itemQty",
+                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.FORTE)
+                )
+                intent.putExtra(
+                    "E_itemQty",
+                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)
+                )
+                intent.putExtra(
+                    "F_itemQty",
+                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)
+                )
 
-            startActivityForResult(intent, 2)
+                startActivityForResult(intent, 2)
 
-            shoppingCart.clearCart()
+                shoppingCart.clearCart()
 
-            updateView(0)
+                updateView(0)
+            }
         }
+        else if (requestCode == 3)
+        {
+            val retVal = data!!.getStringExtra("action")
+            when (retVal){
+                "New" -> {
+                    shoppingCart.clearCart()
+
+                    updateView(0)
+                    Log.d("ret ScreenSaver", "New")
+                }
+                "Continue" -> {
+
+                    Log.d("ret ScreenSaver", "Continue")
+                }
+            }
+        }
+        resetWatchDog()
+
         //printTextAsImage("", cupom, "", applicationContext, account)
 
         //val intent: Intent = Intent(this, MainActivity::class.java)
