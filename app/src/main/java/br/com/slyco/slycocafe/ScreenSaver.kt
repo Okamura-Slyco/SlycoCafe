@@ -127,7 +127,7 @@ class ScreenSaver : AppCompatActivity() {
                 coffeeImageView.translationY = origin[1].toFloat()
 
                 //delay(500L)
-                val time = (2..6).random()*1000
+                val time = (4..6).random()*1000
                 ObjectAnimator.ofFloat(coffeeImageView,"translationX",destination[0].toFloat())
                     .setDuration(time.toLong())
                     .start()
