@@ -85,7 +85,7 @@ class ScreenSaver : AppCompatActivity() {
     @OptIn(ExperimentalStdlibApi::class)
     private suspend fun processAfterUILoad() {
         withContext(Dispatchers.Main) {
-            var ids:IntArray = intArrayOf(R.id.imageView, R.id.imageView2,R.id.imageView3,R.id.imageView4,R.id.imageView5,R.id.imageView6,R.id.imageView7)
+            var ids:IntArray = intArrayOf(R.id.imageView, R.id.imageView2,R.id.imageView3,R.id.imageView4,R.id.imageView5,R.id.imageView6,R.id.imageView7,R.id.imageView8,R.id.imageView9,R.id.imageView10,R.id.imageView11,R.id.imageView12,R.id.imageView13,R.id.imageView14,R.id.imageView15)
             while (true)
             {
                 for (imageElement in ids) {
@@ -113,7 +113,7 @@ class ScreenSaver : AppCompatActivity() {
                         origin_coord,
                         destination_coord
                     )
-                    delay(10000L/ids.size)
+                    delay(((7..10).random()*1000L)/ids.size)
                 }
 
             }
@@ -127,15 +127,15 @@ class ScreenSaver : AppCompatActivity() {
                 coffeeImageView.translationY = origin[1].toFloat()
 
                 //delay(500L)
-
+                val time = (2..6).random()*1000
                 ObjectAnimator.ofFloat(coffeeImageView,"translationX",destination[0].toFloat())
-                    .setDuration(4000L)
+                    .setDuration(time.toLong())
                     .start()
                 ObjectAnimator.ofFloat(coffeeImageView,"translationY",destination[1].toFloat())
-                    .setDuration(4000L)
+                    .setDuration(time.toLong())
                     .start()
                 ObjectAnimator.ofFloat(coffeeImageView,"alpha",0.0f,0.8f,0.0f)
-                    .setDuration(4100L)
+                    .setDuration(time.toLong())
                     .start()
             }
         }

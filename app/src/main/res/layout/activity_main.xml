@@ -160,7 +160,7 @@
         android:layout_height="225dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula1"
-        app:srcCompat="@drawable/forte" />
+        app:srcCompat="@drawable/guatemala" />
 
     <ImageView
         android:id="@+id/imageViewCapsula5"

@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
-        app:srcCompat="@drawable/brasil_organic_trn"
+        app:srcCompat="@drawable/bianco_delicato_trn"
         tools:layout_editor_absoluteX="0"
         tools:layout_editor_absoluteY="0" />
 
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
-        app:srcCompat="@drawable/caffe_vanilio_trn"
+        app:srcCompat="@drawable/bianco_intenso_trn"
         tools:layout_editor_absoluteX="0"
         tools:layout_editor_absoluteY="0" />
 
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
-        app:srcCompat="@drawable/descafeinado_trn"
+        app:srcCompat="@drawable/brasil_organic_trn"
         tools:layout_editor_absoluteX="0"
         tools:layout_editor_absoluteY="0" />
 
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
-        app:srcCompat="@drawable/forte_trn"
+        app:srcCompat="@drawable/caffe_caramelo_trn"
         tools:layout_editor_absoluteX="0"
         tools:layout_editor_absoluteY="0" />
 
@@ -49,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
-        app:srcCompat="@drawable/india_trn"
+        app:srcCompat="@drawable/caffe_nocciola_trn"
         tools:layout_editor_absoluteX="0"
         tools:layout_editor_absoluteY="0" />
 
@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
-        app:srcCompat="@drawable/leggero_trn"
+        app:srcCompat="@drawable/caffe_vanilio_trn"
         tools:layout_editor_absoluteX="0"
         tools:layout_editor_absoluteY="0" />
 
@@ -67,9 +67,73 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
-        app:srcCompat="@drawable/ristretto_trn"
+        app:srcCompat="@drawable/descafeinado_trn"
         tools:layout_editor_absoluteX="815dp"
         tools:layout_editor_absoluteY="310dp" />
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/finezzo_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/forte_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
+    <ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/guatemala_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
+    <ImageView
+        android:id="@+id/imageView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/india_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
+    <ImageView
+        android:id="@+id/imageView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/intenso_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
+    <ImageView
+        android:id="@+id/imageView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/leggero_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
+    <ImageView
+        android:id="@+id/imageView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/ristretto_intenso_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
+    <ImageView
+        android:id="@+id/imageView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@drawable/ristretto_trn"
+        tools:layout_editor_absoluteX="0"
+        tools:layout_editor_absoluteY="0" />
 
     <Button
         android:id="@+id/buttonNew"
