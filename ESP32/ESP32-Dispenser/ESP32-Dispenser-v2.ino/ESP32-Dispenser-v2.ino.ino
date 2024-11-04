@@ -39,7 +39,8 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
 
 #define DISPENSER(X) (1 << X)
-#define DISPENSER_PWM(X) (X)
+#define DISPENSER_PWM(X) (2*X)
+#define LED_PWM(X) DISPENSER_PWM(X)+1
 #define DISPENSER_A 5
 #define DISPENSER_B 4
 #define DISPENSER_C 3
@@ -248,7 +249,7 @@ void SetDoorState(int doors, int angle) {
       if (doors & (0x01 << i)) {
         uint16_t ledPwm = angleToLedPWM(myAngle);
         board1.writeMicroseconds(DISPENSER_PWM(i), angleToMicroseconds(myAngle));
-        board1.writeMicroseconds(DISPENSER_PWM(i)+8, ledPwm);
+        board1.writeMicroseconds(LED_PWM(i), ledPwm);
         servoPosition[i] = myAngle;
       }
     }
