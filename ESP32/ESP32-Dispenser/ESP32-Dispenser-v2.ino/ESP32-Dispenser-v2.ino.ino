@@ -34,7 +34,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 
 #define DELAY_BLINK 500
 #define DELAY_SERVO 500
-#define DELAY_SERVO_STEP 30
+#define DELAY_SERVO_STEP 10
 
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
 
@@ -56,7 +56,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 #define MAX_SERVO_ANGLE() max(DRAWER_REST,DRAWER_PUSH)
 #define MIN_SERVO_ANGLE() min(DRAWER_REST,DRAWER_PUSH)
 
-#define ROTATION_STEP_ANGLE 10
+#define ROTATION_STEP_ANGLE 3
 
 String device_name = "Slyco Dispenser Monitor";
 
@@ -90,7 +90,6 @@ void setup() {
   pinMode(MODULO_VCC, OUTPUT);
 
   digitalWrite(MODULO_LED1, LED_ON);
-  digitalWrite(MODULO_LED2, LED_ON);
   digitalWrite(MODULO_VCC, LED_ON);
   RESET_RELEASE;
 
@@ -106,7 +105,7 @@ void setup() {
 
   release_items("Z\n", 2);
 
-  digitalWrite(MODULO_LED2, LED_OFF);
+  doWow();
   digitalWrite(MODULO_VCC, LED_OFF);
 }
 
@@ -163,6 +162,10 @@ void release_items(char* buffer, int qty) {
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
+
+      case 'W':
+        doWow();
+        return;
       default:
         break;
     }
@@ -192,6 +195,39 @@ void release_items(char* buffer, int qty) {
   Serial.print("\n");
 
   digitalWrite(MODULO_VCC, LED_OFF);
+}
+
+void doWow() {
+  int state = 0; int i = 0; int itCounter = 0;
+  int myAngle = DRAWER_REST; int myStep = ROTATION_STEP_ANGLE;
+  digitalWrite(MODULO_LED2, LED_ON);
+  while (1)
+  {
+    switch (state){
+      case 0: // pulse 1
+        if (myAngle >= MAX_SERVO_ANGLE()){ myStep = -1*ROTATION_STEP_ANGLE; itCounter++;}
+        else if (myAngle <= MIN_SERVO_ANGLE()){ myStep = ROTATION_STEP_ANGLE;}
+
+        myAngle += myStep;
+        for (i = 0; i < DISPENSER_QTY; i++) {
+            uint16_t ledPwm = angleToLedPWM(myAngle);
+            board1.writeMicroseconds(LED_PWM(i), ledPwm);
+        }
+        if (itCounter == 4) {state++; itCounter = 0;}
+      break;
+      
+      default:
+        for (i = 0; i < DISPENSER_QTY; i++) {
+            uint16_t ledPwm = angleToLedPWM(DRAWER_REST);
+            board1.writeMicroseconds(LED_PWM(i), ledPwm);
+        }
+        digitalWrite(MODULO_LED2, LED_OFF);
+        return;
+      break;
+    }
+    
+    delay(DELAY_SERVO_STEP);
+  }
 }
 
 void Release(char comando) {
