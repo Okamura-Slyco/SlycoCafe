@@ -232,7 +232,7 @@ void doWow() {
 
 void Release(char comando) {
   int door = 0;
-  digitalWrite(MODULO_LED1, LED_OFF);
+  //digitalWrite(MODULO_LED1, LED_OFF);
   digitalWrite(MODULO_LED2, LED_ON);
 
   SetDoorState(comando, DRAWER_PUSH);
