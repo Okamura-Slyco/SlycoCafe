@@ -6,14 +6,8 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Typeface
-import android.hardware.usb.UsbDevice
-import android.hardware.usb.UsbDeviceConnection
-import android.hardware.usb.UsbEndpoint
-import android.hardware.usb.UsbInterface
-import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.os.Looper
-import android.os.Looper.*
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -28,18 +22,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
-import com.hoho.android.usbserial.driver.UsbSerialDriver
-import com.hoho.android.usbserial.driver.UsbSerialPort
-import com.hoho.android.usbserial.driver.UsbSerialProber
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.roundToInt
 import android.os.Handler
-import android.widget.ProgressBar
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 
 
 object AppConstants {
@@ -92,72 +79,6 @@ data class item(
 class inventory {
     private var itens = arrayOfNulls<item>(6)
 
-    private lateinit var dbRef : DatabaseReference
-    private var loaded = false
-
-    constructor() {
-        dbRef = FirebaseDatabase.getInstance().getReference("slyco-cafe")
-    this.reset()
-    this.loadDb()
-    }
-    fun loadDb(){
-
-//        dbRef.addValueEventListener(object: ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                if (snapshot.exists()) {
-//                    //val myItems:List<item> = snapshot.children.map { dataSnapshot -> dataSnapshot.getValue(item::class.java)!!.copy() }
-//                    var iter = 0
-//                    for(itemSnap in snapshot.children) {
-//                        var myItem = itemSnap.getValue(item::class.java)
-//                        Log.d("a", "b")
-//                        val index = itemSnap.key!!.toInt()
-//                        if (index in 0..AppConstants.DISPENSERS_QTY - 1) {
-//                            itens[index] = item(
-//                                NESPRESSO_FLAVORS.from(1)!!,
-//                                30,
-//                                1.3f,
-//                                NESPRESSO_FLAVORS.RISTRETTO.value
-//                            )
-//
-//                        //}
-//                    }
-//                }
-//                loaded = true
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-
-        dbRef.child("slyco-cafe").child("0").get().addOnSuccessListener {
-          Log.i("firebase", "Got value ${it.value}")
-        }.addOnFailureListener{
-            Log.e("firebase", "Error getting data", it)
-        }
-//        dbRef.addValueEventListener(object : ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                if(snapshot.exists()) {
-//                    var iter = 0
-//                    for(itemSnap in snapshot.children){
-//                        itens[iter++] = itemSnap.getValue(item::class.java)
-//                    }
-//                }
-//                Log.d("Inventory LoadDB","loaded =)")
-//                loaded = true
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-
-    }
-
-    fun isLoaded():Boolean{
-        return this.loaded
-    }
-
     fun reset(){
         this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.RISTRETTO.value)
         this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.BRAZIL_ORGANIC.value)
@@ -165,14 +86,6 @@ class inventory {
         this.itens[3] = item(NESPRESSO_FLAVORS.GUATEMALA,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.GUATEMALA.value)
         this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.CAFFE_VANILIO.value)
         this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.DESCAFFEINADO.value)
-
-        var i:Int = 0
-        for (i in 0..AppConstants.DISPENSERS_QTY-1) {
-            dbRef.child(i.toString()).setValue(this.itens[i])
-                .addOnFailureListener{ err->
-                    Log.e("inventory reset", "Error adding ${this.itens[i]?.flavor.toString()}: ${err.message}")
-                }
-        }
 
     }
 
@@ -193,21 +106,12 @@ class inventory {
 
         myItem!!.qty = qty
 
-        dbRef.child(myItem.flavor.toString()).setValue(myItem)
-            .addOnFailureListener{ err->
-                Log.e("inventory reset", "Error adding ${flavor.toString()}: ${err.message}")
-            }
-
     }
 
     fun setPrice(flavor: NESPRESSO_FLAVORS,price:Float) {
         var myItem = itens.find{ it?.flavor == flavor }
 
         myItem!!.price = price
-        dbRef.child(myItem?.flavor.toString()).setValue(myItem)
-            .addOnFailureListener{ err->
-                Log.e("inventory reset", "Error adding ${flavor.toString()}: ${err.message}")
-            }
     }
 
     fun getPrice(flavor: NESPRESSO_FLAVORS): Float {
