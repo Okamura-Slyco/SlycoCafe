@@ -288,6 +288,24 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         button = findViewById<MaterialButton>(R.id.floatingActionButtonItem6Minus)
         button.setOnClickListener(listener)
 
+        button = findViewById<MaterialButton>(R.id.textViewPrice1)
+        button.setOnClickListener(listener)
+
+        button = findViewById<MaterialButton>(R.id.textViewPrice2)
+        button.setOnClickListener(listener)
+
+        button = findViewById<MaterialButton>(R.id.textViewPrice3)
+        button.setOnClickListener(listener)
+
+        button = findViewById<MaterialButton>(R.id.textViewPrice4)
+        button.setOnClickListener(listener)
+
+        button = findViewById<MaterialButton>(R.id.textViewPrice5)
+        button.setOnClickListener(listener)
+
+        button = findViewById<MaterialButton>(R.id.textViewPrice6)
+        button.setOnClickListener(listener)
+
         var productImage = findViewById<ImageView>(R.id.imageViewCapsula1)
         productImage.setOnClickListener(listener)
 
@@ -339,7 +357,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         var bUpdateView = true
         resetWatchDog()
         when (view.getId()) {
-            R.id.floatingActionButtonItem1Plus, R.id.imageViewCapsula1 -> {
+            R.id.floatingActionButtonItem1Plus, R.id.imageViewCapsula1, R.id.textViewPrice1 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.RISTRETTO,1, inventory)
                 easterEgg = 0
@@ -349,7 +367,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg2 == 0) easterEgg2 = 1
                 else easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem2Plus,R.id.imageViewCapsula2 -> {
+            R.id.floatingActionButtonItem2Plus,R.id.imageViewCapsula2, R.id.textViewPrice2 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,1, inventory)
                 easterEgg = 0
@@ -357,7 +375,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 else easterEgg1 = 0
                 easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem3Plus, R.id.imageViewCapsula3 -> {
+            R.id.floatingActionButtonItem3Plus, R.id.imageViewCapsula3, R.id.textViewPrice3 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.LEGGERO,1, inventory)
                 easterEgg = 0
@@ -367,7 +385,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg2 == 1) easterEgg2 = 2
                 else easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem4Plus, R.id.imageViewCapsula4 -> {
+            R.id.floatingActionButtonItem4Plus, R.id.imageViewCapsula4, R.id.textViewPrice4 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.GUATEMALA,1, inventory)
                 easterEgg = 0
@@ -375,7 +393,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 else easterEgg1 = 0
                 easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem5Plus, R.id.imageViewCapsula5 -> {
+            R.id.floatingActionButtonItem5Plus, R.id.imageViewCapsula5, R.id.textViewPrice5 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,1, inventory)
                 easterEgg = 0
@@ -385,7 +403,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg2 == 2) easterEgg2 = 3
                 else easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem6Plus, R.id.imageViewCapsula6 -> {
+            R.id.floatingActionButtonItem6Plus, R.id.imageViewCapsula6, R.id.textViewPrice6 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,1, inventory)
                 easterEgg = 0
