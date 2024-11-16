@@ -99,14 +99,14 @@ class ScreenSaver : AppCompatActivity() {
                     origin_coord = selectCoordinates(origin)
                     destination_coord = selectCoordinates(destination)
 
-                    Log.d(
-                        "ScreenSaver",
-                        "ori_x,ori_y: " + origin_coord[0].toString() + "," + origin_coord[1].toString()
-                    )
-                    Log.d(
-                        "ScreenSaver",
-                        "dest_x,dest_y: " + destination_coord[0].toString() + "," + destination_coord[1].toString()
-                    )
+//                    Log.d(
+//                        "ScreenSaver",
+//                        "ori_x,ori_y: " + origin_coord[0].toString() + "," + origin_coord[1].toString()
+//                    )
+//                    Log.d(
+//                        "ScreenSaver",
+//                        "dest_x,dest_y: " + destination_coord[0].toString() + "," + destination_coord[1].toString()
+//                    )
 
                     screenSaverAnimation(
                         findViewById<ImageView>(imageElement),

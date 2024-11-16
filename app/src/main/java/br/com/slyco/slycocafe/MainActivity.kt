@@ -79,6 +79,10 @@ data class item(
 class inventory {
     private var itens = arrayOfNulls<item>(6)
 
+    constructor (){
+        reset()
+    }
+
     fun reset(){
         this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.RISTRETTO.value)
         this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.BRAZIL_ORGANIC.value)
