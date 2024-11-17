@@ -43,7 +43,7 @@
         android:id="@+id/textViewTotalFix"
         android:layout_width="169dp"
         android:layout_height="41dp"
-        android:layout_marginStart="150dp"
+        android:layout_marginStart="125dp"
         android:layout_marginBottom="16dp"
         android:text="Total: R$"
         android:textSize="30sp"
@@ -56,7 +56,8 @@
         android:id="@+id/buttonCheckout"
         android:layout_width="251dp"
         android:layout_height="72dp"
-        android:layout_marginEnd="50dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="5dp"
         android:backgroundTint="#228800"
         android:text="Comprar"
         android:textAllCaps="true"
@@ -69,28 +70,15 @@
 
     <ImageView
         android:id="@+id/imageViewCapsula4"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toStartOf="@+id/imageViewCapsula5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/floatingActionButtonItem1Minus"
-        app:srcCompat="@drawable/india" />
+        app:srcCompat="@drawable/india_trn" />
 
-    <EditText
-        android:id="@+id/editTextNumberItem4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="3"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:inputType="number"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/floatingActionButtonItem4Minus"
-        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem4Plus"
-        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem4Minus"
-        app:layout_constraintTop_toTopOf="@+id/floatingActionButtonItem4Minus" />
+
 
     <Button
         android:id="@+id/textViewPrice4"
@@ -130,7 +118,7 @@
         android:id="@+id/floatingActionButtonItem4Plus"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="-18dp"
+        android:layout_marginEnd="-10dp"
         android:backgroundTint="@color/design_default_color_background"
         app:icon="@drawable/baseline_add_circle_outline_24"
         app:iconPadding="0dp"
@@ -143,7 +131,7 @@
         android:id="@+id/floatingActionButtonItem4Minus"
         android:layout_width="88dp"
         android:layout_height="50dp"
-        android:layout_marginStart="-18dp"
+        android:layout_marginStart="-10dp"
         android:backgroundTint="#FFFFFF"
         app:icon="@drawable/baseline_remove_circle_outline_24"
         app:iconPadding="0dp"
@@ -151,31 +139,31 @@
         app:iconTint="#FF0000"
         app:layout_constraintStart_toStartOf="@+id/imageViewCapsula4"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula4" />
-
-    <ImageView
-        android:id="@+id/imageViewCapsula5"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewCapsula6"
-        app:layout_constraintStart_toEndOf="@id/imageViewCapsula4"
-        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem2Minus"
-        app:srcCompat="@drawable/leggero" />
-
     <EditText
-        android:id="@+id/editTextNumberItem5"
+        android:id="@+id/editTextNumberItem4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="3"
+        android:ems="2"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:inputType="number"
         android:textAlignment="center"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/floatingActionButtonItem5Minus"
-        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem5Plus"
-        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem5Minus"
-        app:layout_constraintTop_toTopOf="@+id/floatingActionButtonItem5Minus" />
+        app:layout_constraintBottom_toBottomOf="@id/floatingActionButtonItem4Minus"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem4Plus"
+        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem4Minus"
+        app:layout_constraintTop_toTopOf="@+id/floatingActionButtonItem4Minus" />
+    <ImageView
+        android:id="@+id/imageViewCapsula5"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewCapsula6"
+        app:layout_constraintStart_toEndOf="@id/imageViewCapsula4"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem2Minus"
+        app:srcCompat="@drawable/leggero_trn" />
+
+
 
     <Button
         android:id="@+id/textViewPrice5"
@@ -216,7 +204,7 @@
         android:id="@+id/floatingActionButtonItem5Plus"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="-18dp"
+        android:layout_marginEnd="-10dp"
         android:backgroundTint="@color/design_default_color_background"
         app:icon="@drawable/baseline_add_circle_outline_24"
         app:iconPadding="0dp"
@@ -229,7 +217,7 @@
         android:id="@+id/floatingActionButtonItem5Minus"
         android:layout_width="88dp"
         android:layout_height="50dp"
-        android:layout_marginStart="-18dp"
+        android:layout_marginStart="-10dp"
         android:backgroundTint="#FFFFFF"
         app:icon="@drawable/baseline_remove_circle_outline_24"
         app:iconPadding="0dp"
@@ -237,32 +225,31 @@
         app:iconTint="#FF0000"
         app:layout_constraintStart_toStartOf="@+id/imageViewCapsula5"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula5" />
-
-    <ImageView
-        android:id="@+id/imageViewCapsula6"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageViewCapsula5"
-        app:layout_constraintTop_toBottomOf="@id/floatingActionButtonItem3Minus"
-        app:srcCompat="@drawable/caffecaramello" />
-
     <EditText
-        android:id="@+id/editTextNumberItem6"
+        android:id="@+id/editTextNumberItem5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-20dp"
-        android:ems="3"
+        android:ems="2"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:inputType="number"
         android:textAlignment="center"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/floatingActionButtonItem6Minus"
-        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem6Plus"
-        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem6Minus"
-        app:layout_constraintTop_toTopOf="@id/floatingActionButtonItem6Minus" />
+        app:layout_constraintBottom_toBottomOf="@id/floatingActionButtonItem5Minus"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem5Plus"
+        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem5Minus"
+        app:layout_constraintTop_toTopOf="@+id/floatingActionButtonItem5Minus" />
+    <ImageView
+        android:id="@+id/imageViewCapsula6"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewCapsula5"
+        app:layout_constraintTop_toBottomOf="@id/floatingActionButtonItem3Minus"
+        app:srcCompat="@drawable/caffe_caramelo_trn" />
+
+
 
     <Button
         android:id="@+id/textViewPrice6"
@@ -303,7 +290,7 @@
         android:id="@+id/floatingActionButtonItem6Plus"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="-18dp"
+        android:layout_marginEnd="-10dp"
         android:backgroundTint="@color/design_default_color_background"
         app:icon="@drawable/baseline_add_circle_outline_24"
         app:iconPadding="0dp"
@@ -316,7 +303,7 @@
         android:id="@+id/floatingActionButtonItem6Minus"
         android:layout_width="88dp"
         android:layout_height="50dp"
-        android:layout_marginStart="-18dp"
+        android:layout_marginStart="-10dp"
         android:backgroundTint="#FFFFFF"
         app:icon="@drawable/baseline_remove_circle_outline_24"
         app:iconPadding="0dp"
@@ -325,32 +312,32 @@
         app:layout_constraintStart_toStartOf="@+id/imageViewCapsula6"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula6" />
 
-    <ImageView
-        android:id="@+id/imageViewCapsula1"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewCapsula2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ristretto" />
-
     <EditText
-        android:id="@+id/editTextNumberItem1"
+        android:id="@+id/editTextNumberItem6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="3"
+        android:layout_marginTop="-20dp"
+        android:ems="2"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:inputType="number"
         android:textAlignment="center"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/floatingActionButtonItem1Minus"
-        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem1Plus"
-        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem1Minus"
-        app:layout_constraintTop_toTopOf="@id/floatingActionButtonItem1Minus" />
+        app:layout_constraintBottom_toBottomOf="@id/floatingActionButtonItem6Minus"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem6Plus"
+        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem6Minus"
+        app:layout_constraintTop_toTopOf="@id/floatingActionButtonItem6Minus" />
+    <ImageView
+        android:id="@+id/imageViewCapsula1"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewCapsula2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ristretto_trn" />
 
-    <Button
+       <Button
         android:id="@+id/textViewPrice1"
         android:layout_width="90dp"
         android:layout_height="40dp"
@@ -388,7 +375,7 @@
         android:id="@+id/floatingActionButtonItem1Plus"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="-18dp"
+        android:layout_marginEnd="-10dp"
         android:backgroundTint="@color/design_default_color_background"
         app:icon="@drawable/baseline_add_circle_outline_24"
         app:iconPadding="0dp"
@@ -401,7 +388,7 @@
         android:id="@+id/floatingActionButtonItem1Minus"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginStart="-18dp"
+        android:layout_marginStart="-10dp"
         android:backgroundTint="#FFFFFF"
         app:icon="@drawable/baseline_remove_circle_outline_24"
         app:iconPadding="0dp"
@@ -410,30 +397,32 @@
         app:layout_constraintStart_toStartOf="@+id/imageViewCapsula1"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula1" />
 
-    <ImageView
-        android:id="@+id/imageViewCapsula2"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewCapsula3"
-        app:layout_constraintStart_toEndOf="@id/imageViewCapsula1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/guatemala" />
-
     <EditText
-        android:id="@+id/editTextNumberItem2"
+        android:id="@+id/editTextNumberItem1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="3"
+        android:ems="2"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:inputType="number"
         android:textAlignment="center"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/floatingActionButtonItem2Minus"
-        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem2Plus"
-        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem2Minus"
-        app:layout_constraintTop_toTopOf="@id/floatingActionButtonItem2Minus" />
+        app:layout_constraintBottom_toBottomOf="@+id/floatingActionButtonItem1Minus"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem1Plus"
+        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem1Minus"
+        app:layout_constraintTop_toTopOf="@id/floatingActionButtonItem1Minus" />
+
+    <ImageView
+        android:id="@+id/imageViewCapsula2"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewCapsula3"
+        app:layout_constraintStart_toEndOf="@id/imageViewCapsula1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/guatemala_trn" />
+
+
 
     <Button
         android:id="@+id/textViewPrice2"
@@ -474,7 +463,7 @@
         android:id="@+id/floatingActionButtonItem2Plus"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="-18dp"
+        android:layout_marginEnd="-10dp"
         android:backgroundTint="@color/design_default_color_background"
         app:icon="@drawable/baseline_add_circle_outline_24"
         app:iconPadding="0dp"
@@ -487,7 +476,7 @@
         android:id="@+id/floatingActionButtonItem2Minus"
         android:layout_width="88dp"
         android:layout_height="50dp"
-        android:layout_marginStart="-18dp"
+        android:layout_marginStart="-10dp"
         android:backgroundTint="#FFFFFF"
         app:icon="@drawable/baseline_remove_circle_outline_24"
         app:iconPadding="0dp"
@@ -496,21 +485,35 @@
         app:layout_constraintStart_toStartOf="@+id/imageViewCapsula2"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula2" />
 
+    <EditText
+        android:id="@+id/editTextNumberItem2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="2"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/floatingActionButtonItem2Minus"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItem2Plus"
+        app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem2Minus"
+        app:layout_constraintTop_toTopOf="@id/floatingActionButtonItem2Minus" />
     <ImageView
         android:id="@+id/imageViewCapsula3"
-        android:layout_width="185dp"
-        android:layout_height="185dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageViewCapsula2"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/brazilorganic" />
+        app:srcCompat="@drawable/brasil_organic_trn" />
 
     <EditText
         android:id="@+id/editTextNumberItem3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="3"
+        android:ems="2"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:inputType="number"
@@ -559,7 +562,7 @@
         android:id="@+id/floatingActionButtonItem3Plus"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="-18dp"
+        android:layout_marginEnd="-10dp"
         android:backgroundTint="@color/design_default_color_background"
         app:icon="@drawable/baseline_add_circle_outline_24"
         app:iconPadding="0dp"
@@ -572,7 +575,7 @@
         android:id="@+id/floatingActionButtonItem3Minus"
         android:layout_width="88dp"
         android:layout_height="50dp"
-        android:layout_marginStart="-18dp"
+        android:layout_marginStart="-10dp"
         android:backgroundTint="#FFFFFF"
         app:icon="@drawable/baseline_remove_circle_outline_24"
         app:iconPadding="0dp"
@@ -583,7 +586,7 @@
 
     <ImageView
         android:id="@+id/imgPoweredBySlyco"
-        android:layout_width="150dp"
+        android:layout_width="180dp"
         android:layout_height="70dp"
         android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="@id/buttonEmpty"

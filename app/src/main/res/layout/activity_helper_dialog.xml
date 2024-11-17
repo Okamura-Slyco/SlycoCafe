@@ -10,16 +10,25 @@
     tools:context=".helperDialog">
 
     <ImageView
+        android:id="@+id/imgPoweredBySlyco"
+        android:layout_width="150dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/poweredbyslyco" />
+
+    <ImageView
         android:id="@+id/imageViewCapsula3Helper"
-        android:layout_width="185dp"
-        android:layout_height="185dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
         android:layout_marginStart="50dp"
         android:layout_marginTop="-150dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/brazilorganic" />
+        app:srcCompat="@drawable/brasil_organic_trn" />
 
     <EditText
         android:id="@+id/editTextNumberItem3Helper"
@@ -29,6 +38,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:inputType="number"
+        android:text="x"
         android:textAlignment="center"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/floatingActionButtonItem3MinusHelper"
@@ -75,7 +85,6 @@
         android:id="@+id/floatingActionButtonItem3PlusHelper"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="-18dp"
         android:backgroundTint="@color/design_default_color_background"
         app:icon="@drawable/baseline_add_circle_outline_24"
         app:iconPadding="0dp"
@@ -88,7 +97,7 @@
         android:id="@+id/floatingActionButtonItem3MinusHelper"
         android:layout_width="88dp"
         android:layout_height="50dp"
-        android:layout_marginStart="-13dp"
+        android:layout_marginStart="-10dp"
         android:backgroundTint="#FFFFFF"
         app:icon="@drawable/baseline_remove_circle_outline_24"
         app:iconPadding="0dp"
@@ -169,8 +178,8 @@
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="80dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="150dp"
         android:fontFamily="@font/caveat_brush"
         android:text="Preço Unitário"
         android:textSize="24sp"
@@ -181,11 +190,11 @@
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
         android:fontFamily="@font/caveat_brush"
         android:text="Aroma"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/textView10"
-        app:layout_constraintStart_toStartOf="@+id/textView10"
+        app:layout_constraintStart_toEndOf="@+id/imageView24"
         app:layout_constraintTop_toTopOf="@+id/imageViewCapsula3Helper" />
 
     <TextView
@@ -193,7 +202,7 @@
         android:layout_width="140dp"
         android:layout_height="82dp"
         android:layout_marginTop="50dp"
-        android:layout_marginEnd="-150dp"
+        android:layout_marginEnd="-180dp"
         android:fontFamily="@font/caveat_brush"
         android:gravity="center_horizontal"
         android:text="Adicionar ao carrinho"
@@ -206,7 +215,7 @@
         android:id="@+id/textView13"
         android:layout_width="133dp"
         android:layout_height="90dp"
-        android:layout_marginStart="-150dp"
+        android:layout_marginStart="-169dp"
         android:layout_marginTop="50dp"
         android:fontFamily="@font/caveat_brush"
         android:gravity="center"
@@ -218,15 +227,15 @@
 
     <TextView
         android:id="@+id/textView14"
-        android:layout_width="130dp"
-        android:layout_height="65dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/caveat_brush"
         android:gravity="center"
         android:text="Quantidade"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/editTextNumberItem3Helper"
         app:layout_constraintStart_toStartOf="@+id/editTextNumberItem3Helper"
-        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView26" />
 
     <TextView
         android:id="@+id/textView4"
@@ -277,8 +286,8 @@
         android:id="@+id/buttonReturn"
         android:layout_width="175dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:backgroundTint="#228800"
         android:text="Voltar"
         android:textAllCaps="true"
@@ -348,6 +357,80 @@
         app:layout_constraintBottom_toTopOf="@+id/buttonReturn"
         app:layout_constraintEnd_toEndOf="@+id/buttonReturn"
         app:layout_constraintStart_toStartOf="@+id/buttonReturn" />
+
+    <ImageView
+        android:id="@+id/imageView19"
+        android:layout_width="192dp"
+        android:layout_height="79dp"
+        android:layout_marginEnd="-55dp"
+        android:layout_marginBottom="30dp"
+        android:rotation="30"
+        android:rotationX="0"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAttributes3"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAttributes3"
+        app:srcCompat="@drawable/seta8" />
+
+    <ImageView
+        android:id="@+id/imageView30"
+        android:layout_width="221dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="-19dp"
+        android:layout_marginEnd="-55dp"
+        android:rotation="180"
+        android:rotationY="180"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAttributes3"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAttributes3"
+        app:srcCompat="@drawable/seta8" />
+
+    <ImageView
+        android:id="@+id/imageView24"
+        android:layout_width="215dp"
+        android:layout_height="101dp"
+        android:layout_marginStart="-10dp"
+        android:layout_marginTop="-45dp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewCapsula3Helper"
+        app:layout_constraintTop_toTopOf="@+id/imageViewCapsula3Helper"
+        app:srcCompat="@drawable/seta28" />
+
+    <ImageView
+        android:id="@+id/imageView21"
+        android:layout_width="115dp"
+        android:layout_height="71dp"
+        android:rotation="60"
+        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem3MinusHelper"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem3MinusHelper"
+        app:srcCompat="@drawable/seta32" />
+
+    <ImageView
+        android:id="@+id/imageView23"
+        android:layout_width="169dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="-20dp"
+        android:layout_marginTop="10dp"
+        android:rotation="40"
+        app:layout_constraintStart_toEndOf="@+id/textViewPrice3Helper"
+        app:layout_constraintTop_toTopOf="@+id/textViewPrice3Helper"
+        app:srcCompat="@drawable/seta23" />
+
+    <ImageView
+        android:id="@+id/imageView27"
+        android:layout_width="115dp"
+        android:layout_height="71dp"
+        android:rotation="60"
+        android:rotationX="0"
+        android:rotationY="180"
+        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItem3PlusHelper"
+        app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem3PlusHelper"
+        app:srcCompat="@drawable/seta32" />
+
+    <ImageView
+        android:id="@+id/imageView26"
+        android:layout_width="58dp"
+        android:layout_height="118dp"
+        app:layout_constraintEnd_toEndOf="@+id/editTextNumberItem3Helper"
+        app:layout_constraintStart_toStartOf="@+id/editTextNumberItem3Helper"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumberItem3Helper"
+        app:srcCompat="@drawable/seta22" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

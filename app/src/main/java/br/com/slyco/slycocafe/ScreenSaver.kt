@@ -55,11 +55,6 @@ class ScreenSaver : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
 
         var button = findViewById<MaterialButton>(R.id.buttonNew)
@@ -148,14 +143,14 @@ class ScreenSaver : AppCompatActivity() {
         when (side)
         {
             1,2 -> { // top or botton
-                if (side == 1) retArray[0] = -173
-                else retArray[0] = 815
-                retArray[1] = (-265..310).random()
+                if (side == 1) retArray[0] = -50
+                else retArray[0] = 1100
+                retArray[1] = (-50..700).random()
             }
             3,4 -> { // left or right
-                retArray[0] = (-173..815).random()
-                if (side == 3) retArray[1] = -265
-                else retArray[1] = 310
+                retArray[0] = (-50..1100).random()
+                if (side == 3) retArray[1] = -50
+                else retArray[1] = 700
             }
         }
         return retArray

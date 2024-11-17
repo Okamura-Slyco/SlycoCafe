@@ -50,24 +50,24 @@ object AppConstants {
 enum class NESPRESSO_FLAVORS (val value:Int){
     NONE (0),
 
-    RISTRETTO (R.drawable.ristretto),
-    RISTRETTO_INTENSO(R.drawable.intenso),
+    RISTRETTO (R.drawable.ristretto_trn),
+    RISTRETTO_INTENSO(R.drawable.ristretto_intenso_trn),
 
-    LEGGERO (R.drawable.leggero),
-    FORTE (R.drawable.forte),
-    FINEZZO (R.drawable.finezzo),
-    INTENSO (R.drawable.intenso),
-    DESCAFFEINADO (R.drawable.descafeinado),
+    LEGGERO (R.drawable.leggero_trn),
+    FORTE (R.drawable.forte_trn),
+    FINEZZO (R.drawable.finezzo_trn),
+    INTENSO (R.drawable.intenso_trn),
+    DESCAFFEINADO (R.drawable.descafeinado_trn),
 
-    BRAZIL_ORGANIC (R.drawable.brazilorganic),
-    INDIA (R.drawable.india),
-    GUATEMALA (R.drawable.guatemala),
+    BRAZIL_ORGANIC (R.drawable.brasil_organic_trn),
+    INDIA (R.drawable.india_trn),
+    GUATEMALA (R.drawable.guatemala_trn),
 
-    CAFFE_NOCCIOLA (R.drawable.caffenocciola),
-    CAFFE_CARAMELLO (R.drawable.caffecaramello),
-    CAFFE_VANILIO (R.drawable.caffevanilio),
-    BIANCO_INTENSO (R.drawable.intenso),
-    BIANCO_DELICATO (R.drawable.biancodelicato);
+    CAFFE_NOCCIOLA (R.drawable.caffe_nocciola_trn),
+    CAFFE_CARAMELLO (R.drawable.caffe_caramelo_trn),
+    CAFFE_VANILIO (R.drawable.caffe_vanilio_trn),
+    BIANCO_INTENSO (R.drawable.intenso_trn),
+    BIANCO_DELICATO (R.drawable.bianco_delicato_trn);
 
     companion object {
         infix fun from(value: Int): NESPRESSO_FLAVORS? = NESPRESSO_FLAVORS.values().firstOrNull { it.value == value }
@@ -261,11 +261,6 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         updatePriceTags()
 
