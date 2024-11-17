@@ -21,6 +21,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+//import com.clover.sdk.util.CloverAccount
+//import com.clover.sdk.v1.ResultStatus
+//import com.clover.sdk.v1.ServiceConnector
+//import com.clover.sdk.v3.employees.Employee
+//import com.clover.sdk.v3.employees.EmployeeConnector
 import com.google.android.material.button.MaterialButton
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -73,7 +78,10 @@ data class item(
     var flavor: NESPRESSO_FLAVORS? = NESPRESSO_FLAVORS.NONE,
     var qty: Int?,
     var price: Float?,
-    var flavorIndex: Int?
+    var flavorIndex: Int?,
+    var size: Int?,
+    var intensity: Int?
+
 )
 
 class inventory {
@@ -84,12 +92,12 @@ class inventory {
     }
 
     fun reset(){
-        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.RISTRETTO.value)
-        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.BRAZIL_ORGANIC.value)
-        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.LEGGERO.value)
-        this.itens[3] = item(NESPRESSO_FLAVORS.GUATEMALA,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.GUATEMALA.value)
-        this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.CAFFE_VANILIO.value)
-        this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.DESCAFFEINADO.value)
+        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.RISTRETTO.value,1,9)
+        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.BRAZIL_ORGANIC.value,2,4)
+        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.LEGGERO.value,2,6)
+        this.itens[3] = item(NESPRESSO_FLAVORS.GUATEMALA,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.GUATEMALA.value,3,6)
+        this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,3.00f,NESPRESSO_FLAVORS.CAFFE_VANILIO.value,2,6)
+        this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,2.75f,NESPRESSO_FLAVORS.DESCAFFEINADO.value,2,7)
 
     }
 
@@ -123,6 +131,24 @@ class inventory {
 
         return myItem!!.price!!
     }
+
+    fun getIntensity(flavor: NESPRESSO_FLAVORS): Int? {
+        var myItem = itens.find{ it?.flavor == flavor }
+
+        if (myItem != null) {
+            return myItem.intensity
+        }
+        return 0
+    }
+
+    fun getSize(flavor: NESPRESSO_FLAVORS): Int? {
+        var myItem = itens.find{ it?.flavor == flavor }
+
+        if (myItem != null) {
+            return myItem.size
+        }
+        return 0
+    }
 }
 
 
@@ -137,12 +163,12 @@ class shoppingCart {
         get() = SimpleDateFormat("HHmmss",Locale.ROOT).format(Date())
 
     constructor(inventory: inventory) {
-        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO, 0, inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO),0)
-        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC, 0, inventory.getPrice(NESPRESSO_FLAVORS.BRAZIL_ORGANIC),1)
-        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO, 0, inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO),2)
-        this.itens[3] = item(NESPRESSO_FLAVORS.GUATEMALA, 0, inventory.getPrice(NESPRESSO_FLAVORS.GUATEMALA),3)
-        this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO, 0, inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO),4)
-        this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO, 0, inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO),5)
+        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO, 0, inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO),0,1,9)
+        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC, 0, inventory.getPrice(NESPRESSO_FLAVORS.BRAZIL_ORGANIC),1,2,4)
+        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO, 0, inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO),2,2,6)
+        this.itens[3] = item(NESPRESSO_FLAVORS.GUATEMALA, 0, inventory.getPrice(NESPRESSO_FLAVORS.GUATEMALA),3,3,6)
+        this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO, 0, inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO),4,2,6)
+        this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO, 0, inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO),5,2,7)
     }
 
     fun calculateTotal() {
@@ -210,6 +236,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     private lateinit var watchDog: Handler
 
     private var serial: String? = null
+
+//    private var TAG = "GetEmployeeExample"
+//    private var mEmployeeConnector: EmployeeConnector? = null
+//    private var account: Account? = null
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -324,6 +354,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         productImage = findViewById<ImageView>(R.id.imageViewCapsula6)
         productImage.setOnClickListener(listener)
 
+        productImage = findViewById<ImageView>(R.id.helpButton)
+        productImage.setOnClickListener(listener)
+
         var button1 = findViewById<Button>(R.id.buttonEmpty)
         button1.setOnClickListener(listener)
         button1 = findViewById<Button>(R.id.buttonCheckout)
@@ -357,7 +390,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         var bUpdateView = true
         resetWatchDog()
         when (view.getId()) {
-            R.id.floatingActionButtonItem1Plus, R.id.imageViewCapsula1, R.id.textViewPrice1 -> {
+            R.id.floatingActionButtonItem1Plus, R.id.imageViewCapsula1, R.id.textViewPrice1, R.id.textViewAttributes1 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.RISTRETTO,1, inventory)
                 easterEgg = 0
@@ -367,7 +400,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg2 == 0) easterEgg2 = 1
                 else easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem2Plus,R.id.imageViewCapsula2, R.id.textViewPrice2 -> {
+            R.id.floatingActionButtonItem2Plus,R.id.imageViewCapsula2, R.id.textViewPrice2, R.id.textViewAttributes2 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,1, inventory)
                 easterEgg = 0
@@ -375,7 +408,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 else easterEgg1 = 0
                 easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem3Plus, R.id.imageViewCapsula3, R.id.textViewPrice3 -> {
+            R.id.floatingActionButtonItem3Plus, R.id.imageViewCapsula3, R.id.textViewPrice3, R.id.textViewAttributes3 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.LEGGERO,1, inventory)
                 easterEgg = 0
@@ -385,7 +418,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg2 == 1) easterEgg2 = 2
                 else easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem4Plus, R.id.imageViewCapsula4, R.id.textViewPrice4 -> {
+            R.id.floatingActionButtonItem4Plus, R.id.imageViewCapsula4, R.id.textViewPrice4, R.id.textViewAttributes4 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.GUATEMALA,1, inventory)
                 easterEgg = 0
@@ -393,7 +426,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 else easterEgg1 = 0
                 easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem5Plus, R.id.imageViewCapsula5, R.id.textViewPrice5 -> {
+            R.id.floatingActionButtonItem5Plus, R.id.imageViewCapsula5, R.id.textViewPrice5, R.id.textViewAttributes5 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.CAFFE_VANILIO,1, inventory)
                 easterEgg = 0
@@ -403,7 +436,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg2 == 2) easterEgg2 = 3
                 else easterEgg2 = 0
             }
-            R.id.floatingActionButtonItem6Plus, R.id.imageViewCapsula6, R.id.textViewPrice6 -> {
+            R.id.floatingActionButtonItem6Plus, R.id.imageViewCapsula6, R.id.textViewPrice6, R.id.textViewAttributes6 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.DESCAFFEINADO,1, inventory)
                 easterEgg = 0
@@ -591,11 +624,27 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg1 = 0
                 easterEgg2 = 0
             }
+
+            R.id.helpButton -> {
+
+                easterEgg = 0
+                easterEgg1 = 0
+                easterEgg2 = 0
+
+                val intent: Intent = Intent(this, helperDialog::class.java)
+
+                resetWatchDog(10)
+                startActivityForResult(intent, 10)
+
+            }
+
         }
         Log.i("easterEgg1","${easterEgg1}")
 
         if (bUpdateView == true) updateView(res)
     }
+
+
 
     fun intentCallback(){
 
@@ -720,22 +769,40 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     }
 
-    fun updatePriceTags(){
-
-        var textView1 = findViewById<TextView>(R.id.textViewPrice1)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO)))
-        textView1 = findViewById<TextView>(R.id.textViewPrice2)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)))
-        textView1 = findViewById<TextView>(R.id.textViewPrice3)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO)))
-        textView1 = findViewById<TextView>(R.id.textViewPrice4)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.GUATEMALA)))
-        textView1 = findViewById<TextView>(R.id.textViewPrice5)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO)))
-        textView1 = findViewById<TextView>(R.id.textViewPrice6)
-        textView1.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO)))
+    fun updateCoffeIcon(flavor: NESPRESSO_FLAVORS, id:Int){
+        val materialButton: MaterialButton = findViewById(id)
+        materialButton.setText(String.format("%d",inventory.getIntensity(flavor)))
+        when (inventory.getSize(flavor)){
+            1 -> materialButton.setIconResource(R.drawable.coffeeicon_s)
+            2 -> materialButton.setIconResource(R.drawable.coffeeicon_m)
+            3 -> materialButton.setIconResource(R.drawable.coffeeicon_l)
+        }
     }
 
+    @SuppressLint("CutPasteId")
+    fun updatePriceTags(){
+
+        var textView2 = findViewById<Button>(R.id.textViewPrice1)
+        textView2.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.RISTRETTO)))
+        textView2 = findViewById<Button>(R.id.textViewPrice2)
+        textView2.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)))
+        textView2 = findViewById<Button>(R.id.textViewPrice3)
+        textView2.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.LEGGERO)))
+        textView2 = findViewById<Button>(R.id.textViewPrice4)
+        textView2.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.GUATEMALA)))
+        textView2 = findViewById<Button>(R.id.textViewPrice5)
+        textView2.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.CAFFE_VANILIO)))
+        textView2 = findViewById<Button>(R.id.textViewPrice6)
+        textView2.setText(String.format("R$%.2f",inventory.getPrice(NESPRESSO_FLAVORS.DESCAFFEINADO)))
+
+        updateCoffeIcon(NESPRESSO_FLAVORS.RISTRETTO,R.id.textViewAttributes1)
+        updateCoffeIcon(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,R.id.textViewAttributes2)
+        updateCoffeIcon(NESPRESSO_FLAVORS.LEGGERO,R.id.textViewAttributes3)
+        updateCoffeIcon(NESPRESSO_FLAVORS.GUATEMALA,R.id.textViewAttributes4)
+        updateCoffeIcon(NESPRESSO_FLAVORS.CAFFE_VANILIO,R.id.textViewAttributes5)
+        updateCoffeIcon(NESPRESSO_FLAVORS.DESCAFFEINADO,R.id.textViewAttributes6)
+
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -899,4 +966,82 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         //val intent: Intent = Intent(this, MainActivity::class.java)
         //startActivityForResult(intent, 1)
     }
+
+
+//    override fun onPause() {
+//        Log.v("TAG", "Pausing...")
+//        disconnect()
+//        super.onPause()
+//    }
+//
+//    override fun onResume() {
+//        Log.v("TAG", "...Resumed.")
+//        super.onResume()
+//
+//        // Retrieve the Clover account
+//        if (account == null) {
+//            account = CloverAccount.getAccount(this)
+//
+//            if (account == null) {
+//                Toast.makeText(this, getString(R.string.no_account), Toast.LENGTH_SHORT).show()
+//                finish()
+//                return
+//            }
+//        }
+//
+//        // Create and Connect to the EmployeeConnector
+//        connect()
+//
+//        // Get the employee object
+//        getEmployee()
+//    }
+//
+//    private fun connect() {
+//        disconnect()
+//        Log.v(TAG, "Connecting...")
+//        if (account != null) {
+//            Log.v(TAG, "Account is not null")
+//            mEmployeeConnector = EmployeeConnector(this, account, this)
+//            mEmployeeConnector.connect()
+//        }
+//    }
+//
+//    private fun disconnect() {   //remember to disconnect!
+//        Log.v(TAG, "Disconnecting...")
+//        if (mEmployeeConnector != null) {
+//            mEmployeeConnector.disconnect()
+//            mEmployeeConnector = null
+//        }
+//    }
+//
+//    private fun getEmployee() {
+//        // Show progressBar while waiting
+//        progressBar.setVisibility(View.VISIBLE)
+//
+//        mEmployeeConnector.getEmployee(object : EmployeeCallback<Employee?>() {
+//            override fun onServiceSuccess(result: Employee, status: ResultStatus?) {
+//                super.onServiceSuccess(result, status)
+//
+//                // Hide the progressBar
+//                progressBar.setVisibility(View.GONE)
+//
+//                name.setText(result.getName())
+//                role.setText(result.getRole().toString())
+//            }
+//        })
+//    }
+//
+//    override fun onActiveEmployeeChanged(employee: Employee?) {
+//        Log.v(TAG, "Employee change!")
+//        if (employee != null) {
+//            name.setText(employee.getName())
+//            role.setText(employee.getRole().toString())
+//        }
+//    }
+//
+//    override fun onServiceConnected(serviceConnector: ServiceConnector<out IInterface?>?) {
+//    }
+//
+//    override fun onServiceDisconnected(serviceConnector: ServiceConnector<out IInterface?>?) {
+//    }
 }

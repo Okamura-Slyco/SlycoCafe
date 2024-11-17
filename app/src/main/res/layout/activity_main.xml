@@ -107,6 +107,23 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula4"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem4Plus" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/textViewAttributes4"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:alpha="0.8"
+        android:backgroundTint="#EEEEEE"
+        android:foregroundTint="@color/black"
+        android:text="0"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textColorLink="@color/red"
+        android:textSize="12sp"
+        app:icon="@drawable/coffeeicon"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula4"
+        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItem4Minus" />
 
 
     <Button
@@ -175,6 +192,24 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula5"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem5Plus" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/textViewAttributes5"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:alpha="0.8"
+        android:backgroundTint="#EEEEEE"
+        android:foregroundTint="@color/black"
+        android:text="0"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textColorLink="@color/red"
+        android:textSize="12sp"
+        app:icon="@drawable/coffeeicon"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula5"
+        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItem5Minus" />
 
 
     <Button
@@ -245,6 +280,24 @@
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula6"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem6Plus" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/textViewAttributes6"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:alpha="0.8"
+        android:backgroundTint="#EEEEEE"
+        android:foregroundTint="@color/black"
+        android:text="0"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textColorLink="@color/red"
+        android:textSize="12sp"
+        app:icon="@drawable/coffeeicon"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula6"
+        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItem6Minus" />
+
 
     <Button
         android:id="@+id/floatingActionButtonItem6Plus"
@@ -313,6 +366,24 @@
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula1"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem1Plus" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/textViewAttributes1"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:alpha="0.8"
+        android:backgroundTint="#EEEEEE"
+        android:foregroundTint="@color/black"
+        android:text="0"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textColorLink="@color/red"
+        android:textSize="12sp"
+        app:icon="@drawable/coffeeicon"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula1"
+        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItem1Minus" />
+
     <Button
         android:id="@+id/floatingActionButtonItem1Plus"
         android:layout_width="90dp"
@@ -379,6 +450,24 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula2"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem2Plus" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/textViewAttributes2"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:alpha="0.8"
+        android:backgroundTint="#EEEEEE"
+        android:foregroundTint="@color/black"
+        android:text="0"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textColorLink="@color/red"
+        android:textSize="12sp"
+        app:icon="@drawable/coffeeicon"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula2"
+        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItem2Minus" />
 
 
     <Button
@@ -447,6 +536,23 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula3"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem3Plus" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/textViewAttributes3"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:alpha="0.8"
+        android:backgroundTint="#EEEEEE"
+        android:foregroundTint="@color/black"
+        android:text="0"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textColorLink="@color/red"
+        android:textSize="12sp"
+        app:icon="@drawable/coffeeicon"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula3"
+        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItem3Minus" />
 
 
     <Button
@@ -484,5 +590,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/buttonEmpty"
         app:srcCompat="@drawable/poweredbyslyco" />
+
+    <ImageView
+        android:id="@+id/helpButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:alpha="0.3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/questionmark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
