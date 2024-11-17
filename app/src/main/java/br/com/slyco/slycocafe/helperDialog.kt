@@ -104,17 +104,17 @@ class helperDialog : AppCompatActivity() {
 
     private fun createVerticalBar(): FrameLayout {
         // Definindo as dimensões da barra
-        val barWidth = 20
+        val barWidth = 15
         val barHeight = 350
 
         // Criando a forma arredondada
-        val radius = floatArrayOf(10f, 10f, 10f, 10f, 0f, 0f, 0f, 0f)
+        val radius = floatArrayOf(10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f)
         val roundRectShape = RoundRectShape(radius, null, null)
 
         // Definindo o gradiente de cores (do cinza escuro ao cinza claro)
         val gradient = LinearGradient(
             0f, 0f, 0f, barHeight.toFloat(),
-            Color.parseColor("#333333"), Color.parseColor("#EEEEEE"),
+            Color.parseColor("#4B371C"), Color.parseColor("#E6B68B"),
             Shader.TileMode.CLAMP
         )
 
