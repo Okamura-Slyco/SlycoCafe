@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "815453369272",
+    "firebase_url": "https://slyco-cafe-default-rtdb.firebaseio.com",
+    "project_id": "slyco-cafe",
+    "storage_bucket": "slyco-cafe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815453369272:android:17f8eb2e8a138b3514154d",
+        "android_client_info": {
+          "package_name": "br.com.slyco.slycocafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCELpmZv-HZslfhuuGliC8-74YDLccHAn0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
