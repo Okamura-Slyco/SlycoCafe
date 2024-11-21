@@ -38,6 +38,20 @@ class ScreenSaver : AppCompatActivity() {
     var destination:Int = 0
     var origin_coord:IntArray = IntArray(2)
     var destination_coord:IntArray = IntArray(2)
+
+    override fun onResume() {
+        val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
+        if (actionBar != null) actionBar.hide()
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+
+        super.onResume()
+    }
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

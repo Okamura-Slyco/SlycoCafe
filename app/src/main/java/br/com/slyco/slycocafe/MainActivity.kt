@@ -240,11 +240,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 //    private var TAG = "GetEmployeeExample"
 //    private var mEmployeeConnector: EmployeeConnector? = null
 //    private var account: Account? = null
-
-    @SuppressLint("WrongViewCast")
-    override fun onCreate(savedInstanceState: Bundle?) {
-
-        shoppingCart = shoppingCart(inventory)
+    fun hideActionBar(){
         val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
         if (actionBar != null) actionBar.hide()
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
@@ -253,6 +249,28 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+    }
+
+    override fun onResume() {
+        hideActionBar()
+
+        super.onResume()
+    }
+
+    override fun onStart() {
+        hideActionBar()
+        super.onStart()
+    }
+    override fun onRestart(){
+        hideActionBar()
+        super.onRestart()
+    }
+
+    @SuppressLint("WrongViewCast")
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        shoppingCart = shoppingCart(inventory)
+        hideActionBar()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -375,8 +393,12 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         startActivityForResult(intent, 3)
     }
 
-    private fun resetWatchDog(n:Int = 1) {
+    private fun disableWatchdog() {
         watchDog.removeCallbacks(watchDogCallback)
+    }
+
+    private fun resetWatchDog(n:Int = 1) {
+        disableWatchdog()
         watchDog.postDelayed(watchDogCallback, n* AppConstants.INACTIVITY_TIMEOUT)
     }
 
@@ -586,7 +608,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                         intent.putExtra("transactionAmount", totalStr)
                         intent.putExtra("invoiceNumber",sdf.format(timestamp) )
 
-                        resetWatchDog(10)
+                        disableWatchdog()
 
                         Log.d("INVOICENUMBER",sdf.format(timestamp))
                         startActivityForResult(intent, 1)
@@ -800,7 +822,11 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        hideActionBar()
         super.onActivityResult(requestCode, resultCode, data)
+
+        resetWatchDog()
+
 
         if (requestCode == 1) {
             Log.d(
@@ -954,12 +980,6 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 }
             }
         }
-        resetWatchDog()
-
-        //printTextAsImage("", cupom, "", applicationContext, account)
-
-        //val intent: Intent = Intent(this, MainActivity::class.java)
-        //startActivityForResult(intent, 1)
     }
 
 
