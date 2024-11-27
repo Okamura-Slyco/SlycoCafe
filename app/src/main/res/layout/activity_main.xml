@@ -79,7 +79,6 @@
         app:srcCompat="@drawable/india_trn" />
 
 
-
     <Button
         android:id="@+id/textViewPrice4"
         android:layout_width="90dp"
@@ -95,6 +94,7 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula4"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem4Plus" />
+
     <Button
         android:id="@+id/textViewAttributes4"
         android:layout_width="90dp"
@@ -162,7 +162,6 @@
         app:layout_constraintStart_toEndOf="@id/imageViewCapsula4"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButtonItem2Minus"
         app:srcCompat="@drawable/leggero_trn" />
-
 
 
     <Button
@@ -248,7 +247,6 @@
         app:layout_constraintStart_toEndOf="@id/imageViewCapsula5"
         app:layout_constraintTop_toBottomOf="@id/floatingActionButtonItem3Minus"
         app:srcCompat="@drawable/caffe_caramelo_trn" />
-
 
 
     <Button
@@ -337,7 +335,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ristretto_trn" />
 
-       <Button
+    <Button
         android:id="@+id/textViewPrice1"
         android:layout_width="90dp"
         android:layout_height="40dp"
@@ -366,6 +364,7 @@
         android:textColor="@color/black"
         android:textColorLink="@color/red"
         android:textSize="12sp"
+        android:textStyle="bold"
         app:icon="@drawable/coffeeicon"
         app:iconTint="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula1"
@@ -421,7 +420,6 @@
         app:layout_constraintStart_toEndOf="@id/imageViewCapsula1"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/guatemala_trn" />
-
 
 
     <Button
@@ -539,6 +537,7 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula3"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItem3Plus" />
+
     <Button
         android:id="@+id/textViewAttributes3"
         android:layout_width="90dp"
@@ -589,6 +588,7 @@
         android:layout_width="150dp"
         android:layout_height="70dp"
         android:layout_marginStart="10dp"
+        android:alpha="0.5"
         app:layout_constraintBottom_toBottomOf="@id/buttonEmpty"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/buttonEmpty"
@@ -602,5 +602,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/questionmark" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

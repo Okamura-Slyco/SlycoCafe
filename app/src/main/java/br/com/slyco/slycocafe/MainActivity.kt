@@ -3,9 +3,7 @@ package br.com.slyco.slycocafe
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -18,20 +16,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-//import com.clover.sdk.util.CloverAccount
-//import com.clover.sdk.v1.ResultStatus
-//import com.clover.sdk.v1.ServiceConnector
-//import com.clover.sdk.v3.employees.Employee
-//import com.clover.sdk.v3.employees.EmployeeConnector
 import com.google.android.material.button.MaterialButton
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.os.Handler
+import android.view.LayoutInflater
+import androidx.constraintlayout.widget.ConstraintLayout
+import br.com.slyco.slycocafe.AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
 
 
 object AppConstants {
@@ -46,6 +39,19 @@ object AppConstants {
     const val ACTION_USB_PERMISSION = "com.android.pinpad.USB_PERMISSION"
     const val INACTIVITY_TIMEOUT = 30000L // 30s (em milissegundos)
 }
+
+data class ITEM_VIEW_COMPONENTS (
+    var shoppingCartImage:Int,
+    var shoppingCartPlusButton:Int,
+    var shoppingCartMinusButton:Int,
+    var shoppingCartQty: Int,
+    var shoppingCartItemInfo: Int,
+    var shoppingCartItemPrice: Int,
+    var dialogInnerLayout: Int,
+    var dialogImage: Int,
+    var dialogQty: Int,
+    var dialogTotal: Int
+    )
 
 enum class NESPRESSO_FLAVORS (val value:Int){
     NONE (0),
@@ -215,6 +221,12 @@ class shoppingCart {
 
         return total
     }
+    fun returnSubTotal(flavor: NESPRESSO_FLAVORS): Double {
+        var myItem = itens.find { it?.flavor == flavor }
+        if ((myItem!!.qty != null) && (myItem!!.price != null))
+            return (myItem!!.qty!!.toDouble() * myItem!!.price!!.toDouble())
+        return 0.00
+    }
 
 }
 
@@ -237,6 +249,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     private var serial: String? = null
 
+    private var dialogElement = arrayOfNulls<ITEM_VIEW_COMPONENTS>(6)
+
 //    private var TAG = "GetEmployeeExample"
 //    private var mEmployeeConnector: EmployeeConnector? = null
 //    private var account: Account? = null
@@ -249,8 +263,14 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+    
     }
 
+
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        hideActionBar()
+        super.onActivityReenter(resultCode, data)
+    }
     override fun onResume() {
         hideActionBar()
 
@@ -266,6 +286,81 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         super.onRestart()
     }
 
+    fun initDialogElements() {
+        dialogElement[0] = ITEM_VIEW_COMPONENTS(
+            R.id.imageViewCapsula1,
+            R.id.floatingActionButtonItem1Plus,
+            R.id.floatingActionButtonItem1Minus,
+            R.id.editTextNumberItem1,
+            R.id.textViewAttributes1,
+            R.id.textViewPrice1,
+            R.id.frameLayout1,
+            R.id.imageViewDialog1,
+            R.id.qtyTextView1,
+            R.id.subTotalTextView1)
+
+        dialogElement[1] = ITEM_VIEW_COMPONENTS(
+            R.id.imageViewCapsula2,
+            R.id.floatingActionButtonItem2Plus,
+            R.id.floatingActionButtonItem2Minus,
+            R.id.editTextNumberItem2,
+            R.id.textViewAttributes2,
+            R.id.textViewPrice2,
+            R.id.frameLayout2,
+            R.id.imageViewDialog2,
+            R.id.qtyTextView2,
+            R.id.subTotalTextView2)
+
+        dialogElement[2] = ITEM_VIEW_COMPONENTS(
+            R.id.imageViewCapsula3,
+            R.id.floatingActionButtonItem3Plus,
+            R.id.floatingActionButtonItem3Minus,
+            R.id.editTextNumberItem3,
+            R.id.textViewAttributes3,
+            R.id.textViewPrice3,
+            R.id.frameLayout3,
+            R.id.imageViewDialog3,
+            R.id.qtyTextView3,
+            R.id.subTotalTextView3)
+
+        dialogElement[3] = ITEM_VIEW_COMPONENTS(
+            R.id.imageViewCapsula4,
+            R.id.floatingActionButtonItem4Plus,
+            R.id.floatingActionButtonItem4Minus,
+            R.id.editTextNumberItem4,
+            R.id.textViewAttributes4,
+            R.id.textViewPrice4,
+            R.id.frameLayout4,
+            R.id.imageViewDialog4,
+            R.id.qtyTextView4,
+            R.id.subTotalTextView4)
+
+        dialogElement[4] = ITEM_VIEW_COMPONENTS(
+            R.id.imageViewCapsula5,
+            R.id.floatingActionButtonItem5Plus,
+            R.id.floatingActionButtonItem5Minus,
+            R.id.editTextNumberItem5,
+            R.id.textViewAttributes5,
+            R.id.textViewPrice5,
+            R.id.frameLayout5,
+            R.id.imageViewDialog5,
+            R.id.qtyTextView5,
+            R.id.subTotalTextView5)
+
+        dialogElement[5] = ITEM_VIEW_COMPONENTS(
+            R.id.imageViewCapsula6,
+            R.id.floatingActionButtonItem6Plus,
+            R.id.floatingActionButtonItem6Minus,
+            R.id.editTextNumberItem6,
+            R.id.textViewAttributes6,
+            R.id.textViewPrice6,
+            R.id.frameLayout6,
+            R.id.imageViewDialog6,
+            R.id.qtyTextView6,
+            R.id.subTotalTextView6)
+
+    }
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -279,6 +374,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
+
+        initDialogElements()
 
         updatePriceTags()
 
@@ -402,10 +499,39 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         watchDog.postDelayed(watchDogCallback, n* AppConstants.INACTIVITY_TIMEOUT)
     }
 
+    private fun setAlphaForAllChildren(layout: ConstraintLayout, alpha: Float) {
+        for (i in 0 until layout.childCount) {
+            val child = layout.getChildAt(i)
+            child.alpha = alpha
+        }
+    }
+
+    fun addItemToDialog(index: Int, dialogView: View) {
+        val flavor = inventory.getFlavor(index)
+        val quantity = flavor?.let { shoppingCart.getCartItemQuantity(it) }
+        if (quantity != null) {
+            var image = dialogElement[index]?.let { dialogView?.findViewById<ImageView>(it.dialogImage) }
+            inventory.getFlavorIndex(index)?.let { image?.setImageResource(it) }
+            var text = dialogElement[index]?.let { dialogView?.findViewById<TextView>(it.dialogQty) }
+            text?.text = shoppingCart.getCartItemQuantity(flavor).toString()
+            text = dialogElement[index]?.let { dialogView?.findViewById(it.dialogTotal) }
+            text?.text = String.format("%.2f",shoppingCart.returnSubTotal(flavor))
+            if (quantity >= 1) {
+                setAlphaForAllChildren(dialogView.findViewById<ConstraintLayout>(dialogElement[index]!!.dialogInnerLayout),AppConstants.ON_STOCK_ALPHA_FLOAT)
+            }
+            else {
+                setAlphaForAllChildren(dialogView.findViewById<ConstraintLayout>(dialogElement[index]!!.dialogInnerLayout),AppConstants.OUT_OF_STOCK_ALPHA_FLOAT)
+            }
+        }
+        var totalText = dialogView.findViewById<TextView>(R.id.totalAmountTextView)
+        totalText.text = String.format("%.2f",shoppingCart.returnTotal())
+    }
+
     val listener= View.OnClickListener { view ->
         var res:Int = 0
         var bUpdateView = true
         resetWatchDog()
+        hideActionBar()
         when (view.getId()) {
             R.id.floatingActionButtonItem1Plus, R.id.imageViewCapsula1, R.id.textViewPrice1, R.id.textViewAttributes1 -> {
                 // Do some work here
@@ -572,67 +698,51 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     var textMessage = "\n"
 
                     // Função para adicionar item ao texto
-                    fun addItemToTextMessage(flavor: NESPRESSO_FLAVORS) {
-                        val quantity = shoppingCart.getCartItemQuantity(flavor)
-                        if (quantity >= 1) {
-                            val price = inventory.getPrice(flavor)!!.toFloat()
-                            val total = price * quantity
-                            textMessage += "\n${flavor.name.replace("_", " ")} - ${quantity}x R$${String.format("%.2f", price)} = R$${String.format("%.2f", total)}\n"
+
+                    val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_purchase_summary, null)
+                    for(i in 0..5) addItemToDialog(i,dialogView)
+                    disableWatchdog()
+
+                    val dialogBuilder = AlertDialog.Builder(this)
+                        .setView(dialogView)
+                        .setTitle("Resumo da Compra")
+                        .setPositiveButton("Pagar") { dialog, _ ->
+                            // Handle positive button click
+                            val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
+
+                            val timestamp = Timestamp(System.currentTimeMillis())
+
+                            val sdf = SimpleDateFormat("yyyyMMddHHmmss")
+
+                            hideActionBar()
+
+                            val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
+                            intent.putExtra("merchantTaxId", "55833084000136")
+                            intent.putExtra("isvTaxId", "55833084000136")
+                            intent.putExtra("functionId", "0")
+                            intent.putExtra("transactionAmount", totalStr)
+                            intent.putExtra("invoiceNumber",sdf.format(timestamp) )
+
+                            disableWatchdog()
+
+                            Log.d("INVOICENUMBER",sdf.format(timestamp))
+                            startActivityForResult(intent, 1)
+
+                            toast("Call SiTef Sales App")
+                            bUpdateView = false
+                            dialog.dismiss()
                         }
-                    }
+                        .setNegativeButton("Cancel") { dialog, _ ->
+                            // Handle negative button click
+                            resetWatchDog()
+                            dialog.dismiss()
+                        }
 
-                    addItemToTextMessage(NESPRESSO_FLAVORS.RISTRETTO)
-                    addItemToTextMessage(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)
-                    addItemToTextMessage(NESPRESSO_FLAVORS.LEGGERO)
-                    addItemToTextMessage(NESPRESSO_FLAVORS.GUATEMALA)
-                    addItemToTextMessage(NESPRESSO_FLAVORS.CAFFE_VANILIO)
-                    addItemToTextMessage(NESPRESSO_FLAVORS.DESCAFFEINADO)
+                    // Show the dialog
+                    val customDialog = dialogBuilder.create()
+                    customDialog.show()
+                    hideActionBar()
 
-                    textMessage += "\n\nValor total da compra: R$ ${String.format("%.2f", shoppingCart.returnTotal())}"
-
-                    val builder = AlertDialog.Builder(this)
-                    builder.setTitle("Resumo da Compra")
-                    builder.setMessage(textMessage)
-
-                    builder.setPositiveButton("Pagar") { dialog, _ ->
-                        val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
-
-                        val timestamp = Timestamp(System.currentTimeMillis())
-
-                        val sdf = SimpleDateFormat("yyyyMMddHHmmss")
-
-                        val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-                        intent.putExtra("merchantTaxId", "55833084000136")
-                        intent.putExtra("isvTaxId", "55833084000136")
-                        intent.putExtra("functionId", "0")
-                        intent.putExtra("transactionAmount", totalStr)
-                        intent.putExtra("invoiceNumber",sdf.format(timestamp) )
-
-                        disableWatchdog()
-
-                        Log.d("INVOICENUMBER",sdf.format(timestamp))
-                        startActivityForResult(intent, 1)
-
-                        toast("Call SiTef Sales App")
-                        bUpdateView = false
-                    }
-
-                    // Botão de Cancelar
-                    builder.setNegativeButton("Voltar") { dialog, _ ->
-                        //toast("Compra cancelada.")
-                        dialog.dismiss()
-                    }
-
-                    // Mostrar o AlertDialog
-                    val dialog = builder.create()
-                    dialog.show()
-                    val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                    positiveButton.setTextColor(ContextCompat.getColor(this, R.color.green))
-                    positiveButton.setTypeface(null, Typeface.BOLD)
-
-                    val negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-                    negativeButton.setTextColor(ContextCompat.getColor(this, R.color.red))
-                    negativeButton.setTypeface(null, Typeface.BOLD)
                 } else {
                     toast("Adicione itens ao carrinho.")
                 }
@@ -826,237 +936,176 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         resetWatchDog()
-
+        Log.d ("onActivityResult requestCode",requestCode.toString())
 
         if (requestCode == 1) {
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@", this.javaClass.getName() + " | "
-                        + object : Any() {}.javaClass.getEnclosingMethod().name + " | "
-                        + "RequestCode: " + requestCode
-            )
+            try {
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@", this.javaClass.getName() + " | "
+                            + object : Any() {}.javaClass.getEnclosingMethod().name + " | "
+                            + "RequestCode: " + requestCode
+                )
 
-            Log.d("@@PRE_PAYMENT_SAMPLE@@", "requestCode: " + requestCode);
-            Log.d("@@PRE_PAYMENT_SAMPLE@@", "resultCode: " + resultCode);
+                Log.d("@@PRE_PAYMENT_SAMPLE@@", "requestCode: " + requestCode);
+                Log.d("@@PRE_PAYMENT_SAMPLE@@", "resultCode: " + resultCode);
 
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "responseCode: " + data!!.getStringExtra("responseCode")
-            )
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "transactionType: " + data!!.getStringExtra("transactionType")
-            )
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "installmentType: " + data!!.getStringExtra("installmentType")
-            )
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "cashbackAmount: " + data!!.getStringExtra("cashbackAmount")
-            )
-            Log.d("@@PRE_PAYMENT_SAMPLE@@", "acquirerId: " + data!!.getStringExtra("acquirerId"))
-            Log.d("@@PRE_PAYMENT_SAMPLE@@", "cardBrand: " + data!!.getStringExtra("cardBrand"))
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "sitefTransactionId: " + data!!.getStringExtra("sitefTransactionId")
-            )
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "hostTrasactionId: " + data!!.getStringExtra("hostTrasactionId")
-            )
-            Log.d("@@PRE_PAYMENT_SAMPLE@@", "authCode: " + data!!.getStringExtra("authCode"))
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "transactionInstallments: " + data!!.getStringExtra("transactionInstallments")
-            )
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "merchantReceipt: " + data!!.getStringExtra("merchantReceipt")
-            )
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "customerReceipt: " + data!!.getStringExtra("customerReceipt")
-            )
-            Log.d(
-                "@@PRE_PAYMENT_SAMPLE@@",
-                "returnedFields: " + data!!.getStringExtra("returnedFields")
-            )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "responseCode: " + data!!.getStringExtra("responseCode")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "transactionType: " + data!!.getStringExtra("transactionType")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "installmentType: " + data!!.getStringExtra("installmentType")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "cashbackAmount: " + data!!.getStringExtra("cashbackAmount")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "acquirerId: " + data!!.getStringExtra("acquirerId")
+                )
+                Log.d("@@PRE_PAYMENT_SAMPLE@@", "cardBrand: " + data!!.getStringExtra("cardBrand"))
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "sitefTransactionId: " + data!!.getStringExtra("sitefTransactionId")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "hostTrasactionId: " + data!!.getStringExtra("hostTrasactionId")
+                )
+                Log.d("@@PRE_PAYMENT_SAMPLE@@", "authCode: " + data!!.getStringExtra("authCode"))
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "transactionInstallments: " + data!!.getStringExtra("transactionInstallments")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "merchantReceipt: " + data!!.getStringExtra("merchantReceipt")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "customerReceipt: " + data!!.getStringExtra("customerReceipt")
+                )
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "returnedFields: " + data!!.getStringExtra("returnedFields")
+                )
 
-            var cupom: String? = data!!.getStringExtra("merchantReceipt")
+                var cupom: String? = data!!.getStringExtra("merchantReceipt")
 
-            if (cupom != null) {
-                this.inventory.setQty(
-                    NESPRESSO_FLAVORS.RISTRETTO,
-                    inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO)!! - shoppingCart.getCartItemQuantity(
-                        NESPRESSO_FLAVORS.RISTRETTO
+                if (cupom != null) {
+                    this.inventory.setQty(
+                        NESPRESSO_FLAVORS.RISTRETTO,
+                        inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO)!! - shoppingCart.getCartItemQuantity(
+                            NESPRESSO_FLAVORS.RISTRETTO
+                        )
                     )
-                )
-                this.inventory.setQty(
-                    NESPRESSO_FLAVORS.BRAZIL_ORGANIC,
-                    inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)!! - shoppingCart.getCartItemQuantity(
-                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC
+                    this.inventory.setQty(
+                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC,
+                        inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)!! - shoppingCart.getCartItemQuantity(
+                            NESPRESSO_FLAVORS.BRAZIL_ORGANIC
+                        )
                     )
-                )
-                this.inventory.setQty(
-                    NESPRESSO_FLAVORS.LEGGERO,
-                    inventory.getQty(NESPRESSO_FLAVORS.LEGGERO)!! - shoppingCart.getCartItemQuantity(
-                        NESPRESSO_FLAVORS.LEGGERO
+                    this.inventory.setQty(
+                        NESPRESSO_FLAVORS.LEGGERO,
+                        inventory.getQty(NESPRESSO_FLAVORS.LEGGERO)!! - shoppingCart.getCartItemQuantity(
+                            NESPRESSO_FLAVORS.LEGGERO
+                        )
                     )
-                )
-                this.inventory.setQty(
-                    NESPRESSO_FLAVORS.GUATEMALA,
-                    inventory.getQty(NESPRESSO_FLAVORS.GUATEMALA)!! - shoppingCart.getCartItemQuantity(
-                        NESPRESSO_FLAVORS.GUATEMALA
+                    this.inventory.setQty(
+                        NESPRESSO_FLAVORS.GUATEMALA,
+                        inventory.getQty(NESPRESSO_FLAVORS.GUATEMALA)!! - shoppingCart.getCartItemQuantity(
+                            NESPRESSO_FLAVORS.GUATEMALA
+                        )
                     )
-                )
-                this.inventory.setQty(
-                    NESPRESSO_FLAVORS.CAFFE_VANILIO,
-                    inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO)!! - shoppingCart.getCartItemQuantity(
-                        NESPRESSO_FLAVORS.CAFFE_VANILIO
+                    this.inventory.setQty(
+                        NESPRESSO_FLAVORS.CAFFE_VANILIO,
+                        inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO)!! - shoppingCart.getCartItemQuantity(
+                            NESPRESSO_FLAVORS.CAFFE_VANILIO
+                        )
                     )
-                )
-                this.inventory.setQty(
-                    NESPRESSO_FLAVORS.DESCAFFEINADO,
-                    inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO)!! - shoppingCart.getCartItemQuantity(
-                        NESPRESSO_FLAVORS.DESCAFFEINADO
+                    this.inventory.setQty(
+                        NESPRESSO_FLAVORS.DESCAFFEINADO,
+                        inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO)!! - shoppingCart.getCartItemQuantity(
+                            NESPRESSO_FLAVORS.DESCAFFEINADO
+                        )
                     )
-                )
 
 
-                val dispenserBufferString =
-                    "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
-                            "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
-                            "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
-                            "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)) +
-                            "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) +
-                            "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) + "\n"
+                    val dispenserBufferString =
+                        "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
+                                "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
+                                "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
+                                "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)) +
+                                "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) +
+                                "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) + "\n"
 
-                val intent: Intent = Intent(this, DispenserProgress::class.java)
-                intent.putExtra(
-                    "A_itemQty",
-                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)
-                )
-                intent.putExtra(
-                    "B_itemQty",
-                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)
-                )
-                intent.putExtra(
-                    "C_itemQty",
-                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)
-                )
-                intent.putExtra(
-                    "D_itemQty",
-                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)
-                )
-                intent.putExtra(
-                    "E_itemQty",
-                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)
-                )
-                intent.putExtra(
-                    "F_itemQty",
-                    shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)
-                )
-                resetWatchDog(10)
-                startActivityForResult(intent, 2)
+                    val intent: Intent = Intent(this, DispenserProgress::class.java)
+                    intent.putExtra(
+                        "A_itemQty",
+                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)
+                    )
+                    intent.putExtra(
+                        "B_itemQty",
+                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)
+                    )
+                    intent.putExtra(
+                        "C_itemQty",
+                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)
+                    )
+                    intent.putExtra(
+                        "D_itemQty",
+                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)
+                    )
+                    intent.putExtra(
+                        "E_itemQty",
+                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)
+                    )
+                    intent.putExtra(
+                        "F_itemQty",
+                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)
+                    )
+                    resetWatchDog()
+                    startActivityForResult(intent, 2)
 
-                shoppingCart.clearCart()
-
-                updateView(0)
-            }
-        }
-        else if (requestCode == 3)
-        {
-            val retVal = data!!.getStringExtra("action")
-            when (retVal){
-                "New" -> {
                     shoppingCart.clearCart()
 
                     updateView(0)
-                    Log.d("ret ScreenSaver", "New")
                 }
-                "Continue" -> {
+            }
+            catch (e: Exception)  {
+                Log.e ("Exception Sales App",e.toString())
+                resetWatchDog()
+                shoppingCart.clearCart()
+                updateView(0)
+            }
+        }
+        else if (requestCode == 3) {
+            try {
+                val retVal = data!!.getStringExtra("action")
+                when (retVal) {
+                    "New" -> {
+                        shoppingCart.clearCart()
 
-                    Log.d("ret ScreenSaver", "Continue")
+                        updateView(0)
+                        Log.d("ret ScreenSaver", "New")
+                    }
+
+                    "Continue" -> {
+
+                        Log.d("ret ScreenSaver", "Continue")
+                    }
                 }
+            }
+            catch (e: Exception)  {
+                Log.e ("ScreenSaver",e.toString())
             }
         }
     }
 
-
-//    override fun onPause() {
-//        Log.v("TAG", "Pausing...")
-//        disconnect()
-//        super.onPause()
-//    }
-//
-//    override fun onResume() {
-//        Log.v("TAG", "...Resumed.")
-//        super.onResume()
-//
-//        // Retrieve the Clover account
-//        if (account == null) {
-//            account = CloverAccount.getAccount(this)
-//
-//            if (account == null) {
-//                Toast.makeText(this, getString(R.string.no_account), Toast.LENGTH_SHORT).show()
-//                finish()
-//                return
-//            }
-//        }
-//
-//        // Create and Connect to the EmployeeConnector
-//        connect()
-//
-//        // Get the employee object
-//        getEmployee()
-//    }
-//
-//    private fun connect() {
-//        disconnect()
-//        Log.v(TAG, "Connecting...")
-//        if (account != null) {
-//            Log.v(TAG, "Account is not null")
-//            mEmployeeConnector = EmployeeConnector(this, account, this)
-//            mEmployeeConnector.connect()
-//        }
-//    }
-//
-//    private fun disconnect() {   //remember to disconnect!
-//        Log.v(TAG, "Disconnecting...")
-//        if (mEmployeeConnector != null) {
-//            mEmployeeConnector.disconnect()
-//            mEmployeeConnector = null
-//        }
-//    }
-//
-//    private fun getEmployee() {
-//        // Show progressBar while waiting
-//        progressBar.setVisibility(View.VISIBLE)
-//
-//        mEmployeeConnector.getEmployee(object : EmployeeCallback<Employee?>() {
-//            override fun onServiceSuccess(result: Employee, status: ResultStatus?) {
-//                super.onServiceSuccess(result, status)
-//
-//                // Hide the progressBar
-//                progressBar.setVisibility(View.GONE)
-//
-//                name.setText(result.getName())
-//                role.setText(result.getRole().toString())
-//            }
-//        })
-//    }
-//
-//    override fun onActiveEmployeeChanged(employee: Employee?) {
-//        Log.v(TAG, "Employee change!")
-//        if (employee != null) {
-//            name.setText(employee.getName())
-//            role.setText(employee.getRole().toString())
-//        }
-//    }
-//
-//    override fun onServiceConnected(serviceConnector: ServiceConnector<out IInterface?>?) {
-//    }
-//
-//    override fun onServiceDisconnected(serviceConnector: ServiceConnector<out IInterface?>?) {
-//    }
 }
