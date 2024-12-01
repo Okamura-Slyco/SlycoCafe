@@ -34,7 +34,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 
 #define DELAY_BLINK 500
 #define DELAY_SERVO 1000
-#define DELAY_SERVO_STEP 5
+#define DELAY_SERVO_STEP 30
 
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
 
@@ -56,7 +56,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 #define MAX_SERVO_ANGLE() max(DRAWER_REST,DRAWER_PUSH)
 #define MIN_SERVO_ANGLE() min(DRAWER_REST,DRAWER_PUSH)
 
-#define ROTATION_STEP_ANGLE 20
+#define ROTATION_STEP_ANGLE 10
 
 String device_name = "Slyco Dispenser Monitor";
 
