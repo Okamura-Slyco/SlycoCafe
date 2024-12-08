@@ -49,8 +49,7 @@ data class ITEM_VIEW_COMPONENTS (
     var shoppingCartItemPrice: Int,
     var dialogInnerLayout: Int,
     var dialogImage: Int,
-    var dialogQty: Int,
-    var dialogTotal: Int
+    var dialogQty: Int
     )
 
 enum class NESPRESSO_FLAVORS (val value:Int){
@@ -98,12 +97,12 @@ class inventory {
     }
 
     fun reset(){
-        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,1.5f,NESPRESSO_FLAVORS.RISTRETTO.value,1,9)
-        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,1.5f,NESPRESSO_FLAVORS.BRAZIL_ORGANIC.value,2,4)
-        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,1.5f,NESPRESSO_FLAVORS.LEGGERO.value,2,6)
-        this.itens[3] = item(NESPRESSO_FLAVORS.GUATEMALA,AppConstants.MAX_DISPENSER_CAPACITY,1.5f,NESPRESSO_FLAVORS.GUATEMALA.value,3,6)
-        this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,1.5f,NESPRESSO_FLAVORS.CAFFE_VANILIO.value,2,6)
-        this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,1.5f,NESPRESSO_FLAVORS.DESCAFFEINADO.value,2,7)
+        this.itens[0] = item(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,NESPRESSO_FLAVORS.RISTRETTO.value,1,9)
+        this.itens[1] = item(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,NESPRESSO_FLAVORS.BRAZIL_ORGANIC.value,2,4)
+        this.itens[2] = item(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,NESPRESSO_FLAVORS.LEGGERO.value,2,6)
+        this.itens[3] = item(NESPRESSO_FLAVORS.GUATEMALA,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,NESPRESSO_FLAVORS.GUATEMALA.value,3,6)
+        this.itens[4] = item(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,NESPRESSO_FLAVORS.CAFFE_VANILIO.value,2,6)
+        this.itens[5] = item(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,NESPRESSO_FLAVORS.DESCAFFEINADO.value,2,7)
 
     }
 
@@ -244,6 +243,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var easterEgg = 0
     var easterEgg1 = 0
     var easterEgg2 = 0
+    var demoMode = false
 
     private lateinit var watchDog: Handler
 
@@ -296,8 +296,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.textViewPrice1,
             R.id.frameLayout1,
             R.id.imageViewDialog1,
-            R.id.qtyTextView1,
-            R.id.subTotalTextView1)
+            R.id.qtyTextView1)
 
         dialogElement[1] = ITEM_VIEW_COMPONENTS(
             R.id.imageViewCapsula2,
@@ -308,8 +307,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.textViewPrice2,
             R.id.frameLayout2,
             R.id.imageViewDialog2,
-            R.id.qtyTextView2,
-            R.id.subTotalTextView2)
+            R.id.qtyTextView2)
 
         dialogElement[2] = ITEM_VIEW_COMPONENTS(
             R.id.imageViewCapsula3,
@@ -320,8 +318,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.textViewPrice3,
             R.id.frameLayout3,
             R.id.imageViewDialog3,
-            R.id.qtyTextView3,
-            R.id.subTotalTextView3)
+            R.id.qtyTextView3)
 
         dialogElement[3] = ITEM_VIEW_COMPONENTS(
             R.id.imageViewCapsula4,
@@ -332,8 +329,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.textViewPrice4,
             R.id.frameLayout4,
             R.id.imageViewDialog4,
-            R.id.qtyTextView4,
-            R.id.subTotalTextView4)
+            R.id.qtyTextView4)
 
         dialogElement[4] = ITEM_VIEW_COMPONENTS(
             R.id.imageViewCapsula5,
@@ -344,8 +340,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.textViewPrice5,
             R.id.frameLayout5,
             R.id.imageViewDialog5,
-            R.id.qtyTextView5,
-            R.id.subTotalTextView5)
+            R.id.qtyTextView5)
 
         dialogElement[5] = ITEM_VIEW_COMPONENTS(
             R.id.imageViewCapsula6,
@@ -356,8 +351,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.textViewPrice6,
             R.id.frameLayout6,
             R.id.imageViewDialog6,
-            R.id.qtyTextView6,
-            R.id.subTotalTextView6)
+            R.id.qtyTextView6)
 
     }
 
@@ -506,6 +500,40 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         }
     }
 
+    fun callSiTefSalesApp(type:Int,enabledTransactions:String="") {
+        // Handle positive button click
+        val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
+
+        val timestamp = Timestamp(System.currentTimeMillis())
+
+        val sdf = SimpleDateFormat("yyyyMMddHHmmss")
+
+        hideActionBar()
+
+        if (this.demoMode == false) {
+
+            val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
+            intent.putExtra("merchantTaxId", "55833084000136")
+            intent.putExtra("isvTaxId", "55833084000136")
+            intent.putExtra("functionId", type.toString())
+            if (enabledTransactions != "") intent.putExtra("enabledTransactions", enabledTransactions)
+            intent.putExtra("transactionAmount", totalStr)
+            intent.putExtra("invoiceNumber", sdf.format(timestamp))
+
+            disableWatchdog()
+
+            Log.d("INVOICENUMBER", sdf.format(timestamp))
+            startActivityForResult(intent, 1)
+
+            toast("Call SiTef Sales App")
+        } else {
+            releaseCoffee()
+            shoppingCart.clearCart()
+            updateView(0)
+            Log.d("DemoMode", "shoppingCart.clearCart()")
+        }
+    }
+
     fun addItemToDialog(index: Int, dialogView: View) {
         val flavor = inventory.getFlavor(index)
         val quantity = flavor?.let { shoppingCart.getCartItemQuantity(it) }
@@ -514,8 +542,6 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             inventory.getFlavorIndex(index)?.let { image?.setImageResource(it) }
             var text = dialogElement[index]?.let { dialogView?.findViewById<TextView>(it.dialogQty) }
             text?.text = shoppingCart.getCartItemQuantity(flavor).toString()
-            text = dialogElement[index]?.let { dialogView?.findViewById(it.dialogTotal) }
-            text?.text = String.format("%.2f",shoppingCart.returnSubTotal(flavor))
             if (quantity >= 1) {
                 setAlphaForAllChildren(dialogView.findViewById<ConstraintLayout>(dialogElement[index]!!.dialogInnerLayout),AppConstants.ON_STOCK_ALPHA_FLOAT)
             }
@@ -525,6 +551,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         }
         var totalText = dialogView.findViewById<TextView>(R.id.totalAmountTextView)
         totalText.text = String.format("%.2f",shoppingCart.returnTotal())
+
     }
 
     val listener= View.OnClickListener { view ->
@@ -533,6 +560,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         resetWatchDog()
         hideActionBar()
         when (view.getId()) {
+
             R.id.floatingActionButtonItem1Plus, R.id.imageViewCapsula1, R.id.textViewPrice1, R.id.textViewAttributes1 -> {
                 // Do some work here
                 res = shoppingCart.addItemToCart(NESPRESSO_FLAVORS.RISTRETTO,1, inventory)
@@ -705,41 +733,40 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                     val dialogBuilder = AlertDialog.Builder(this)
                         .setView(dialogView)
-                        .setTitle("Resumo da Compra")
-                        .setPositiveButton("Pagar") { dialog, _ ->
-                            // Handle positive button click
-                            val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
-
-                            val timestamp = Timestamp(System.currentTimeMillis())
-
-                            val sdf = SimpleDateFormat("yyyyMMddHHmmss")
-
-                            hideActionBar()
-
-                            val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-                            intent.putExtra("merchantTaxId", "55833084000136")
-                            intent.putExtra("isvTaxId", "55833084000136")
-                            intent.putExtra("functionId", "0")
-                            intent.putExtra("transactionAmount", totalStr)
-                            intent.putExtra("invoiceNumber",sdf.format(timestamp) )
-
-                            disableWatchdog()
-
-                            Log.d("INVOICENUMBER",sdf.format(timestamp))
-                            startActivityForResult(intent, 1)
-
-                            toast("Call SiTef Sales App")
-                            bUpdateView = false
-                            dialog.dismiss()
-                        }
-                        .setNegativeButton("Cancel") { dialog, _ ->
+                        .setTitle("CHECKOUT")
+                        //.setNegativeButton("Cancelar") { dialog, _ ->
                             // Handle negative button click
-                            resetWatchDog()
-                            dialog.dismiss()
-                        }
+                        //    resetWatchDog()
+                        //    dialog.dismiss()
+                        //}
+
+
 
                     // Show the dialog
                     val customDialog = dialogBuilder.create()
+
+                    var myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
+                    myButton.setOnClickListener{
+                        callSiTefSalesApp(122)
+                        customDialog.dismiss()
+                    }
+                    myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
+                    myButton.setOnClickListener{
+                        callSiTefSalesApp(3,"16")
+                        customDialog.dismiss()
+                    }
+
+                    myButton = dialogView.findViewById<ImageView>(R.id.botaoDebito)
+                    myButton.setOnClickListener{
+                        callSiTefSalesApp(2)
+                        customDialog.dismiss()
+                    }
+
+                    myButton = dialogView.findViewById<ImageView>(R.id.botaoVoucher)
+                    myButton.setOnClickListener{
+                        callSiTefSalesApp(3)
+                        customDialog.dismiss()
+                    }
                     customDialog.show()
                     hideActionBar()
 
@@ -999,79 +1026,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 var cupom: String? = data!!.getStringExtra("merchantReceipt")
 
                 if (cupom != null) {
-                    this.inventory.setQty(
-                        NESPRESSO_FLAVORS.RISTRETTO,
-                        inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO)!! - shoppingCart.getCartItemQuantity(
-                            NESPRESSO_FLAVORS.RISTRETTO
-                        )
-                    )
-                    this.inventory.setQty(
-                        NESPRESSO_FLAVORS.BRAZIL_ORGANIC,
-                        inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)!! - shoppingCart.getCartItemQuantity(
-                            NESPRESSO_FLAVORS.BRAZIL_ORGANIC
-                        )
-                    )
-                    this.inventory.setQty(
-                        NESPRESSO_FLAVORS.LEGGERO,
-                        inventory.getQty(NESPRESSO_FLAVORS.LEGGERO)!! - shoppingCart.getCartItemQuantity(
-                            NESPRESSO_FLAVORS.LEGGERO
-                        )
-                    )
-                    this.inventory.setQty(
-                        NESPRESSO_FLAVORS.GUATEMALA,
-                        inventory.getQty(NESPRESSO_FLAVORS.GUATEMALA)!! - shoppingCart.getCartItemQuantity(
-                            NESPRESSO_FLAVORS.GUATEMALA
-                        )
-                    )
-                    this.inventory.setQty(
-                        NESPRESSO_FLAVORS.CAFFE_VANILIO,
-                        inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO)!! - shoppingCart.getCartItemQuantity(
-                            NESPRESSO_FLAVORS.CAFFE_VANILIO
-                        )
-                    )
-                    this.inventory.setQty(
-                        NESPRESSO_FLAVORS.DESCAFFEINADO,
-                        inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO)!! - shoppingCart.getCartItemQuantity(
-                            NESPRESSO_FLAVORS.DESCAFFEINADO
-                        )
-                    )
-
-
-                    val dispenserBufferString =
-                        "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
-                                "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
-                                "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
-                                "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)) +
-                                "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) +
-                                "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) + "\n"
-
-                    val intent: Intent = Intent(this, DispenserProgress::class.java)
-                    intent.putExtra(
-                        "A_itemQty",
-                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)
-                    )
-                    intent.putExtra(
-                        "B_itemQty",
-                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)
-                    )
-                    intent.putExtra(
-                        "C_itemQty",
-                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)
-                    )
-                    intent.putExtra(
-                        "D_itemQty",
-                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)
-                    )
-                    intent.putExtra(
-                        "E_itemQty",
-                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)
-                    )
-                    intent.putExtra(
-                        "F_itemQty",
-                        shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)
-                    )
-                    resetWatchDog()
-                    startActivityForResult(intent, 2)
+                    releaseCoffee()
 
                     shoppingCart.clearCart()
 
@@ -1106,6 +1061,81 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 Log.e ("ScreenSaver",e.toString())
             }
         }
+    }
+    fun releaseCoffee (){
+        this.inventory.setQty(
+            NESPRESSO_FLAVORS.RISTRETTO,
+            inventory.getQty(NESPRESSO_FLAVORS.RISTRETTO)!! - shoppingCart.getCartItemQuantity(
+                NESPRESSO_FLAVORS.RISTRETTO
+            )
+        )
+        this.inventory.setQty(
+            NESPRESSO_FLAVORS.BRAZIL_ORGANIC,
+            inventory.getQty(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)!! - shoppingCart.getCartItemQuantity(
+                NESPRESSO_FLAVORS.BRAZIL_ORGANIC
+            )
+        )
+        this.inventory.setQty(
+            NESPRESSO_FLAVORS.LEGGERO,
+            inventory.getQty(NESPRESSO_FLAVORS.LEGGERO)!! - shoppingCart.getCartItemQuantity(
+                NESPRESSO_FLAVORS.LEGGERO
+            )
+        )
+        this.inventory.setQty(
+            NESPRESSO_FLAVORS.GUATEMALA,
+            inventory.getQty(NESPRESSO_FLAVORS.GUATEMALA)!! - shoppingCart.getCartItemQuantity(
+                NESPRESSO_FLAVORS.GUATEMALA
+            )
+        )
+        this.inventory.setQty(
+            NESPRESSO_FLAVORS.CAFFE_VANILIO,
+            inventory.getQty(NESPRESSO_FLAVORS.CAFFE_VANILIO)!! - shoppingCart.getCartItemQuantity(
+                NESPRESSO_FLAVORS.CAFFE_VANILIO
+            )
+        )
+        this.inventory.setQty(
+            NESPRESSO_FLAVORS.DESCAFFEINADO,
+            inventory.getQty(NESPRESSO_FLAVORS.DESCAFFEINADO)!! - shoppingCart.getCartItemQuantity(
+                NESPRESSO_FLAVORS.DESCAFFEINADO
+            )
+        )
+
+
+        val dispenserBufferString =
+            "A".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)) +
+                    "B".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)) +
+                    "C".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)) +
+                    "D".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)) +
+                    "E".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)) +
+                    "F".repeat(shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)) + "\n"
+
+        val intent: Intent = Intent(this, DispenserProgress::class.java)
+        intent.putExtra(
+            "A_itemQty",
+            shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.RISTRETTO)
+        )
+        intent.putExtra(
+            "B_itemQty",
+            shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.BRAZIL_ORGANIC)
+        )
+        intent.putExtra(
+            "C_itemQty",
+            shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.LEGGERO)
+        )
+        intent.putExtra(
+            "D_itemQty",
+            shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.GUATEMALA)
+        )
+        intent.putExtra(
+            "E_itemQty",
+            shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.CAFFE_VANILIO)
+        )
+        intent.putExtra(
+            "F_itemQty",
+            shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.DESCAFFEINADO)
+        )
+        resetWatchDog()
+        startActivityForResult(intent, 2)
     }
 
 }
