@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -27,19 +28,45 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.max
 
+data class DISPENSER_ELEMENTS (
+    var counter:Int = 0,
+    var id:String = "",
+    var flavor:Int = 0
+    )
+data class ANIMATION_ELEMENTS (
+    var counter: Int = 0,
+    var imgId:Int = 0,
+    var imgSrcId:Int = 0
+)
+
+object GlobalVariables {
+    var dispenserElements = arrayOf <DISPENSER_ELEMENTS> (
+    DISPENSER_ELEMENTS(0,"A"),
+    DISPENSER_ELEMENTS(0,"B"),
+    DISPENSER_ELEMENTS(0,"C"),
+    DISPENSER_ELEMENTS(0,"D"),
+    DISPENSER_ELEMENTS(0,"E"),
+    DISPENSER_ELEMENTS(0,"F"),
+    DISPENSER_ELEMENTS(0,"G"),
+    DISPENSER_ELEMENTS(0,"H")
+    )
+    var animationElements = arrayOf<ANIMATION_ELEMENTS> (
+    ANIMATION_ELEMENTS(0,R.id.capsule1,0),
+    ANIMATION_ELEMENTS(0,R.id.capsule2,0),
+    ANIMATION_ELEMENTS(0,R.id.capsule3,0),
+    ANIMATION_ELEMENTS(0,R.id.capsule4,0),
+    ANIMATION_ELEMENTS(0,R.id.capsule5,0),
+    ANIMATION_ELEMENTS(0,R.id.capsule6,0),
+    ANIMATION_ELEMENTS(0,R.id.capsule7,0),
+    ANIMATION_ELEMENTS(0,R.id.capsule8,0)
+    )
+}
+
 class DispenserProgress : AppCompatActivity()
 {
     var dispenserPort: UsbSerialPort? = null
 
     var thisIntent: Intent? = null
-
-    var countA:Int = 0
-    var countB:Int = 0
-    var countC:Int = 0
-    var countD:Int = 0
-    var countE:Int = 0
-    var countF:Int = 0
-
 
     override fun onResume() {
         val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
@@ -66,21 +93,37 @@ class DispenserProgress : AppCompatActivity()
 
         thisIntent = Intent()
 
-        countA = intent.getIntExtra("A_itemQty", 0)
-        countB = intent.getIntExtra("B_itemQty", 0)
-        countC = intent.getIntExtra("C_itemQty", 0)
-        countD = intent.getIntExtra("D_itemQty", 0)
-        countE = intent.getIntExtra("E_itemQty", 0)
-        countF = intent.getIntExtra("F_itemQty", 0)
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        Log.d("DispenserProgress","A: ${countA}; B: ${countB}; C: ${countC}; D: ${countD}; E: ${countE}; F: ${countF}")
+        val widthPixels = displayMetrics.widthPixels
+        val heightPixels = displayMetrics.heightPixels
+        val densityDpi = displayMetrics.densityDpi
 
-        findViewById<ImageView>(R.id.imgRistretto).alpha = 0.0f
-        findViewById<ImageView>(R.id.imgBrasilOrganic).alpha = 0.0f
-        findViewById<ImageView>(R.id.imgLeggero).alpha = 0.0f
-        findViewById<ImageView>(R.id.imgForte).alpha = 0.0f
-        findViewById<ImageView>(R.id.imgCaffeVanilio).alpha = 0.0f
-        findViewById<ImageView>(R.id.imgDescafeinado).alpha = 0.0f
+        val widthDp = widthPixels / (densityDpi / 160f)
+        val heightDp = heightPixels / (densityDpi / 160f)
+
+        var capsuleDp = widthPixels / AppConstants.DISPENSERS_QTY
+
+
+        for (i in 0..< AppConstants.DISPENSERS_QTY) {
+            if (GlobalVariables.dispenserElements[i] != null) {
+                GlobalVariables.animationElements[i]?.counter = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+AppConstants.dispenserIdSufix, 0)
+                if (GlobalVariables.animationElements[i]?.counter!! > 0){
+                    GlobalVariables.animationElements[i]?.imgSrcId = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+"_itemFlavor", 0)
+                    Log.d("DispenserProgress","${GlobalVariables.dispenserElements[i]?.id} : ${GlobalVariables.animationElements[i]?.counter} : ${GlobalVariables.animationElements[i]?.imgSrcId} ")
+
+                    var image = findViewById<ImageView>(GlobalVariables.animationElements[i].imgId)
+                    image.alpha = 0.0f
+                    image.setImageResource(GlobalVariables.animationElements[i].imgSrcId)
+                    image.layoutParams.height = capsuleDp.toInt()
+
+                    image.layoutParams.width = capsuleDp.toInt()
+                }
+
+
+            }
+        }
 
 
         // Find all available drivers from attached devices.
@@ -107,12 +150,11 @@ class DispenserProgress : AppCompatActivity()
                 UsbSerialPort.PARITY_NONE
             )
 
-            val dispenserBufferString = "A".repeat(countA) +
-                    "B".repeat(countB) +
-                    "C".repeat(countC) +
-                    "D".repeat(countD) +
-                    "E".repeat(countE) +
-                    "F".repeat(countF) + "\n"
+            var dispenserBufferString = ""
+            for (dispenserElement in GlobalVariables.dispenserElements){
+                dispenserBufferString += dispenserElement!!.id.repeat(dispenserElement!!.counter)
+            }
+            dispenserBufferString += "\n"
 
             Log.d("DispenserProgress","Buffer: ${dispenserBufferString}")
 
@@ -137,7 +179,11 @@ class DispenserProgress : AppCompatActivity()
             progressBar.max = 100
             progressBar.progress = 0
 
-            val maxIt = max(countA,max(countB,max(countC,max(countD,max(countE,countF)))))
+            var maxIt = 0
+            for (animationElement in GlobalVariables.animationElements)
+            {
+                maxIt = max(maxIt,animationElement!!.counter)
+            }
             var myIt = 0
 
             val inBuffer:ByteArray = ByteArray(500)
@@ -145,13 +191,16 @@ class DispenserProgress : AppCompatActivity()
             Log.d("DispenserProgress USB IB", inBuffer.toHexString(0,500))
 
             while (myIt++ < maxIt){
+                var elements = 0
 
-                if (countA > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgRistretto)); countA -- }
-                if (countB > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgBrasilOrganic)); countB -- }
-                if (countC > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgLeggero)); countC -- }
-                if (countD > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgForte)); countD -- }
-                if (countE > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgCaffeVanilio)); countE -- }
-                if (countF > 0) { dispenserAnimation(findViewById<ImageView>(R.id.imgDescafeinado)); countF -- }
+                for (animationElement in GlobalVariables.animationElements)
+                {
+                    if (animationElement!!.counter > 0) {elements++; dispenserAnimation(findViewById<ImageView>(animationElement.imgId)); animationElement!!.counter --}
+                }
+
+                if (elements %2 == 0){
+
+                }
 
                 ObjectAnimator.ofInt(progressBar,"progress",(100*(myIt.toFloat()/maxIt.toFloat())).toInt())
                     .setDuration(1000L)
