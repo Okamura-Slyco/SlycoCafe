@@ -90,7 +90,7 @@ class ScreenSaver : AppCompatActivity() {
     @OptIn(ExperimentalStdlibApi::class)
     private suspend fun processAfterUILoad() {
         withContext(Dispatchers.Main) {
-            var ids:IntArray = intArrayOf(R.id.imageView, R.id.imageView2,R.id.imageView3,R.id.imageView4,R.id.imageView5,R.id.imageView6,R.id.imageView7,R.id.imageView8,R.id.imageView9,R.id.imageView10,R.id.imageView11,R.id.imageView12,R.id.imageView13,R.id.imageView14,R.id.imageView15)
+            var ids:IntArray = intArrayOf(R.id.imageView, R.id.imageView2,R.id.imageView3,R.id.imageView4,R.id.imageView5,R.id.imageView6,R.id.imageView7,R.id.imageView8,R.id.imageView9,R.id.imageView10,R.id.imageView11,R.id.imageView12,R.id.imageView13,R.id.imageView14,R.id.imageView15,R.id.imageView16)
             while (true)
             {
                 for (imageElement in ids) {
