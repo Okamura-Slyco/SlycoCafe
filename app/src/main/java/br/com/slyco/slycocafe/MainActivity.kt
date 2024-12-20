@@ -1,8 +1,10 @@
+
 package br.com.slyco.slycocafe
 
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.bluetooth.BluetoothClass.Device
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -27,6 +29,8 @@ import java.util.Locale
 
 
 data class ITEM_VIEW_COMPONENTS (
+    var firstLevelLayout:Int,
+    var secondLevelLayout:Int,
     var shoppingCartImage:Int,
     var shoppingCartPlusButton:Int,
     var shoppingCartMinusButton:Int,
@@ -258,7 +262,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var easterEgg = 0
     var easterEgg1 = 0
     var easterEgg2 = 0
-    var demoMode = true
+    var demoMode = false
 
     private lateinit var watchDog: Handler
 
@@ -303,6 +307,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     fun initDialogElements() {
         dialogElements[0] = ITEM_VIEW_COMPONENTS(
+            R.id.g1,
+            R.id.i1g1,
             R.id.imageViewCapsula1,
             R.id.floatingActionButtonItem1Plus,
             R.id.floatingActionButtonItem1Minus,
@@ -314,6 +320,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.qtyTextView1)
 
         dialogElements[1] = ITEM_VIEW_COMPONENTS(
+            R.id.g1,
+            R.id.i2g1,
             R.id.imageViewCapsula2,
             R.id.floatingActionButtonItem2Plus,
             R.id.floatingActionButtonItem2Minus,
@@ -325,6 +333,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.qtyTextView2)
 
         dialogElements[2] = ITEM_VIEW_COMPONENTS(
+            R.id.g1,
+            R.id.i3g1,
             R.id.imageViewCapsula3,
             R.id.floatingActionButtonItem3Plus,
             R.id.floatingActionButtonItem3Minus,
@@ -336,6 +346,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.qtyTextView3)
 
         dialogElements[3] = ITEM_VIEW_COMPONENTS(
+            R.id.g2,
+            R.id.i1g2,
             R.id.imageViewCapsula4,
             R.id.floatingActionButtonItem4Plus,
             R.id.floatingActionButtonItem4Minus,
@@ -347,6 +359,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.qtyTextView4)
 
         dialogElements[4] = ITEM_VIEW_COMPONENTS(
+            R.id.g2,
+            R.id.i1g2,
             R.id.imageViewCapsula5,
             R.id.floatingActionButtonItem5Plus,
             R.id.floatingActionButtonItem5Minus,
@@ -358,6 +372,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             R.id.qtyTextView5)
 
         dialogElements[5] = ITEM_VIEW_COMPONENTS(
+            R.id.g2,
+            R.id.i3g2,
             R.id.imageViewCapsula6,
             R.id.floatingActionButtonItem6Plus,
             R.id.floatingActionButtonItem6Minus,
@@ -377,7 +393,22 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         hideActionBar()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+
+        Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}")
+
+        var viewLayout = R.layout.activity_main
+
+        if ((DeviceInfoModule.deviceBrand == "Clover") && (DeviceInfoModule.deviceModel == "C305")) {
+            Log.d ("Dettected Device","Clover Mini")
+            viewLayout = R.layout.activity_main
+        }
+        else if ((DeviceInfoModule.deviceBrand == "ingenico") && (DeviceInfoModule.deviceModel == "DX8000")) {
+
+            Log.d ("Dettected Device","Ingenico DX8000")
+            viewLayout = R.layout.activity_main_smart_terminal
+        }
+
+        setContentView(viewLayout)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -695,7 +726,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoVoucher)
                     myButton.setOnClickListener{
-                        callSiTefSalesApp(3)
+                        callSiTefSalesApp(2)
                         customDialog.dismiss()
                     }
                     customDialog.show()

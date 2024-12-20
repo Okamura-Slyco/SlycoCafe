@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -18,6 +19,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 
 class objectAnimationVector {
     var origin:Int = 0
@@ -34,6 +36,8 @@ class ScreenSaver : AppCompatActivity() {
     var destination:Int = 0
     var origin_coord:IntArray = IntArray(2)
     var destination_coord:IntArray = IntArray(2)
+    var height = 0
+    var width = 0
 
     override fun onResume() {
         val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
@@ -65,6 +69,11 @@ class ScreenSaver : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
+
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        height = displayMetrics.heightPixels
+        width = displayMetrics.widthPixels
 
 
         var button = findViewById<MaterialButton>(R.id.buttonNew)
@@ -154,13 +163,13 @@ class ScreenSaver : AppCompatActivity() {
         {
             1,2 -> { // top or botton
                 if (side == 1) retArray[0] = -50
-                else retArray[0] = 1100
-                retArray[1] = (-50..700).random()
+                else retArray[0] = (width * 1.1).toInt()
+                retArray[1] = (-50..(height * 1.1).toInt()).random()
             }
             3,4 -> { // left or right
-                retArray[0] = (-50..1100).random()
+                retArray[0] = (-50..(width * 1.1).toInt()).random()
                 if (side == 3) retArray[1] = -50
-                else retArray[1] = 700
+                else retArray[1] = (height * 1.1).toInt()
             }
         }
         return retArray

@@ -109,6 +109,7 @@ class DispenserProgress : AppCompatActivity()
         for (i in 0..< AppConstants.DISPENSERS_QTY) {
             if (GlobalVariables.dispenserElements[i] != null) {
                 GlobalVariables.animationElements[i]?.counter = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+AppConstants.dispenserIdSufix, 0)
+                GlobalVariables.dispenserElements[i]?.counter = GlobalVariables.animationElements[i].counter
                 if (GlobalVariables.animationElements[i]?.counter!! > 0){
                     GlobalVariables.animationElements[i]?.imgSrcId = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+"_itemFlavor", 0)
                     Log.d("DispenserProgress","${GlobalVariables.dispenserElements[i]?.id} : ${GlobalVariables.animationElements[i]?.counter} : ${GlobalVariables.animationElements[i]?.imgSrcId} ")
@@ -152,7 +153,7 @@ class DispenserProgress : AppCompatActivity()
 
             var dispenserBufferString = ""
             for (dispenserElement in GlobalVariables.dispenserElements){
-                dispenserBufferString += dispenserElement!!.id.repeat(dispenserElement!!.counter)
+                dispenserBufferString += dispenserElement!!.id.repeat(dispenserElement.counter)
             }
             dispenserBufferString += "\n"
 
