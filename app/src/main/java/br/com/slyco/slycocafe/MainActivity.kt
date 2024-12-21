@@ -402,7 +402,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             Log.d ("Dettected Device","Clover Mini")
             viewLayout = R.layout.activity_main
         }
-        else if ((DeviceInfoModule.deviceBrand == "ingenico") && (DeviceInfoModule.deviceModel == "DX8000")) {
+        else if (((DeviceInfoModule.deviceBrand == "ingenico") && (DeviceInfoModule.deviceModel == "DX8000") )||
+            ((DeviceInfoModule.deviceBrand == "SUNMI") && (DeviceInfoModule.deviceModel == "P2-A11"))||
+                    ((DeviceInfoModule.deviceBrand == "Gertec") && (DeviceInfoModule.deviceModel == "SK-210") )) {
 
             Log.d ("Dettected Device","Ingenico DX8000")
             viewLayout = R.layout.activity_main_smart_terminal
@@ -489,21 +491,24 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         hideActionBar()
 
         if (this.demoMode == false) {
+            try {
+                val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
+                intent.putExtra("merchantTaxId", "55833084000136")
+                intent.putExtra("isvTaxId", "55833084000136")
+                intent.putExtra("functionId", type.toString())
+                if (enabledTransactions != "") intent.putExtra("enabledTransactions", enabledTransactions)
+                intent.putExtra("transactionAmount", totalStr)
+                intent.putExtra("invoiceNumber", sdf.format(timestamp))
 
-            val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-            intent.putExtra("merchantTaxId", "55833084000136")
-            intent.putExtra("isvTaxId", "55833084000136")
-            intent.putExtra("functionId", type.toString())
-            if (enabledTransactions != "") intent.putExtra("enabledTransactions", enabledTransactions)
-            intent.putExtra("transactionAmount", totalStr)
-            intent.putExtra("invoiceNumber", sdf.format(timestamp))
+                disableWatchdog()
 
-            disableWatchdog()
+                startActivityForResult(intent, 1)
 
-            Log.d("INVOICENUMBER", sdf.format(timestamp))
-            startActivityForResult(intent, 1)
-
-            toast("Call SiTef Sales App")
+                toast("Call SiTef Sales App")
+            }
+            catch (e:Exception) {
+                toast("Call m-SiTef")
+            }
         } else {
             releaseCoffee()
             shoppingCart.clearCart()
@@ -714,7 +719,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     }
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
                     myButton.setOnClickListener{
-                        callSiTefSalesApp(3,"16")
+                        callSiTefSalesApp(3,"26")
                         customDialog.dismiss()
                     }
 
@@ -767,15 +772,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     }
 
     fun sendDmp(){
-
-        val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-        intent.putExtra("merchantTaxId", "55833084000136")
-        intent.putExtra("isvTaxId", "55833084000136")
-        intent.putExtra("functionId", "121")
-        intent.putExtra("transactionAmount", "0")
-        resetWatchDog(10)
-        startActivityForResult(intent, 1)
-
+        callSiTefSalesApp(121)
     }
 
     fun updateView(res:Int)
