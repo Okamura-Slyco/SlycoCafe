@@ -4,8 +4,8 @@ package br.com.slyco.slycocafe
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.bluetooth.BluetoothClass.Device
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -41,6 +41,45 @@ data class ITEM_VIEW_COMPONENTS (
     var dialogImage: Int,
     var dialogQty: Int
     )
+
+data class PAYMENT_INTERFACE_FIELDS_NAMES (
+    var integrationApp:INTEGRATION_APP = INTEGRATION_APP.NONE,
+    var intentActionStr:String = "",
+    var sitefMIDStr:String = "",
+    var endpointStr:String = "",
+    var terminalIdStr:String = "",
+    var functionIdStr:String = "",
+    var merchant_TIDStr:String = "",
+    var amountStr:String = "",
+    var restrictionStr:String = "",
+    var operatorIdStr:String = "",
+    var dateStr:String = "",
+    var hourStr:String = "",
+    var invoiceNumberStr:String = "",
+    var installmentsStr:String = "",
+    var otpStr:String = "",
+    var enabledTransactionsStr:String = "",
+    var pinpadMACStr:String = "",
+    var comProtocolString:String = "",
+    var doubleValidationStr:String = "",
+    var isv_TIDStr:String = "",
+    var van_IDStr:String = "",
+    var inputTimeoutStr:String = "",
+    var acessibilityStr:String = "",
+    var pinpadTypeStr:String = "",
+    var softDescriptorStr:String = "",
+    var fieldsStr:String = "",
+    var IATA_inputStr:String = "",
+    var IATA_installmentInputStr:String = "",
+    var clsitStr:String = "",
+    var tlsToken:String = ""
+)
+
+enum class INTEGRATION_APP(val value: Int) {
+    MSITEF (0),
+    SITEF_SALES_APP (1),
+    NONE (-1)
+}
 
 enum class NESPRESSO_FLAVORS (val value:Int){
     NONE (0),
@@ -258,11 +297,17 @@ fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
 class MainActivity<Bitmap> : AppCompatActivity() {
     var inventory : inventory = inventory()
 
+    lateinit var paymentInterfaceFieldNames: PAYMENT_INTERFACE_FIELDS_NAMES
+    var paymentParameters :PAYMENT_INTERFACE_FIELDS_NAMES = PAYMENT_INTERFACE_FIELDS_NAMES()
+
     lateinit var shoppingCart : shoppingCart
     var easterEgg = 0
     var easterEgg1 = 0
     var easterEgg2 = 0
+    var easterEgg3 = 0
     var demoMode = false
+
+    var integrationApp:INTEGRATION_APP = INTEGRATION_APP.NONE
 
     private lateinit var watchDog: Handler
 
@@ -386,6 +431,24 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     }
 
+    fun activate_msitef(){
+
+
+        var activationIntent = Intent ("br.com.bin.ACTION_SITEF_ACTIVATION")
+        if (isCallable(Intent(activationIntent))){
+            activationIntent.putExtra("ACTIVATION_MODE",1)
+            startActivityForResult(activationIntent,99)
+            Log.d ("Smart Fiserv", "m-SiTef Activation")
+            toast("m-SiTef Activation")
+        }
+        else {
+            Log.d ("Smart Fiserv", "m-SiTef Activation not found")
+
+            toast("m-SiTef Activation not found")
+
+        }
+    }
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -403,12 +466,91 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             viewLayout = R.layout.activity_main
         }
         else if (((DeviceInfoModule.deviceBrand == "ingenico") && (DeviceInfoModule.deviceModel == "DX8000") )||
-            ((DeviceInfoModule.deviceBrand == "SUNMI") && (DeviceInfoModule.deviceModel == "P2-A11"))||
-                    ((DeviceInfoModule.deviceBrand == "Gertec") && (DeviceInfoModule.deviceModel == "SK-210") )) {
+            ((DeviceInfoModule.deviceBrand == "SUNMI") && (DeviceInfoModule.deviceModel == "P2-A11"))) {
 
-            Log.d ("Dettected Device","Ingenico DX8000")
+            Log.d ("Dettected Device","Smart Terminal")
             viewLayout = R.layout.activity_main_smart_terminal
         }
+        else if ((DeviceInfoModule.deviceBrand == "Gertec") && (DeviceInfoModule.deviceModel == "SK-210") ) {
+            viewLayout = R.layout.activity_main_smart_terminal
+            paymentParameters.pinpadTypeStr="ANDROID_USB"
+        }
+
+        if (isCallable(Intent("com.fiserv.sitef.action.TRANSACTION"))){
+            Log.d("TRANSACTION","SiTef Sales App")
+            paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
+                INTEGRATION_APP.SITEF_SALES_APP,
+                "com.fiserv.sitef.action.TRANSACTION",
+                "",
+                "",
+                "",
+                "functionId",
+                "",
+                "transactionAmount",
+                "functionAdditionalParameters",
+                "tenderOperator",
+                "invoiceDate",
+                "invoiceTime",
+                "invoiceNumber",
+                "transactionInstallments",
+                "",
+                "enabledTransactions",
+                "",
+                "",
+                "",
+                "isvTaxId",
+                "",
+                "",
+                "",
+                "",
+                "subAcquirerParameters",
+                "autoFields",
+                "",
+                "",
+                "",
+                ""
+            )
+        }
+        else if (isCallable(Intent("br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF"))
+        ){
+            paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
+                INTEGRATION_APP.MSITEF,
+                "br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF",
+                "empresaSitef",
+                "enderecoSitef",
+                "terminalSitef",
+                "modalidade",
+                "CNPJ_CPF",
+                "valor",
+                "restricoes",
+                "operador",
+                "Data",
+                "Hora",
+                "numeroCupom",
+                "numParcelas",
+                "Otp",
+                "transacoesHabilitadas",
+                "pinpadMac",
+                "comExterna",
+                "isDoubleValidation",
+                "cnpj_automacao",
+                "cnpj_facilitador",
+                "timeoutColeta",
+                "acessibilidadeVisual",
+                "tipoPinpad",
+                "dadosSubAdqui",
+                "tipoCampos",
+                "habilitaColetaTaxaEmbarqueIATA",
+                "habilitaColetaValorEntradaIATA",
+                "clsit",
+                "tokenRegistroTls"
+            )
+            Log.d("TRANSACTION","m-SiTef")
+        }
+        else {
+            Log.d("TRANSACTION","none")
+        }
+
 
         setContentView(viewLayout)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -480,25 +622,72 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         }
     }
 
-    fun callSiTefSalesApp(type:Int,enabledTransactions:String="") {
+    fun callPaymentApp(transactionParameters:PAYMENT_INTERFACE_FIELDS_NAMES) {
         // Handle positive button click
-        val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
-
-        val timestamp = Timestamp(System.currentTimeMillis())
-
-        val sdf = SimpleDateFormat("yyyyMMddHHmmss")
 
         hideActionBar()
 
+
         if (this.demoMode == false) {
             try {
-                val intent: Intent = Intent("com.fiserv.sitef.action.TRANSACTION")
-                intent.putExtra("merchantTaxId", "55833084000136")
-                intent.putExtra("isvTaxId", "55833084000136")
-                intent.putExtra("functionId", type.toString())
-                if (enabledTransactions != "") intent.putExtra("enabledTransactions", enabledTransactions)
-                intent.putExtra("transactionAmount", totalStr)
-                intent.putExtra("invoiceNumber", sdf.format(timestamp))
+                PAYMENT_INTERFACE_FIELDS_NAMES(intentActionStr = paymentInterfaceFieldNames.intentActionStr)
+                val intent: Intent = Intent(paymentInterfaceFieldNames.intentActionStr)
+
+                Log.d ("Action","Intent ${paymentInterfaceFieldNames.intentActionStr}")
+
+                if ((paymentInterfaceFieldNames.sitefMIDStr != "") && (transactionParameters.sitefMIDStr != "")) { intent.putExtra(paymentInterfaceFieldNames.sitefMIDStr, transactionParameters.sitefMIDStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.sitefMIDStr}:${transactionParameters.sitefMIDStr}")}
+
+                if ((paymentInterfaceFieldNames.endpointStr != "") && (transactionParameters.endpointStr != "")) { intent.putExtra(paymentInterfaceFieldNames.endpointStr, transactionParameters.endpointStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.endpointStr}:${transactionParameters.endpointStr}")}
+
+                if ((paymentInterfaceFieldNames.terminalIdStr != "") && (transactionParameters.terminalIdStr != "")) { intent.putExtra(paymentInterfaceFieldNames.terminalIdStr, transactionParameters.terminalIdStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.terminalIdStr}:${transactionParameters.terminalIdStr}")}
+
+                if ((paymentInterfaceFieldNames.functionIdStr != "") && (transactionParameters.functionIdStr != "")) { intent.putExtra(paymentInterfaceFieldNames.functionIdStr, transactionParameters.functionIdStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.functionIdStr}:${transactionParameters.functionIdStr}")}
+
+                if ((paymentInterfaceFieldNames.merchant_TIDStr != "") && (transactionParameters.merchant_TIDStr != "")) { intent.putExtra(paymentInterfaceFieldNames.merchant_TIDStr, transactionParameters.merchant_TIDStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.merchant_TIDStr}:${transactionParameters.merchant_TIDStr}")}
+
+                if ((paymentInterfaceFieldNames.amountStr != "") && (transactionParameters.amountStr != "")) { intent.putExtra(paymentInterfaceFieldNames.amountStr, transactionParameters.amountStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.amountStr}:${transactionParameters.amountStr}")}
+
+                if ((paymentInterfaceFieldNames.restrictionStr != "") && (transactionParameters.restrictionStr != "")) { intent.putExtra(paymentInterfaceFieldNames.restrictionStr, transactionParameters.restrictionStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.restrictionStr}:${transactionParameters.restrictionStr}")}
+
+                if ((paymentInterfaceFieldNames.operatorIdStr != "") && (transactionParameters.operatorIdStr != "")) { intent.putExtra(paymentInterfaceFieldNames.operatorIdStr, transactionParameters.operatorIdStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.operatorIdStr}:${transactionParameters.operatorIdStr}")}
+
+                if ((paymentInterfaceFieldNames.dateStr != "") && (transactionParameters.dateStr != "")) { intent.putExtra(paymentInterfaceFieldNames.dateStr, transactionParameters.dateStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.dateStr}:${transactionParameters.dateStr}")}
+
+                if ((paymentInterfaceFieldNames.hourStr != "") && (transactionParameters.hourStr != "")) { intent.putExtra(paymentInterfaceFieldNames.hourStr, transactionParameters.hourStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.hourStr}:${transactionParameters.hourStr}")}
+
+                if ((paymentInterfaceFieldNames.invoiceNumberStr != "") && (transactionParameters.invoiceNumberStr != "")) { intent.putExtra(paymentInterfaceFieldNames.invoiceNumberStr, transactionParameters.invoiceNumberStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.invoiceNumberStr}:${transactionParameters.invoiceNumberStr}")}
+
+                if ((paymentInterfaceFieldNames.installmentsStr != "") && (transactionParameters.installmentsStr != "")) { intent.putExtra(paymentInterfaceFieldNames.installmentsStr, transactionParameters.installmentsStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.installmentsStr}:${transactionParameters.installmentsStr}")}
+
+                if ((paymentInterfaceFieldNames.otpStr != "") && (transactionParameters.otpStr != "")) { intent.putExtra(paymentInterfaceFieldNames.otpStr, transactionParameters.otpStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.otpStr}:${transactionParameters.otpStr}")}
+
+                if ((paymentInterfaceFieldNames.enabledTransactionsStr != "") && (transactionParameters.enabledTransactionsStr != "")) { intent.putExtra(paymentInterfaceFieldNames.enabledTransactionsStr, transactionParameters.enabledTransactionsStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.enabledTransactionsStr}:${transactionParameters.enabledTransactionsStr}")}
+
+                if ((paymentInterfaceFieldNames.pinpadMACStr != "") && (transactionParameters.pinpadMACStr != "")) { intent.putExtra(paymentInterfaceFieldNames.pinpadMACStr, transactionParameters.pinpadMACStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.pinpadMACStr}:${transactionParameters.pinpadMACStr}")}
+
+                if ((paymentInterfaceFieldNames.comProtocolString != "") && (transactionParameters.comProtocolString != "")) { intent.putExtra(paymentInterfaceFieldNames.comProtocolString, transactionParameters.comProtocolString); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.comProtocolString}:${transactionParameters.comProtocolString}")}
+
+                if ((paymentInterfaceFieldNames.doubleValidationStr != "") && (transactionParameters.doubleValidationStr != "")) { intent.putExtra(paymentInterfaceFieldNames.doubleValidationStr, transactionParameters.doubleValidationStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.doubleValidationStr}:${transactionParameters.doubleValidationStr}")}
+
+                if ((paymentInterfaceFieldNames.isv_TIDStr != "") && (transactionParameters.isv_TIDStr != "")) { intent.putExtra(paymentInterfaceFieldNames.isv_TIDStr, transactionParameters.isv_TIDStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.isv_TIDStr}:${transactionParameters.isv_TIDStr}")}
+
+                if ((paymentInterfaceFieldNames.van_IDStr != "") && (transactionParameters.van_IDStr != "")) { intent.putExtra(paymentInterfaceFieldNames.van_IDStr, transactionParameters.van_IDStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.van_IDStr}:${transactionParameters.van_IDStr}")}
+
+                if ((paymentInterfaceFieldNames.inputTimeoutStr != "") && (transactionParameters.inputTimeoutStr != "")) { intent.putExtra(paymentInterfaceFieldNames.inputTimeoutStr, transactionParameters.inputTimeoutStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.inputTimeoutStr}:${transactionParameters.inputTimeoutStr}")}
+
+                if ((paymentInterfaceFieldNames.acessibilityStr != "") && (transactionParameters.acessibilityStr != "")) { intent.putExtra(paymentInterfaceFieldNames.acessibilityStr, transactionParameters.acessibilityStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.acessibilityStr}:${transactionParameters.acessibilityStr}")}
+
+                if ((paymentInterfaceFieldNames.pinpadTypeStr != "") && (transactionParameters.pinpadTypeStr != "")) { intent.putExtra(paymentInterfaceFieldNames.pinpadTypeStr, transactionParameters.pinpadTypeStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.pinpadTypeStr}:${transactionParameters.pinpadTypeStr}")}
+
+                if ((paymentInterfaceFieldNames.softDescriptorStr != "") && (transactionParameters.softDescriptorStr != "")) { intent.putExtra(paymentInterfaceFieldNames.softDescriptorStr, transactionParameters.softDescriptorStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.softDescriptorStr}:${transactionParameters.softDescriptorStr}")}
+
+                if ((paymentInterfaceFieldNames.fieldsStr != "") && (transactionParameters.fieldsStr != "")) { intent.putExtra(paymentInterfaceFieldNames.fieldsStr, transactionParameters.fieldsStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.fieldsStr}:${transactionParameters.fieldsStr}")}
+
+                if ((paymentInterfaceFieldNames.IATA_inputStr != "") && (transactionParameters.IATA_inputStr != "")) { intent.putExtra(paymentInterfaceFieldNames.IATA_inputStr, transactionParameters.IATA_inputStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.IATA_inputStr}:${transactionParameters.IATA_inputStr}")}
+
+                if ((paymentInterfaceFieldNames.IATA_installmentInputStr != "") && (transactionParameters.IATA_installmentInputStr != "")) { intent.putExtra(paymentInterfaceFieldNames.IATA_installmentInputStr, transactionParameters.IATA_installmentInputStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.IATA_installmentInputStr}:${transactionParameters.IATA_installmentInputStr}")}
+
+                if ((paymentInterfaceFieldNames.clsitStr != "") && (transactionParameters.clsitStr != "")) { intent.putExtra(paymentInterfaceFieldNames.clsitStr, transactionParameters.clsitStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.clsitStr}:${transactionParameters.clsitStr}")}
 
                 disableWatchdog()
 
@@ -537,6 +726,14 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     }
 
+    private fun isCallable(intent: Intent): Boolean {
+        val list = packageManager.queryIntentActivities(
+            intent,
+            PackageManager.MATCH_DEFAULT_ONLY
+        )
+        return list.size > 0
+    }
+
     val listener= View.OnClickListener { view ->
         var res:Int = 0
         var bUpdateView = true
@@ -553,6 +750,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 if (easterEgg2 == 0) easterEgg2 = 1
                 else easterEgg2 = 0
+                easterEgg3 = 0
             }
             dialogElements[1]?.shoppingCartPlusButton, dialogElements[1]?.shoppingCartImage, dialogElements[1]?.shoppingCartItemPrice, dialogElements[1]?.shoppingCartItemInfo -> {
                 // Do some work here
@@ -562,6 +760,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 else easterEgg1 = 0
 
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
             dialogElements[2]?.shoppingCartPlusButton, dialogElements[2]?.shoppingCartImage, dialogElements[2]?.shoppingCartItemPrice, dialogElements[2]?.shoppingCartItemInfo -> {
                 // Do some work here
@@ -572,6 +771,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 if (easterEgg2 == 1) easterEgg2 = 2
                 else easterEgg2 = 0
+                easterEgg3 = 0
             }
             dialogElements[3]?.shoppingCartPlusButton, dialogElements[3]?.shoppingCartImage, dialogElements[3]?.shoppingCartItemPrice, dialogElements[3]?.shoppingCartItemInfo -> {
                 // Do some work here
@@ -581,6 +781,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 else easterEgg1 = 0
 
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
             dialogElements[4]?.shoppingCartPlusButton, dialogElements[4]?.shoppingCartImage, dialogElements[4]?.shoppingCartItemPrice, dialogElements[4]?.shoppingCartItemInfo -> {
                 // Do some work here
@@ -591,6 +792,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 if (easterEgg2 == 2) easterEgg2 = 3
                 else easterEgg2 = 0
+                easterEgg3 = 0
 
             }
 
@@ -602,6 +804,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 else easterEgg1 = 0
 
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
 
             dialogElements[0]?.shoppingCartMinusButton -> {
@@ -611,6 +814,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg1 == 6) easterEgg1 = 7
                 else easterEgg1 = 0
                 easterEgg2 = 0
+                easterEgg3 = 1
             }
             dialogElements[1]?.shoppingCartMinusButton -> {
                 // Do some work here
@@ -619,6 +823,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg1 == 7) easterEgg1 = 8
                 else easterEgg1 = 0
                 easterEgg2 = 0
+                if (easterEgg3 == 2) easterEgg3 = 3
             }
             dialogElements[2]?.shoppingCartMinusButton -> {
                 // Do some work here
@@ -627,6 +832,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg1 == 8) easterEgg1 = 9
                 else easterEgg1 = 0
                 easterEgg2 = 0
+                if (easterEgg3 == 4) easterEgg3 = 5
             }
             dialogElements[3]?.shoppingCartMinusButton -> {
                 // Do some work here
@@ -635,6 +841,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg1 == 9) easterEgg1 = 10
                 else easterEgg1 = 0
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
             dialogElements[4]?.shoppingCartMinusButton -> {
                 // Do some work here
@@ -643,6 +850,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg1 == 10) easterEgg1 = 11
                 else easterEgg1 = 0
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
             dialogElements[5]?.shoppingCartMinusButton -> {
                 // Do some work here
@@ -651,6 +859,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg1 == 11) easterEgg1 = 12
                 else easterEgg1 = 0
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
             R.id.textViewTotalFix -> {
                 easterEgg++
@@ -667,6 +876,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     toast("Inventory SET")
                 }
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
             R.id.buttonEmpty -> {
                 shoppingCart.clearCart()
@@ -693,6 +903,13 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 easterEgg2 = 0
                 easterEgg1 = 0
+
+                if (easterEgg3 == 5){
+
+                    activate_msitef()
+                }
+                else if (easterEgg3%2 == 1) easterEgg3++
+                else easterEgg3 = 0
                 toast("Inventory Reset")
             }
             R.id.buttonCheckout -> {
@@ -712,26 +929,50 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     // Show the dialog
                     val customDialog = dialogBuilder.create()
 
+                    val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
+
+                    val timestamp = Timestamp(System.currentTimeMillis())
+
+                    val sdf = SimpleDateFormat("yyyyMMddHHmmss")
+
+                    paymentParameters.amountStr = totalStr
+                    paymentParameters.invoiceNumberStr = sdf.format(timestamp)
+                    paymentParameters.merchant_TIDStr = AppConstants.merchantTaxId
+                    paymentParameters.isv_TIDStr = AppConstants.isvTaxId
+                    paymentParameters.sitefMIDStr = "00000000"
+                    paymentParameters.endpointStr = "3.19.30.51:4096"
+                    paymentParameters.comProtocolString = "0"
+                    paymentParameters.operatorIdStr = "1"
+                    paymentParameters.tlsToken = "8977316332439824"
+
                     var myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
                     myButton.setOnClickListener{
-                        callSiTefSalesApp(122)
+                        paymentParameters.functionIdStr = "122"
+                        callPaymentApp(paymentParameters)
                         customDialog.dismiss()
                     }
+
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
                     myButton.setOnClickListener{
-                        callSiTefSalesApp(3,"26")
+                        paymentParameters.functionIdStr = "3"
+                        paymentParameters.enabledTransactionsStr = "26"
+                        paymentParameters.restrictionStr = "{TransacoesHabilitadas=26}"
+                        paymentParameters.installmentsStr = "1"
+                        callPaymentApp(paymentParameters)
                         customDialog.dismiss()
                     }
 
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoDebito)
                     myButton.setOnClickListener{
-                        callSiTefSalesApp(2)
+                        paymentParameters.functionIdStr = "2"
+                        callPaymentApp(paymentParameters)
                         customDialog.dismiss()
                     }
 
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoVoucher)
                     myButton.setOnClickListener{
-                        callSiTefSalesApp(2)
+                        paymentParameters.functionIdStr = "2"
+                        callPaymentApp(paymentParameters)
                         customDialog.dismiss()
                     }
                     customDialog.show()
@@ -744,6 +985,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 easterEgg1 = 0
                 easterEgg2 = 0
+                easterEgg3 = 0
             }
 
             R.id.helpButton -> {
@@ -751,6 +993,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 easterEgg1 = 0
                 easterEgg2 = 0
+                easterEgg3 = 0
 
                 val intent: Intent = Intent(this, helperDialog::class.java)
 
@@ -772,7 +1015,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     }
 
     fun sendDmp(){
-        callSiTefSalesApp(121)
+        callPaymentApp(PAYMENT_INTERFACE_FIELDS_NAMES(functionIdStr = "121", amountStr = "0", invoiceNumberStr = "", merchant_TIDStr = AppConstants.merchantTaxId, isv_TIDStr = AppConstants.isvTaxId))
+
     }
 
     fun updateView(res:Int)
@@ -937,6 +1181,23 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             catch (e: Exception)  {
                 Log.e ("ScreenSaver",e.toString())
+            }
+        }
+        else if (requestCode == 99){
+            if (resultCode == RESULT_OK){
+                if (data == null){
+                    Log.i ("Smart Fiserv","REQUEST_ACTIVATE_TEF null data")
+                }
+                else {
+                    Log.d ("Smart Fiserv","WIFI_ADDRESS: "+ data!!.getStringExtra("WIFI_ADDRESS"))
+                    Log.d ("Smart Fiserv","GPRS_ADDRESS: "+ data!!.getStringExtra("GPRS_ADDRESS"))
+                    Log.d ("Smart Fiserv","SIM_CARD_TYPE: "+ data!!.getStringExtra("SIM_CARD_TYPE"))
+                    Log.d ("Smart Fiserv","PRIVATE_SIM_CARD_MANUFACTURER: "+ data!!.getStringExtra("PRIVATE_SIM_CARD_MANUFACTURER"))
+                    Log.d ("Smart Fiserv","BUSINESS_ID: "+ data!!.getStringExtra("BUSINESS_ID"))
+                    Log.d ("Smart Fiserv","TERMINAL_ID: "+ data!!.getStringExtra("TERMINAL_ID"))
+                    Log.d ("Smart Fiserv","SUPERVISOR_CODE: "+ data!!.getStringExtra("SUPERVISOR_CODE"))
+                    Log.d ("Smart Fiserv","ACQUIRER_CNPJ: "+ data!!.getStringExtra("ACQUIRER_CNPJ"))
+                }
             }
         }
     }

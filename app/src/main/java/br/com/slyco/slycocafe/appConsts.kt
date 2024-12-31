@@ -14,4 +14,6 @@ object AppConstants {
     const val INACTIVITY_TIMEOUT = 30000L // 30s (em milissegundos)
     const val dispenserIdSufix = "_itemQty"
     const val dispenserFlavorSufix = "_itemFlavor"
+    const val merchantTaxId = "55833084000136"
+    const val isvTaxId = "55833084000136"
 }

@@ -473,7 +473,6 @@
                 android:id="@+id/floatingActionButtonItem5Plus"
                 android:layout_width="90dp"
                 android:layout_height="35dp"
-                android:layout_marginTop="-10dp"
                 android:layout_marginEnd="-20dp"
                 android:backgroundTint="@color/design_default_color_background"
                 app:icon="@drawable/baseline_add_circle_outline_24"
