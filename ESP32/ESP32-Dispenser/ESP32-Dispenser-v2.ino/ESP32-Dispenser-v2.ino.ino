@@ -30,7 +30,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 #define SERVO_MAX_PULSE 2500
 
 #define LED_MIN_PULSE 0
-#define LED_MAX_PULSE 1000000/SERVO_PWM_FREQUENCY
+#define LED_MAX_PULSE 1000000 / SERVO_PWM_FREQUENCY
 
 #define DELAY_BLINK 500
 #define DELAY_SERVO 1000
@@ -39,8 +39,8 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
 
 #define DISPENSER(X) (1 << X)
-#define DISPENSER_PWM(X) (2*X)
-#define LED_PWM(X) DISPENSER_PWM(X)+1
+#define DISPENSER_PWM(X) (2 * X)
+#define LED_PWM(X) DISPENSER_PWM(X) + 1
 #define DISPENSER_A 5
 #define DISPENSER_B 4
 #define DISPENSER_C 3
@@ -53,8 +53,8 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver();  // called this way,
 
 #define DRAWER_REST 180
 #define DRAWER_PUSH 0
-#define MAX_SERVO_ANGLE() max(DRAWER_REST,DRAWER_PUSH)
-#define MIN_SERVO_ANGLE() min(DRAWER_REST,DRAWER_PUSH)
+#define MAX_SERVO_ANGLE() max(DRAWER_REST, DRAWER_PUSH)
+#define MIN_SERVO_ANGLE() min(DRAWER_REST, DRAWER_PUSH)
 
 #define ROTATION_STEP_ANGLE 10
 
@@ -82,7 +82,7 @@ char buf[BUFFER_SIZE];
 
 char release[DISPENSER_STOCK];
 
-int servoPosition[DISPENSER_QTY] = {DRAWER_REST,DRAWER_REST,DRAWER_REST,DRAWER_REST,DRAWER_REST,DRAWER_REST};
+int servoPosition[DISPENSER_QTY] = { DRAWER_REST, DRAWER_REST, DRAWER_REST, DRAWER_REST, DRAWER_REST, DRAWER_REST };
 
 void setup() {
   pinMode(MODULO_LED1, OUTPUT);
@@ -96,8 +96,8 @@ void setup() {
   //servoPosition
 
   Serial.begin(9600);
-//  SerialBT.begin(device_name);
-//  SerialBT.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
+  //  SerialBT.begin(device_name);
+  //  SerialBT.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
 
   board1.begin();
   board1.setOscillatorFrequency(PCA9865_OSCILLATOR_FREQUENCY);
@@ -198,34 +198,43 @@ void release_items(char* buffer, int qty) {
 }
 
 void doWow() {
-  int state = 0; int i = 0; int itCounter = 0;
-  int myAngle = DRAWER_REST; int myStep = ROTATION_STEP_ANGLE;
+  int state = 0;
+  int i = 0;
+  int itCounter = 0;
+  int myAngle = DRAWER_REST;
+  int myStep = ROTATION_STEP_ANGLE;
   digitalWrite(MODULO_LED2, LED_ON);
-  while (1)
-  {
-    switch (state){
-      case 0: // pulse 1
-        if (myAngle >= MAX_SERVO_ANGLE()){ myStep = -1*ROTATION_STEP_ANGLE; itCounter++;}
-        else if (myAngle <= MIN_SERVO_ANGLE()){ myStep = ROTATION_STEP_ANGLE;}
+  while (1) {
+    switch (state) {
+      case 0:  // pulse 1
+        if (myAngle >= MAX_SERVO_ANGLE()) {
+          myStep = -1 * ROTATION_STEP_ANGLE;
+          itCounter++;
+        } else if (myAngle <= MIN_SERVO_ANGLE()) {
+          myStep = ROTATION_STEP_ANGLE;
+        }
 
         myAngle += myStep;
         for (i = 0; i < DISPENSER_QTY; i++) {
-            uint16_t ledPwm = angleToLedPWM(myAngle);
-            board1.writeMicroseconds(LED_PWM(i), ledPwm);
+          uint16_t ledPwm = angleToLedPWM(myAngle);
+          board1.writeMicroseconds(LED_PWM(i), ledPwm);
         }
-        if (itCounter == 4) {state++; itCounter = 0;}
-      break;
-      
+        if (itCounter == 4) {
+          state++;
+          itCounter = 0;
+        }
+        break;
+
       default:
         for (i = 0; i < DISPENSER_QTY; i++) {
-            uint16_t ledPwm = angleToLedPWM(DRAWER_REST);
-            board1.writeMicroseconds(LED_PWM(i), ledPwm);
+          uint16_t ledPwm = angleToLedPWM(DRAWER_REST);
+          board1.writeMicroseconds(LED_PWM(i), ledPwm);
         }
         digitalWrite(MODULO_LED2, LED_OFF);
         return;
-      break;
+        break;
     }
-    
+
     delay(DELAY_SERVO_STEP);
   }
 }
@@ -236,13 +245,13 @@ void Release(char comando) {
   digitalWrite(MODULO_LED2, LED_ON);
 
   SetDoorState(comando, DRAWER_PUSH);
-  
+
   delay(DELAY_SERVO);
 
   SetDoorState(comando, DRAWER_REST);
 
   delay(DELAY_SERVO);
-  
+
   digitalWrite(MODULO_LED1, LED_ON);
   digitalWrite(MODULO_LED2, LED_OFF);
 }
@@ -255,7 +264,7 @@ uint16_t angleToMicroseconds(int ang)  //gets angle in degree and returns the pu
 
 uint16_t angleToLedPWM(int ang)  //gets angle in degree and returns the pulse width
 {
-  uint16_t pulse = (uint16_t)map(ang, DRAWER_PUSH, DRAWER_REST, LED_MAX_PULSE, LED_MIN_PULSE );  // map angle of 0 to 180 to Servo min and Servo max
+  uint16_t pulse = (uint16_t)map(ang, DRAWER_PUSH, DRAWER_REST, LED_MAX_PULSE, LED_MIN_PULSE);  // map angle of 0 to 180 to Servo min and Servo max
   return pulse;
 }
 
@@ -272,11 +281,10 @@ void SetDoorState(int doors, int angle) {
     }
   }
 
-  if (myAngle > angle) myStep = -1*ROTATION_STEP_ANGLE;
+  if (myAngle > angle) myStep = -1 * ROTATION_STEP_ANGLE;
   else myStep = ROTATION_STEP_ANGLE;
 
-  while (myAngle != angle)
-  {
+  while (myAngle != angle) {
     myAngle += myStep;
     if (myAngle > MAX_SERVO_ANGLE()) myAngle = MAX_SERVO_ANGLE();
     else if (myAngle < MIN_SERVO_ANGLE()) myAngle = MIN_SERVO_ANGLE();

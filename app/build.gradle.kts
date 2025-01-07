@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
+//    id("kotlin-kapt")
 }
 
 android {
@@ -13,8 +13,8 @@ android {
         minSdk = 26
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 29
-        versionCode = 11
-        versionName = "1.11"
+        versionCode = 13
+        versionName = "1.13"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,9 +64,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.usb.android)
     //implementation(com.clover.sdk:clover-android-sdk:228.3)
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    //implementation("androidx.room:room-runtime:2.6.1")
+    //kapt("androidx.room:room-compiler:2.6.1")
+    //implementation("androidx.room:room-ktx:2.6.1")
 }
 
 

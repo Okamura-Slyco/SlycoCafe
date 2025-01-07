@@ -30,7 +30,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);  // called this 
 
 #define DELAY_DROP 2 * 500
 #define DELAY_BLINK 500
-#define DELAY_SERVO 500
+#define DELAY_SERVO 750
 
 #define RESET_RELEASE 'memset (release, 0x00, sizeof(release))'
 

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.content.Context
 
 
 data class ITEM_VIEW_COMPONENTS (
@@ -306,12 +308,16 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     var easterEgg2 = 0
     var easterEgg3 = 0
     var demoMode = false
+    lateinit var android_id:String
 
     var integrationApp:INTEGRATION_APP = INTEGRATION_APP.NONE
 
     private lateinit var watchDog: Handler
 
     private var serial: String? = null
+
+    var viewLayout = R.layout.activity_main_smart_terminal
+    var purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
 
     private var dialogElements = arrayOfNulls<ITEM_VIEW_COMPONENTS>(AppConstants.DISPENSERS_QTY)
 
@@ -448,6 +454,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
         }
     }
+    fun getAndroidId(context: Context): String {
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -457,23 +466,35 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}")
+        android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
 
-        var viewLayout = R.layout.activity_main
+        Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}   DeviceID ${android_id}")
 
-        if ((DeviceInfoModule.deviceBrand == "Clover") && (DeviceInfoModule.deviceModel == "C305")) {
+        if ((DeviceInfoModule.deviceBrand.toUpperCase() == "CLOVER") && (DeviceInfoModule.deviceModel.toUpperCase() == "C305")) {
             Log.d ("Dettected Device","Clover Mini")
             viewLayout = R.layout.activity_main
+            purchaseSummaryLayout = R.layout.dialog_purchase_summary
         }
-        else if (((DeviceInfoModule.deviceBrand == "ingenico") && (DeviceInfoModule.deviceModel == "DX8000") )||
+        else if ((DeviceInfoModule.deviceBrand.toUpperCase() == "CLOVER") && ((DeviceInfoModule.deviceModel.toUpperCase() == "C405")||(DeviceInfoModule.deviceModel.toUpperCase() == "C406"))) {
+            Log.d ("Dettected Device","Clover Flex")
+            viewLayout = R.layout.activity_main_smart_terminal
+            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
+        }
+        else if (((DeviceInfoModule.deviceBrand.toUpperCase() == "INGENICO") && (DeviceInfoModule.deviceModel.toUpperCase() == "DX8000") )||
             ((DeviceInfoModule.deviceBrand == "SUNMI") && (DeviceInfoModule.deviceModel == "P2-A11"))) {
 
             Log.d ("Dettected Device","Smart Terminal")
             viewLayout = R.layout.activity_main_smart_terminal
+            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
         }
-        else if ((DeviceInfoModule.deviceBrand == "Gertec") && (DeviceInfoModule.deviceModel == "SK-210") ) {
+        else if ((DeviceInfoModule.deviceBrand.toUpperCase() == "GERTEC") && (DeviceInfoModule.deviceModel.toUpperCase() == "SK-210") ) {
+            Log.d ("Dettected Device","Gertec SK210")
             viewLayout = R.layout.activity_main_smart_terminal
+            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
             paymentParameters.pinpadTypeStr="ANDROID_USB"
+        }
+        else {
+            Log.d ("Dettected Device","Unknown")
         }
 
         if (isCallable(Intent("com.fiserv.sitef.action.TRANSACTION"))){
@@ -918,7 +939,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                     // Função para adicionar item ao texto
 
-                    val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_purchase_summary, null)
+                    val dialogView = LayoutInflater.from(this).inflate(purchaseSummaryLayout, null)
                     for(i in 0..5) addItemToDialog(i,dialogView)
                     disableWatchdog()
 
@@ -939,8 +960,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     paymentParameters.invoiceNumberStr = sdf.format(timestamp)
                     paymentParameters.merchant_TIDStr = AppConstants.merchantTaxId
                     paymentParameters.isv_TIDStr = AppConstants.isvTaxId
-                    paymentParameters.sitefMIDStr = "00000000"
-                    paymentParameters.endpointStr = "3.19.30.51:4096"
+                    paymentParameters.sitefMIDStr = "MOBILE00"
+                    paymentParameters.endpointStr = "https://tls-uat.fiservapp.com:443"
                     paymentParameters.comProtocolString = "0"
                     paymentParameters.operatorIdStr = "1"
                     paymentParameters.tlsToken = "8977316332439824"
