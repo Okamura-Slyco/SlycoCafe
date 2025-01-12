@@ -103,10 +103,12 @@ class DispenserProgress : AppCompatActivity()
         val widthDp = widthPixels / (densityDpi / 160f)
         val heightDp = heightPixels / (densityDpi / 160f)
 
-        var capsuleDp = widthPixels / AppConstants.DISPENSERS_QTY
+        var myDispensers = intent.getIntExtra("dispensersQty", 0)
+
+        var capsuleDp = widthPixels / myDispensers
 
 
-        for (i in 0..< AppConstants.DISPENSERS_QTY) {
+        for (i in 0..< myDispensers) {
             if (GlobalVariables.dispenserElements[i] != null) {
                 GlobalVariables.animationElements[i]?.counter = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+AppConstants.dispenserIdSufix, 0)
                 GlobalVariables.dispenserElements[i]?.counter = GlobalVariables.animationElements[i].counter

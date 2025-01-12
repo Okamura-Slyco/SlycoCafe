@@ -25,270 +25,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.button.MaterialButton
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import android.content.Context
+import kotlinx.coroutines.delay
 
 
-data class ITEM_VIEW_COMPONENTS (
-    var firstLevelLayout:Int,
-    var secondLevelLayout:Int,
-    var shoppingCartImage:Int,
-    var shoppingCartPlusButton:Int,
-    var shoppingCartMinusButton:Int,
-    var shoppingCartQty: Int,
-    var shoppingCartItemInfo: Int,
-    var shoppingCartItemPrice: Int,
-    var dialogInnerLayout: Int,
-    var dialogImage: Int,
-    var dialogQty: Int
-    )
-
-data class PAYMENT_INTERFACE_FIELDS_NAMES (
-    var integrationApp:INTEGRATION_APP = INTEGRATION_APP.NONE,
-    var intentActionStr:String = "",
-    var sitefMIDStr:String = "",
-    var endpointStr:String = "",
-    var terminalIdStr:String = "",
-    var functionIdStr:String = "",
-    var merchant_TIDStr:String = "",
-    var amountStr:String = "",
-    var restrictionStr:String = "",
-    var operatorIdStr:String = "",
-    var dateStr:String = "",
-    var hourStr:String = "",
-    var invoiceNumberStr:String = "",
-    var installmentsStr:String = "",
-    var otpStr:String = "",
-    var enabledTransactionsStr:String = "",
-    var pinpadMACStr:String = "",
-    var comProtocolString:String = "",
-    var doubleValidationStr:String = "",
-    var isv_TIDStr:String = "",
-    var van_IDStr:String = "",
-    var inputTimeoutStr:String = "",
-    var acessibilityStr:String = "",
-    var pinpadTypeStr:String = "",
-    var softDescriptorStr:String = "",
-    var fieldsStr:String = "",
-    var IATA_inputStr:String = "",
-    var IATA_installmentInputStr:String = "",
-    var clsitStr:String = "",
-    var tlsToken:String = ""
-)
-
-enum class INTEGRATION_APP(val value: Int) {
-    MSITEF (0),
-    SITEF_SALES_APP (1),
-    NONE (-1)
-}
-
-enum class NESPRESSO_FLAVORS (val value:Int){
-    NONE (0),
-
-    RISTRETTO (R.drawable.ristretto_trn),
-    RISTRETTO_INTENSO(R.drawable.ristretto_intenso_trn),
-
-    LEGGERO (R.drawable.leggero_trn),
-    FORTE (R.drawable.forte_trn),
-    FINEZZO (R.drawable.finezzo_trn),
-    INTENSO (R.drawable.intenso_trn),
-    DESCAFFEINADO (R.drawable.descafeinado_trn),
-
-    BRAZIL_ORGANIC (R.drawable.brasil_organic_trn),
-    INDONESIA (R.drawable.indonesia_trn),
-    INDIA (R.drawable.india_trn),
-    GUATEMALA (R.drawable.guatemala_trn),
-
-    CAFFE_NOCCIOLA (R.drawable.caffe_nocciola_trn),
-    CAFFE_CARAMELLO (R.drawable.caffe_caramelo_trn),
-    CAFFE_VANILIO (R.drawable.caffe_vanilio_trn),
-    BIANCO_INTENSO (R.drawable.intenso_trn),
-    BIANCO_DELICATO (R.drawable.bianco_delicato_trn);
-
-    companion object {
-        infix fun from(value: Int): NESPRESSO_FLAVORS? = NESPRESSO_FLAVORS.values().firstOrNull { it.value == value }
-    }
-}
-
-data class ITEM(
-    var flavor: NESPRESSO_FLAVORS = NESPRESSO_FLAVORS.NONE,
-    var qty: Int?,
-    var price: Float?,
-    var size: Int?,
-    var intensity: Int?
-
-)
-
-class inventory {
-    private var myItems = arrayOfNulls<ITEM>(AppConstants.NESPRESSO_FLAVORS_QTY)
-
-    constructor (){
-        reset()
-    }
-
-    fun reset(){
-        // TODO: Get parameterization from cloud database
-        myItems = arrayOf(
-            ITEM(NESPRESSO_FLAVORS.RISTRETTO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,1,9),
-            ITEM(NESPRESSO_FLAVORS.RISTRETTO_INTENSO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,1,12),
-
-            ITEM(NESPRESSO_FLAVORS.LEGGERO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,6),
-            ITEM(NESPRESSO_FLAVORS.FORTE,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,7),
-            ITEM(NESPRESSO_FLAVORS.FINEZZO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,3,5),
-            ITEM(NESPRESSO_FLAVORS.INTENSO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,3,8),
-            ITEM(NESPRESSO_FLAVORS.DESCAFFEINADO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,7),
-
-            ITEM(NESPRESSO_FLAVORS.BRAZIL_ORGANIC,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,3,4),
-            ITEM(NESPRESSO_FLAVORS.INDONESIA,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,3,9),
-            ITEM(NESPRESSO_FLAVORS.INDIA,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,3,10),
-            ITEM(NESPRESSO_FLAVORS.GUATEMALA,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,3,6),
-
-            ITEM(NESPRESSO_FLAVORS.CAFFE_NOCCIOLA,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,6),
-            ITEM(NESPRESSO_FLAVORS.CAFFE_CARAMELLO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,5),
-            ITEM(NESPRESSO_FLAVORS.CAFFE_VANILIO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,6),
-            ITEM(NESPRESSO_FLAVORS.BIANCO_INTENSO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,6),
-            ITEM(NESPRESSO_FLAVORS.BIANCO_DELICATO,AppConstants.MAX_DISPENSER_CAPACITY,3.0f,2,4)
-    )
-    }
-
-    fun getFlavor (index:Int):NESPRESSO_FLAVORS? {
-        return this.myItems[index]?.flavor
-    }
-    fun getQty(flavor: NESPRESSO_FLAVORS) : Int? {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        return myItem?.qty
-    }
-
-    fun setQty(flavor: NESPRESSO_FLAVORS,qty:Int) {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        myItem!!.qty = qty
-
-    }
-
-    fun setPrice(flavor: NESPRESSO_FLAVORS,price:Float) {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        myItem!!.price = price
-    }
-
-    fun getPrice(flavor: NESPRESSO_FLAVORS): Float {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        return myItem!!.price!!
-    }
-
-    fun getIntensity(flavor: NESPRESSO_FLAVORS): Int? {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        if (myItem != null) {
-            return myItem.intensity
-        }
-        return 0
-    }
-
-    fun getSize(flavor: NESPRESSO_FLAVORS): Int? {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        if (myItem != null) {
-            return myItem.size
-        }
-        return 0
-    }
-}
-
-
-
-class shoppingCart {
-    private var itens = arrayOfNulls<ITEM>(AppConstants.DISPENSERS_QTY)
-    private var total = 0.0
-
-    private val customDateFormat: String
-        get() = SimpleDateFormat("yyMMdd", Locale.ROOT).format(Date())
-    private val customTimeFormat: String
-        get() = SimpleDateFormat("HHmmss",Locale.ROOT).format(Date())
-
-    val displayFlavors = arrayOf(
-        NESPRESSO_FLAVORS.RISTRETTO,
-        NESPRESSO_FLAVORS.BRAZIL_ORGANIC,
-        NESPRESSO_FLAVORS.LEGGERO,
-        NESPRESSO_FLAVORS.GUATEMALA,
-        NESPRESSO_FLAVORS.CAFFE_VANILIO,
-        NESPRESSO_FLAVORS.DESCAFFEINADO)
-
-    constructor(inventory: inventory) {
-
-        for (i in 0..<AppConstants.DISPENSERS_QTY)
-            this.itens[i] = ITEM(
-                displayFlavors[i],
-                0,
-                inventory.getPrice(displayFlavors[i]),
-                inventory.getSize(displayFlavors[i]),
-                inventory.getIntensity(displayFlavors[i]))
-    }
-
-    fun calculateTotal() {
-        this.total = 0.0
-        for (item in itens) {
-            this.total += item!!.qty!! * item.price!!
-        }
-
-        Log.i("total", "${total}")
-    }
-
-    fun addItemToCart(item: NESPRESSO_FLAVORS, qty: Int, inventory: inventory) :Int{
-        var myItem = itens.find { it?.flavor == item }
-        var myQty = myItem!!.qty!! + qty
-        if (myQty >= 0) {
-            if (myQty <= inventory.getQty(item)!!) {
-                myItem!!.qty = myQty
-            }
-            else{
-                return -1
-            }
-        }
-        else{
-            return -2
-        }
-        this.calculateTotal()
-        Log.i("teste", "${item} ${qty}")
-        return 0
-    }
-
-    fun getCartItemQuantity(flavor: NESPRESSO_FLAVORS,index:Int = 0): Int {
-        if (flavor != NESPRESSO_FLAVORS.NONE) {
-            var myItem = itens.find { it?.flavor == flavor }
-            return myItem!!.qty!!
-        }
-        return itens[index]!!.qty!!
-    }
-
-    fun getFlavor (id: Int): NESPRESSO_FLAVORS {
-        return itens[id]?.flavor ?: NESPRESSO_FLAVORS.NONE
-    }
-
-    fun clearCart() {
-        for (item in itens) {
-            item!!.qty = 0
-        }
-        this.calculateTotal()
-    }
-
-    fun returnTotal(): Double {
-
-        return total
-    }
-    fun returnSubTotal(flavor: NESPRESSO_FLAVORS): Double {
-        var myItem = itens.find { it?.flavor == flavor }
-        if ((myItem!!.qty != null) && (myItem!!.price != null))
-            return (myItem!!.qty!!.toDouble() * myItem!!.price!!.toDouble())
-        return 0.00
-    }
-
-}
-
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
@@ -297,29 +40,33 @@ fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
 
 
 class MainActivity<Bitmap> : AppCompatActivity() {
-    var inventory : inventory = inventory()
+    private lateinit var myInventory : inventory
 
-    lateinit var paymentInterfaceFieldNames: PAYMENT_INTERFACE_FIELDS_NAMES
-    var paymentParameters :PAYMENT_INTERFACE_FIELDS_NAMES = PAYMENT_INTERFACE_FIELDS_NAMES()
+    private lateinit var paymentInterfaceFieldNames: PAYMENT_INTERFACE_FIELDS_NAMES
+    private var paymentParameters :PAYMENT_INTERFACE_FIELDS_NAMES = PAYMENT_INTERFACE_FIELDS_NAMES()
 
-    lateinit var shoppingCart : shoppingCart
-    var easterEgg = 0
-    var easterEgg1 = 0
-    var easterEgg2 = 0
-    var easterEgg3 = 0
-    var demoMode = false
-    lateinit var android_id:String
+    private lateinit var myLocation:location
 
-    var integrationApp:INTEGRATION_APP = INTEGRATION_APP.NONE
+    private val myLog = log("MAIN ACTIVITY")
+
+    private lateinit var shoppingCart : shoppingCart
+    private var easterEgg = 0
+    private var easterEgg1 = 0
+    private var easterEgg2 = 0
+    private var easterEgg3 = 0
+    private var demoMode = false
+    private lateinit var android_id:String
+
+    private var integrationApp:INTEGRATION_APP = INTEGRATION_APP.NONE
 
     private lateinit var watchDog: Handler
 
     private var serial: String? = null
 
-    var viewLayout = R.layout.activity_main_smart_terminal
-    var purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
+    private var viewLayout = R.layout.activity_main_smart_terminal
+    private var purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
 
-    private var dialogElements = arrayOfNulls<ITEM_VIEW_COMPONENTS>(AppConstants.DISPENSERS_QTY)
+    private lateinit var dialogElements : List<ITEM_VIEW_COMPONENTS>
 
 //    private var TAG = "GetEmployeeExample"
 //    private var mEmployeeConnector: EmployeeConnector? = null
@@ -357,84 +104,81 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     }
 
     fun initDialogElements() {
-        dialogElements[0] = ITEM_VIEW_COMPONENTS(
-            R.id.g1,
-            R.id.i1g1,
-            R.id.imageViewCapsula1,
-            R.id.floatingActionButtonItem1Plus,
-            R.id.floatingActionButtonItem1Minus,
-            R.id.editTextNumberItem1,
-            R.id.textViewAttributes1,
-            R.id.textViewPrice1,
-            R.id.frameLayout1,
-            R.id.imageViewDialog1,
-            R.id.qtyTextView1)
+        dialogElements = listOf(
+            ITEM_VIEW_COMPONENTS(
+                R.id.g1,
+                R.id.i1g1,
+                R.id.imageViewCapsula1,
+                R.id.floatingActionButtonItem1Plus,
+                R.id.floatingActionButtonItem1Minus,
+                R.id.editTextNumberItem1,
+                R.id.textViewAttributes1,
+                R.id.textViewPrice1,
+                R.id.frameLayout1,
+                R.id.imageViewDialog1,
+                R.id.qtyTextView1),
+            ITEM_VIEW_COMPONENTS(
+                R.id.g1,
+                R.id.i2g1,
+                R.id.imageViewCapsula2,
+                R.id.floatingActionButtonItem2Plus,
+                R.id.floatingActionButtonItem2Minus,
+                R.id.editTextNumberItem2,
+                R.id.textViewAttributes2,
+                R.id.textViewPrice2,
+                R.id.frameLayout2,
+                R.id.imageViewDialog2,
+                R.id.qtyTextView2),
+            ITEM_VIEW_COMPONENTS(
+                R.id.g1,
+                R.id.i3g1,
+                R.id.imageViewCapsula3,
+                R.id.floatingActionButtonItem3Plus,
+                R.id.floatingActionButtonItem3Minus,
+                R.id.editTextNumberItem3,
+                R.id.textViewAttributes3,
+                R.id.textViewPrice3,
+                R.id.frameLayout3,
+                R.id.imageViewDialog3,
+                R.id.qtyTextView3),
+            ITEM_VIEW_COMPONENTS(
+                R.id.g2,
+                R.id.i1g2,
+                R.id.imageViewCapsula4,
+                R.id.floatingActionButtonItem4Plus,
+                R.id.floatingActionButtonItem4Minus,
+                R.id.editTextNumberItem4,
+                R.id.textViewAttributes4,
+                R.id.textViewPrice4,
+                R.id.frameLayout4,
+                R.id.imageViewDialog4,
+                R.id.qtyTextView4),
+            ITEM_VIEW_COMPONENTS(
+                R.id.g2,
+                R.id.i1g2,
+                R.id.imageViewCapsula5,
+                R.id.floatingActionButtonItem5Plus,
+                R.id.floatingActionButtonItem5Minus,
+                R.id.editTextNumberItem5,
+                R.id.textViewAttributes5,
+                R.id.textViewPrice5,
+                R.id.frameLayout5,
+                R.id.imageViewDialog5,
+                R.id.qtyTextView5),
 
-        dialogElements[1] = ITEM_VIEW_COMPONENTS(
-            R.id.g1,
-            R.id.i2g1,
-            R.id.imageViewCapsula2,
-            R.id.floatingActionButtonItem2Plus,
-            R.id.floatingActionButtonItem2Minus,
-            R.id.editTextNumberItem2,
-            R.id.textViewAttributes2,
-            R.id.textViewPrice2,
-            R.id.frameLayout2,
-            R.id.imageViewDialog2,
-            R.id.qtyTextView2)
-
-        dialogElements[2] = ITEM_VIEW_COMPONENTS(
-            R.id.g1,
-            R.id.i3g1,
-            R.id.imageViewCapsula3,
-            R.id.floatingActionButtonItem3Plus,
-            R.id.floatingActionButtonItem3Minus,
-            R.id.editTextNumberItem3,
-            R.id.textViewAttributes3,
-            R.id.textViewPrice3,
-            R.id.frameLayout3,
-            R.id.imageViewDialog3,
-            R.id.qtyTextView3)
-
-        dialogElements[3] = ITEM_VIEW_COMPONENTS(
-            R.id.g2,
-            R.id.i1g2,
-            R.id.imageViewCapsula4,
-            R.id.floatingActionButtonItem4Plus,
-            R.id.floatingActionButtonItem4Minus,
-            R.id.editTextNumberItem4,
-            R.id.textViewAttributes4,
-            R.id.textViewPrice4,
-            R.id.frameLayout4,
-            R.id.imageViewDialog4,
-            R.id.qtyTextView4)
-
-        dialogElements[4] = ITEM_VIEW_COMPONENTS(
-            R.id.g2,
-            R.id.i1g2,
-            R.id.imageViewCapsula5,
-            R.id.floatingActionButtonItem5Plus,
-            R.id.floatingActionButtonItem5Minus,
-            R.id.editTextNumberItem5,
-            R.id.textViewAttributes5,
-            R.id.textViewPrice5,
-            R.id.frameLayout5,
-            R.id.imageViewDialog5,
-            R.id.qtyTextView5)
-
-        dialogElements[5] = ITEM_VIEW_COMPONENTS(
-            R.id.g2,
-            R.id.i3g2,
-            R.id.imageViewCapsula6,
-            R.id.floatingActionButtonItem6Plus,
-            R.id.floatingActionButtonItem6Minus,
-            R.id.editTextNumberItem6,
-            R.id.textViewAttributes6,
-            R.id.textViewPrice6,
-            R.id.frameLayout6,
-            R.id.imageViewDialog6,
-            R.id.qtyTextView6)
-
+            ITEM_VIEW_COMPONENTS(
+                R.id.g2,
+                R.id.i3g2,
+                R.id.imageViewCapsula6,
+                R.id.floatingActionButtonItem6Plus,
+                R.id.floatingActionButtonItem6Minus,
+                R.id.editTextNumberItem6,
+                R.id.textViewAttributes6,
+                R.id.textViewPrice6,
+                R.id.frameLayout6,
+                R.id.imageViewDialog6,
+                R.id.qtyTextView6)
+        )
     }
 
     fun activate_msitef(){
@@ -458,15 +202,22 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        shoppingCart = shoppingCart(inventory)
         hideActionBar()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+
+        //val inventoryId = android_id // Replace with the desired post ID
+
+        myLocation = location(android_id)
+
+        myInventory = inventory(myLocation.getLocation().items,myLocation.getLocation().dispenserModel.capacityPerFlavor,myLocation.getLocation().dispenserModel.flavors)
+        shoppingCart = shoppingCart(myLocation.getLocation().items)
 
         Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}   DeviceID ${android_id}")
 
@@ -585,7 +336,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         updatePriceTags()
 
 
-        for (i in 0..< AppConstants.DISPENSERS_QTY){
+        for (i in 0..< myLocation.getLocation().dispenserModel.flavors){
             var image = findViewById<ImageView>(dialogElements[i]!!.shoppingCartImage)
             image.setImageResource(shoppingCart.getFlavor(i)!!.value)
             image.setOnClickListener(listener)
@@ -764,7 +515,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             dialogElements[0]?.shoppingCartPlusButton, dialogElements[0]?.shoppingCartImage, dialogElements[0]?.shoppingCartItemPrice, dialogElements[0]?.shoppingCartItemInfo -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(0),1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(0),1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 0) easterEgg1 = 1
                 else easterEgg1 = 0
@@ -775,7 +526,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[1]?.shoppingCartPlusButton, dialogElements[1]?.shoppingCartImage, dialogElements[1]?.shoppingCartItemPrice, dialogElements[1]?.shoppingCartItemInfo -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(1),1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(1),1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 1) easterEgg1 = 2
                 else easterEgg1 = 0
@@ -785,7 +536,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[2]?.shoppingCartPlusButton, dialogElements[2]?.shoppingCartImage, dialogElements[2]?.shoppingCartItemPrice, dialogElements[2]?.shoppingCartItemInfo -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(2),1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(2),1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 2) easterEgg1 = 3
                 else easterEgg1 = 0
@@ -796,7 +547,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[3]?.shoppingCartPlusButton, dialogElements[3]?.shoppingCartImage, dialogElements[3]?.shoppingCartItemPrice, dialogElements[3]?.shoppingCartItemInfo -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(3),1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(3),1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 3) easterEgg1 = 4
                 else easterEgg1 = 0
@@ -806,7 +557,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[4]?.shoppingCartPlusButton, dialogElements[4]?.shoppingCartImage, dialogElements[4]?.shoppingCartItemPrice, dialogElements[4]?.shoppingCartItemInfo -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(4),1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(4),1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 4) easterEgg1 = 5
                 else easterEgg1 = 0
@@ -819,7 +570,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             dialogElements[5]?.shoppingCartPlusButton, dialogElements[5]?.shoppingCartImage, dialogElements[5]?.shoppingCartItemPrice, dialogElements[5]?.shoppingCartItemInfo -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(5),1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(5),1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 5) easterEgg1 = 6
                 else easterEgg1 = 0
@@ -830,7 +581,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             dialogElements[0]?.shoppingCartMinusButton -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(0),-1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(0),-1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 6) easterEgg1 = 7
                 else easterEgg1 = 0
@@ -839,7 +590,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[1]?.shoppingCartMinusButton -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(1),-1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(1),-1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 7) easterEgg1 = 8
                 else easterEgg1 = 0
@@ -848,7 +599,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[2]?.shoppingCartMinusButton -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(2),-1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(2),-1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 8) easterEgg1 = 9
                 else easterEgg1 = 0
@@ -857,7 +608,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[3]?.shoppingCartMinusButton -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(3),-1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(3),-1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 9) easterEgg1 = 10
                 else easterEgg1 = 0
@@ -866,7 +617,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[4]?.shoppingCartMinusButton -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(4),-1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(4),-1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 10) easterEgg1 = 11
                 else easterEgg1 = 0
@@ -875,7 +626,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             }
             dialogElements[5]?.shoppingCartMinusButton -> {
                 // Do some work here
-                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(5),-1, inventory)
+                res = shoppingCart.addItemToCart(shoppingCart.getFlavor(5),-1, myInventory)
                 easterEgg = 0
                 if (easterEgg1 == 11) easterEgg1 = 12
                 else easterEgg1 = 0
@@ -888,9 +639,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 if (easterEgg == 20) {
                     easterEgg = 0
 
-                    for (i in 0..<AppConstants.DISPENSERS_QTY){
+                    for (i in 0..<myLocation.getLocation().dispenserModel.flavors){
                         var textView = findViewById<EditText>(dialogElements[i]!!.shoppingCartQty )
-                        inventory.setQty(shoppingCart.getFlavor(i),Integer.valueOf(textView.text.toString()))
+                        myInventory.setQty(shoppingCart.getFlavor(i),Integer.valueOf(textView.text.toString()))
                     }
 
                     Log.i("INVENTORY","SET")
@@ -904,8 +655,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 easterEgg = 0
                 if (easterEgg1 == 12)
                 {
-                    inventory.reset()
-                    for (i in 0..<AppConstants.DISPENSERS_QTY) {
+                    myLocation.getLocation()?.let { myInventory.reset(it.items) }
+                    for (i in 0..<myLocation.getLocation().dispenserModel.flavors) {
                         var textView = findViewById<EditText>(dialogElements[i]!!.shoppingCartQty)
                         textView.setText("0")
                     }
@@ -1043,14 +794,14 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     fun updateView(res:Int)
     {
         if (res == 0) {
-            for (i in 0..<AppConstants.DISPENSERS_QTY){
+            for (i in 0..<myLocation.getLocation().dispenserModel.flavors){
                 var textView = findViewById<EditText>(dialogElements[i]!!.shoppingCartQty)
                 textView.setText(
                     shoppingCart!!.getCartItemQuantity(NESPRESSO_FLAVORS.NONE,i).toString()
                 )
                 var flavor : NESPRESSO_FLAVORS? = shoppingCart.getFlavor(i)
 
-                if ((flavor?.let { inventory.getQty(it) }!! - shoppingCart.getCartItemQuantity(flavor)) <=0 ) {
+                if ((flavor?.let { myInventory.getQty(it) }!! - shoppingCart.getCartItemQuantity(flavor)) <=0 ) {
                 findViewById<ImageView>(dialogElements[i]!!.shoppingCartImage).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
                 findViewById<Button>(dialogElements[i]!!.shoppingCartPlusButton).alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
             }
@@ -1082,8 +833,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     fun updateCoffeIcon(flavor: NESPRESSO_FLAVORS, id:Int){
         val materialButton: MaterialButton = findViewById(id)
-        materialButton.setText(String.format("%d",inventory.getIntensity(flavor)))
-        when (inventory.getSize(flavor)){
+        materialButton.setText(String.format("%d",myInventory.getIntensity(flavor)))
+        when (myInventory.getSize(flavor)){
             1 -> materialButton.setIconResource(R.drawable.coffeeicon_s)
             2 -> materialButton.setIconResource(R.drawable.coffeeicon_m)
             3 -> materialButton.setIconResource(R.drawable.coffeeicon_l)
@@ -1093,10 +844,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     @SuppressLint("CutPasteId")
     fun updatePriceTags(){
 
-        for (i in 0..<AppConstants.DISPENSERS_QTY){
+        for (i in 0..<myLocation.getLocation().dispenserModel.flavors){
             val myFlavor = shoppingCart.getFlavor(i)
             var textView2 = findViewById<Button>(dialogElements[i]!!.shoppingCartItemPrice)
-            textView2.setText(String.format("R$%.2f",inventory.getPrice(myFlavor)))
+            textView2.setText(String.format("R$%.2f",myInventory.getPrice(myFlavor)))
             updateCoffeIcon(myFlavor,dialogElements[i]!!.shoppingCartItemInfo)
         }
     }
@@ -1225,12 +976,18 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     fun releaseCoffee (){
 
         val intent: Intent = Intent(this, DispenserProgress::class.java)
+        intent.putExtra(
+            "dispensersQty",
+            myLocation.getLocation().dispenserModel.flavors
+        )
 
-        for (i in 0..<AppConstants.DISPENSERS_QTY){
+
+
+        for (i in 0..<myLocation.getLocation().dispenserModel.flavors){
             val myFlavor = shoppingCart.getFlavor(i)
-            this.inventory.setQty(
+            this.myInventory.setQty(
                 myFlavor,
-                inventory.getQty(myFlavor)!! - shoppingCart.getCartItemQuantity(
+                myInventory.getQty(myFlavor)!! - shoppingCart.getCartItemQuantity(
                     myFlavor
                 )
             )

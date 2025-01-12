@@ -13,8 +13,8 @@ android {
         minSdk = 26
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 29
-        versionCode = 13
-        versionName = "1.13"
+        versionCode = 14
+        versionName = "1.14"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,6 +63,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.usb.android)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     //implementation(com.clover.sdk:clover-android-sdk:228.3)
     //implementation("androidx.room:room-runtime:2.6.1")
     //kapt("androidx.room:room-compiler:2.6.1")
