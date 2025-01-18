@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -17,17 +17,20 @@
         android:theme="@style/Theme.SlycoCafé"
         tools:targetApi="31">
         <activity
+            android:name=".support"
+            android:exported="false" />
+        <activity
             android:name=".helperDialog"
             android:exported="false"
-            android:theme="@style/Theme.SlycoCafé"/>
+            android:theme="@style/Theme.SlycoCafé" />
         <activity
             android:name=".ScreenSaver"
             android:exported="false"
-            android:theme="@style/Theme.SlycoCafé"/>
+            android:theme="@style/Theme.SlycoCafé" />
         <activity
             android:name=".DispenserProgress"
             android:exported="false"
-            android:theme="@style/Theme.SlycoCafé"/>
+            android:theme="@style/Theme.SlycoCafé" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -39,16 +42,16 @@
             </intent-filter>
         </activity>
 
-
-
-        <receiver android:enabled="true" android:name=".BootUpReceiver" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+        <receiver
+            android:name=".BootUpReceiver"
+            android:enabled="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
     </application>
-
-
 
 </manifest>

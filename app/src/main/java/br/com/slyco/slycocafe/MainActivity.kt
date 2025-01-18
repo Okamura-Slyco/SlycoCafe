@@ -26,6 +26,8 @@ import com.google.android.material.button.MaterialButton
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.delay
 
 
@@ -54,14 +56,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     private var easterEgg1 = 0
     private var easterEgg2 = 0
     private var easterEgg3 = 0
-    private var demoMode = false
     private lateinit var android_id:String
-
-    private var integrationApp:INTEGRATION_APP = INTEGRATION_APP.NONE
 
     private lateinit var watchDog: Handler
 
-    private var serial: String? = null
 
     private var viewLayout = R.layout.activity_main_smart_terminal
     private var purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
@@ -210,6 +208,12 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Using constructor
+        val hashMap: HashMap<String, Int> = HashMap()
+
+// Using hashMapOf function
+
+
         android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
 
         //val inventoryId = android_id // Replace with the desired post ID
@@ -243,6 +247,11 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             viewLayout = R.layout.activity_main_smart_terminal
             purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
             paymentParameters.pinpadTypeStr="ANDROID_USB"
+            paymentParameters.sitefMIDStr="00000048"
+            paymentParameters.endpointStr="tls-prod.fiservapp.com"
+            paymentParameters.comProtocolString="4"
+            paymentParameters.merchant_TIDStr="55833084000136"
+            paymentParameters.isv_TIDStr = "55833084000136"
         }
         else {
             Log.d ("Dettected Device","Unknown")
@@ -400,7 +409,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         hideActionBar()
 
 
-        if (this.demoMode == false) {
+        if (this.myLocation.getLocation().demoMode == false) {
             try {
                 PAYMENT_INTERFACE_FIELDS_NAMES(intentActionStr = paymentInterfaceFieldNames.intentActionStr)
                 val intent: Intent = Intent(paymentInterfaceFieldNames.intentActionStr)
@@ -415,7 +424,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 if ((paymentInterfaceFieldNames.functionIdStr != "") && (transactionParameters.functionIdStr != "")) { intent.putExtra(paymentInterfaceFieldNames.functionIdStr, transactionParameters.functionIdStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.functionIdStr}:${transactionParameters.functionIdStr}")}
 
-                if ((paymentInterfaceFieldNames.merchant_TIDStr != "") && (transactionParameters.merchant_TIDStr != "")) { intent.putExtra(paymentInterfaceFieldNames.merchant_TIDStr, transactionParameters.merchant_TIDStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.merchant_TIDStr}:${transactionParameters.merchant_TIDStr}")}
+                if ((paymentInterfaceFieldNames.merchant_TIDStr != "") && (transactionParameters.merchant_TIDStr != "")) { intent.putExtra(paymentInterfaceFieldNames.merchant_TIDStr, transactionParameters.merchant_TIDStr.replace(".", "").replace("/", "").replace("-", "")); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.merchant_TIDStr}:${transactionParameters.merchant_TIDStr.replace(".", "").replace("/", "").replace("-", "")}")}
 
                 if ((paymentInterfaceFieldNames.amountStr != "") && (transactionParameters.amountStr != "")) { intent.putExtra(paymentInterfaceFieldNames.amountStr, transactionParameters.amountStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.amountStr}:${transactionParameters.amountStr}")}
 
@@ -471,8 +480,13 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 toast("Call m-SiTef")
             }
         } else {
+
             releaseCoffee()
+
+            myInventory.putInventory(myLocation.getLocation().id,myLocation.getLocation().items)
+
             shoppingCart.clearCart()
+
             updateView(0)
             Log.d("DemoMode", "shoppingCart.clearCart()")
         }
@@ -480,12 +494,12 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     fun addItemToDialog(index: Int, dialogView: View) {
         val flavor = shoppingCart.getFlavor(index)
-        val quantity = flavor?.let { shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.NONE,index) }
+        val quantity = flavor?.let { shoppingCart.getCartItemQuantity(NESPRESSOFLAVORS.NONE,index) }
         if (quantity != null) {
             var image = dialogElements[index]?.let { dialogView?.findViewById<ImageView>(it.dialogImage) }
             image?.setImageResource(flavor.value)
             var text = dialogElements[index]?.let { dialogView?.findViewById<TextView>(it.dialogQty) }
-            text?.text = shoppingCart.getCartItemQuantity(NESPRESSO_FLAVORS.NONE,index).toString()
+            text?.text = shoppingCart.getCartItemQuantity(NESPRESSOFLAVORS.NONE,index).toString()
             if (quantity >= 1) {
                 setAlphaForAllChildren(dialogView.findViewById<ConstraintLayout>(dialogElements[index]!!.dialogInnerLayout),AppConstants.ON_STOCK_ALPHA_FLOAT)
             }
@@ -709,13 +723,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                     paymentParameters.amountStr = totalStr
                     paymentParameters.invoiceNumberStr = sdf.format(timestamp)
-                    paymentParameters.merchant_TIDStr = AppConstants.merchantTaxId
+                    paymentParameters.merchant_TIDStr = myLocation.getLocation().merchant.tax_id
                     paymentParameters.isv_TIDStr = AppConstants.isvTaxId
-                    paymentParameters.sitefMIDStr = "MOBILE00"
-                    paymentParameters.endpointStr = "https://tls-uat.fiservapp.com:443"
-                    paymentParameters.comProtocolString = "0"
                     paymentParameters.operatorIdStr = "1"
-                    paymentParameters.tlsToken = "8977316332439824"
 
                     var myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
                     myButton.setOnClickListener{
@@ -787,7 +797,19 @@ class MainActivity<Bitmap> : AppCompatActivity() {
     }
 
     fun sendDmp(){
-        callPaymentApp(PAYMENT_INTERFACE_FIELDS_NAMES(functionIdStr = "121", amountStr = "0", invoiceNumberStr = "", merchant_TIDStr = AppConstants.merchantTaxId, isv_TIDStr = AppConstants.isvTaxId))
+
+        val test = PAYMENT_INTERFACE_FIELDS_NAMES(
+            pinpadTypeStr="ANDROID_USB",
+            sitefMIDStr="00000048",
+            endpointStr="tls-prod.fiservapp.com",
+            comProtocolString="4",
+            functionIdStr = "121",
+            amountStr = "0",
+            invoiceNumberStr = "",
+            merchant_TIDStr = myLocation.getLocation().merchant.tax_id.replace(".", "").replace("/", "").replace("-", ""),
+            isv_TIDStr = AppConstants.isvTaxId
+        )
+        callPaymentApp(test)
 
     }
 
@@ -797,9 +819,9 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             for (i in 0..<myLocation.getLocation().dispenserModel.flavors){
                 var textView = findViewById<EditText>(dialogElements[i]!!.shoppingCartQty)
                 textView.setText(
-                    shoppingCart!!.getCartItemQuantity(NESPRESSO_FLAVORS.NONE,i).toString()
+                    shoppingCart!!.getCartItemQuantity(NESPRESSOFLAVORS.NONE,i).toString()
                 )
-                var flavor : NESPRESSO_FLAVORS? = shoppingCart.getFlavor(i)
+                var flavor : NESPRESSOFLAVORS? = shoppingCart.getFlavor(i)
 
                 if ((flavor?.let { myInventory.getQty(it) }!! - shoppingCart.getCartItemQuantity(flavor)) <=0 ) {
                 findViewById<ImageView>(dialogElements[i]!!.shoppingCartImage).imageAlpha = AppConstants.OUT_OF_STOCK_ALPHA
@@ -831,7 +853,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     }
 
-    fun updateCoffeIcon(flavor: NESPRESSO_FLAVORS, id:Int){
+    fun updateCoffeIcon(flavor: NESPRESSOFLAVORS, id:Int){
         val materialButton: MaterialButton = findViewById(id)
         materialButton.setText(String.format("%d",myInventory.getIntensity(flavor)))
         when (myInventory.getSize(flavor)){
@@ -917,11 +939,48 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     "returnedFields: " + data!!.getStringExtra("returnedFields")
                 )
 
+                val gson = Gson()
+                val mapType = object : TypeToken<Map<String, Any>>() {}.type
+                val genericMap: Map<String, Any> = gson.fromJson(data!!.getStringExtra("returnedFields"), mapType)
+                println(genericMap)
+                var mydata = genericMap["2021"]
+
+                myLog.log("genericMap: ${(mydata as ArrayList<String>).get(0)}")
+                var mySaleResponseData = saleResponseDC(
+                    id = android_id,
+                    transactionType = (data!!.getStringExtra("transactionType") as String),
+                    installmentType = data!!.getStringExtra("installmentType") as String,
+                    cashbackAmount = data!!.getStringExtra("cashbackAmount") as String,
+                    acquirerId = data!!.getStringExtra("acquirerId") as String,
+                    cardBrand = data!!.getStringExtra("cardBrand") as String,
+                    sitefTransactionId = data!!.getStringExtra("sitefTransactionId") as String,
+                    hostTrasactionId = data!!.getStringExtra("hostTrasactionId") as String,
+                    authCode = data!!.getStringExtra("authCode") as String,
+                    transactionInstallments = data!!.getStringExtra("transactionInstallments") as String,
+                    pan = (genericMap["2021"] as ArrayList<String>).get(0), // pan
+                    goodThru = (genericMap["1002"] as ArrayList<String>)!!.get(0), // good thru
+                    cardType = (genericMap["2090"] as ArrayList<String>)!!.get(0), // card_type
+                    cardReadStatus = (genericMap["2091"] as ArrayList<String>)!!.get(0), // card read status
+                    paymentSourceTaxID = (genericMap["950"] as ArrayList<String>)!!.get(0), // payment source tax id
+                    invoiceBrandID = (genericMap["951"] as ArrayList<String>)!!.get(0), // brand id for invoice
+                    invoiceNumber = (genericMap["953"] as ArrayList<String>)!!.get(0), // invoice number
+                    authorizerResponseCode = (genericMap["2010"] as ArrayList<String>)!!.get(0), // authorizer response code
+                    authorizationCode = (genericMap["135"] as ArrayList<String>)!!.get(0), // authorization code
+                    transactionTimestamp = (genericMap["105"] as ArrayList<String>)!!.get(0), //transaction timestamp
+                    authorizationNetworkID = (genericMap["158"] as ArrayList<String>)!!.get(0), // authorization network id
+                    merchantID = (genericMap["157"] as ArrayList<String>)!!.get(0), //merchant id,
+                    sitefIf = (genericMap["131"] as ArrayList<String>)!!.get(0), //if sitef,
+                    cardBrandID = (genericMap["132"] as ArrayList<String>)!!.get(0), // sitef cardbrand id
+                    invoiceAuthorizationCode = (genericMap["952"] as ArrayList<String>)!!.get(0), // invoice authorization code
+                )
+
+                myLog.log(mySaleResponseData.toString())
+
                 var cupom: String? = data!!.getStringExtra("merchantReceipt")
 
                 if (cupom != null) {
                     releaseCoffee()
-
+                    myInventory.putInventory(myLocation.getLocation().id,myLocation.getLocation().items)
                     shoppingCart.clearCart()
 
                     updateView(0)

@@ -17,7 +17,7 @@ class shoppingCart {
     constructor(items: List<inventoryStockDC>) {
         for (i in 0..<items.size) {
             var myItem = ITEM(
-                NESPRESSO_FLAVORS.from(items[i].item.id),
+                NESPRESSOFLAVORS.from(NESPRESSOFLAVORSHASH.getValue(items[i].item.id)),
                 0,
                 items[i].price.toFloat()/100,
                 items[i].item.coffeeSize,
@@ -37,7 +37,7 @@ class shoppingCart {
         myLog.log( "${total}")
     }
 
-    fun addItemToCart(item: NESPRESSO_FLAVORS, qty: Int, inventory: inventory) :Int{
+    fun addItemToCart(item: NESPRESSOFLAVORS, qty: Int, inventory: inventory) :Int{
         var myItem = itens.find { it?.flavor == item }
         var myQty = myItem!!.qty!! + qty
         if (myQty >= 0) {
@@ -56,16 +56,16 @@ class shoppingCart {
         return 0
     }
 
-    fun getCartItemQuantity(flavor: NESPRESSO_FLAVORS,index:Int = 0): Int {
-        if (flavor != NESPRESSO_FLAVORS.NONE) {
+    fun getCartItemQuantity(flavor: NESPRESSOFLAVORS,index:Int = 0): Int {
+        if (flavor != NESPRESSOFLAVORS.NONE) {
             var myItem = itens.find { it?.flavor == flavor }
             return myItem!!.qty!!
         }
         return itens[index]!!.qty!!
     }
 
-    fun getFlavor (id: Int): NESPRESSO_FLAVORS {
-        return itens[id]?.flavor ?: NESPRESSO_FLAVORS.NONE
+    fun getFlavor (id: Int): NESPRESSOFLAVORS {
+        return itens[id]?.flavor ?: NESPRESSOFLAVORS.NONE
     }
 
     fun clearCart() {
@@ -79,7 +79,7 @@ class shoppingCart {
 
         return total
     }
-    fun returnSubTotal(flavor: NESPRESSO_FLAVORS): Double {
+    fun returnSubTotal(flavor: NESPRESSOFLAVORS): Double {
         var myItem = itens.find { it?.flavor == flavor }
         if ((myItem!!.qty != null) && (myItem!!.price != null))
             return (myItem!!.qty!!.toDouble() * myItem!!.price!!.toDouble())

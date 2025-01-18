@@ -369,6 +369,8 @@
         app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItem6Minus"
         app:layout_constraintTop_toTopOf="@id/floatingActionButtonItem6Minus" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -676,6 +678,15 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
+        android:id="@+id/supportButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:alpha="0.3"
+        app:layout_constraintBottom_toTopOf="@id/imgPoweredBySlyco"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/customer_support" />
+
+    <ImageView
         android:id="@+id/imgPoweredBySlyco"
         android:layout_width="150dp"
         android:layout_height="70dp"
@@ -694,7 +705,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/questionmark" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

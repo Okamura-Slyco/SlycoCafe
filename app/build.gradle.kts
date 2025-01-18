@@ -65,6 +65,11 @@ dependencies {
     implementation(libs.usb.android)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation ("com.google.zxing:core:3.4.1")
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation ("androidx.core:core-ktx:1.6.0")
+
     //implementation(com.clover.sdk:clover-android-sdk:228.3)
     //implementation("androidx.room:room-runtime:2.6.1")
     //kapt("androidx.room:room-compiler:2.6.1")

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainSupport"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".support">
+
+    <ImageView
+        android:id="@+id/qrCodeImageViewSupport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/customer_support" />
+
+    <ProgressBar
+        android:id="@+id/progressBarTimeoutHelperSupport"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:alpha="0.5"
+        android:backgroundTintMode="add"
+        android:foregroundTint="#228800"
+        android:foregroundTintMode="src_atop"
+        android:indeterminateTint="#228800"
+        android:indeterminateTintMode="src_atop"
+        android:max="100"
+        android:maxHeight="1dip"
+        android:minHeight="1dip"
+        android:progress="100"
+        android:progressBackgroundTint="#AAAAAA"
+        android:progressBackgroundTintMode="src_atop"
+        android:progressTint="#228800"
+        android:progressTintMode="src_atop"
+        android:scaleY="6"
+        android:secondaryProgressTint="#228800"
+        app:layout_constraintBottom_toTopOf="@+id/buttonReturnSupport"
+        app:layout_constraintEnd_toEndOf="@+id/buttonReturnSupport"
+        app:layout_constraintStart_toStartOf="@+id/buttonReturnSupport" />
+
+    <Button
+        android:id="@+id/buttonReturnSupport"
+        android:layout_width="175dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="#228800"
+        android:text="Voltar"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        app:icon="@drawable/undo_icon_md"
+        app:iconSize="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
