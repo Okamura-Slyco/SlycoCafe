@@ -1,5 +1,11 @@
 package br.com.slyco.slycocafe
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class inventory {
@@ -10,10 +16,21 @@ class inventory {
 
     val myLog = log(classTag)
 
-    constructor(items: List<inventoryStockDC>, dispenserCapacity:Int, dispenserFlavors: Int){
+    constructor(android_id: String, items: List<inventoryStockDC>, dispenserCapacity:Int, dispenserFlavors: Int){
         this.dispenserFlavors = dispenserFlavors
         this.dispenserCapacity = dispenserCapacity
         reset(items)
+
+        try {
+            runBlocking {
+                val result = async(Dispatchers.IO) {
+                    putInventory(android_id,items)
+                }.await()
+            }
+        } catch(e: Exception){
+            myLog.log("${e.printStackTrace().toString()}")
+
+        }
     }
 
     fun reset(items:List<inventoryStockDC>){
@@ -96,17 +113,23 @@ class inventory {
     fun putInventory(id:String,items: List<inventoryStockDC>){
 
         for (i in 0.. dispenserFlavors-1 ) {
-            items[i].quantity = this.getQty(NESPRESSOFLAVORS.from(items[i].item.id))!!
+            items[i].quantity = this.getQty(NESPRESSOFLAVORS.from(NESPRESSOFLAVORSHASH.getValue(items[i].item.id)))!!
         }
 
-        val call = apiService.putInventory(id,items)
-        var ret:inventoryDC
-        try {
-            var callReturn: Response<inventoryDC> = call.execute()
-            ret = callReturn.body()!!
-        }
-        catch (e: Exception){
-            myLog.log("${e.printStackTrace().toString()}")
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = apiService.putInventory(id, items)
+            try {
+                val callReturn: Response<inventoryDC> = call.execute()
+                val ret = callReturn.body()!!
+                withContext(Dispatchers.Main) {
+                    // Handle the response on the main thread
+                    // update UI or perform other main thread operations
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    myLog.log("${e.printStackTrace().toString()}")
+                }
+            }
         }
 
         //return myLocation

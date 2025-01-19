@@ -220,7 +220,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
         myLocation = location(android_id)
 
-        myInventory = inventory(myLocation.getLocation().items,myLocation.getLocation().dispenserModel.capacityPerFlavor,myLocation.getLocation().dispenserModel.flavors)
+        myInventory = inventory(android_id,myLocation.getLocation().items,myLocation.getLocation().dispenserModel.capacityPerFlavor,myLocation.getLocation().dispenserModel.flavors)
         shoppingCart = shoppingCart(myLocation.getLocation().items)
 
         Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}   DeviceID ${android_id}")
@@ -384,6 +384,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         val intent: Intent = Intent(this, ScreenSaver::class.java)
         if (shoppingCart.returnTotal() == 0.0) intent.putExtra("activateContinueButton", 0)
         else intent.putExtra("activateContinueButton", 1)
+        intent.putExtra("locationName", myLocation.getLocation().name)
         startActivityForResult(intent, 3)
     }
 
@@ -480,14 +481,39 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 toast("Call m-SiTef")
             }
         } else {
+            val timestamp = Timestamp(System.currentTimeMillis())
 
-            releaseCoffee()
+            val sdf = SimpleDateFormat("yyyyMMddHHmmss")
 
-            myInventory.putInventory(myLocation.getLocation().id,myLocation.getLocation().items)
-
-            shoppingCart.clearCart()
-
-            updateView(0)
+            var mySaleResponseData = saleResponseDC(
+                locationId = android_id,
+                transactionType = "demo mode",
+                installmentType = "",
+                cashbackAmount = "",
+                acquirerId = "",
+                cardBrand = "",
+                sitefTransactionId = "",
+                hostTrasactionId = "",
+                authCode = "",
+                transactionInstallments = "",
+                pan = "", // pan
+                goodThru = "", // good thru
+                cardType = "", // card_type
+                cardReadStatus = "", // card read status
+                paymentSourceTaxID = "", // payment source tax id
+                invoiceBrandID = "", // brand id for invoice
+                invoiceNumber = "", // invoice number
+                authorizerResponseCode = "", // authorizer response code
+                authorizationCode = "", // authorization code
+                transactionTimestamp = sdf.format(timestamp).toLong(), //transaction timestamp
+                authorizationNetworkID = "", // authorization network id
+                merchantID = "", //merchant id,
+                sitefIf = "", //if sitef,
+                cardBrandID = "", // sitef cardbrand id
+                invoiceAuthorizationCode = "", // invoice authorization code
+                saleItems = ""
+            )
+            finishTransaction(mySaleResponseData)
             Log.d("DemoMode", "shoppingCart.clearCart()")
         }
     }
@@ -510,6 +536,25 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         var totalText = dialogView.findViewById<TextView>(R.id.totalAmountTextView)
         totalText.text = String.format("%.2f",shoppingCart.returnTotal())
 
+    }
+
+    private fun finishTransaction(mySaleResponse: saleResponseDC){
+        releaseCoffee()
+        myInventory.putInventory(myLocation.getLocation().id,myLocation.getLocation().items)
+
+        var saleItems = ""
+
+        for (i in 0..myLocation.getLocation().dispenserModel.flavors-1){
+            var qty = shoppingCart.getCartItemQuantity(NESPRESSOFLAVORS.NONE,i)
+            if (qty > 0){
+                saleItems += "${INVENTORYHASH.get(shoppingCart.getFlavor(i).value)}:${i+1}:${qty};"
+            }
+        }
+        mySaleResponse.saleItems = saleItems
+        putSale (android_id,mySaleResponse)
+        shoppingCart.clearCart()
+
+        updateView(0)
     }
 
     private fun isCallable(intent: Intent): Boolean {
@@ -946,8 +991,10 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 var mydata = genericMap["2021"]
 
                 myLog.log("genericMap: ${(mydata as ArrayList<String>).get(0)}")
+
+
                 var mySaleResponseData = saleResponseDC(
-                    id = android_id,
+                    locationId = android_id,
                     transactionType = (data!!.getStringExtra("transactionType") as String),
                     installmentType = data!!.getStringExtra("installmentType") as String,
                     cashbackAmount = data!!.getStringExtra("cashbackAmount") as String,
@@ -966,30 +1013,29 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     invoiceNumber = (genericMap["953"] as ArrayList<String>)!!.get(0), // invoice number
                     authorizerResponseCode = (genericMap["2010"] as ArrayList<String>)!!.get(0), // authorizer response code
                     authorizationCode = (genericMap["135"] as ArrayList<String>)!!.get(0), // authorization code
-                    transactionTimestamp = (genericMap["105"] as ArrayList<String>)!!.get(0), //transaction timestamp
+                    transactionTimestamp = (genericMap["105"] as ArrayList<String>)!!.get(0).toLong(), //transaction timestamp
                     authorizationNetworkID = (genericMap["158"] as ArrayList<String>)!!.get(0), // authorization network id
                     merchantID = (genericMap["157"] as ArrayList<String>)!!.get(0), //merchant id,
                     sitefIf = (genericMap["131"] as ArrayList<String>)!!.get(0), //if sitef,
                     cardBrandID = (genericMap["132"] as ArrayList<String>)!!.get(0), // sitef cardbrand id
                     invoiceAuthorizationCode = (genericMap["952"] as ArrayList<String>)!!.get(0), // invoice authorization code
+                    saleItems = ""
                 )
+
+
 
                 myLog.log(mySaleResponseData.toString())
 
                 var cupom: String? = data!!.getStringExtra("merchantReceipt")
 
                 if (cupom != null) {
-                    releaseCoffee()
-                    myInventory.putInventory(myLocation.getLocation().id,myLocation.getLocation().items)
-                    shoppingCart.clearCart()
-
-                    updateView(0)
+                    finishTransaction(mySaleResponseData)
                 }
             }
             catch (e: Exception)  {
                 Log.e ("Exception Sales App",e.toString())
                 resetWatchDog()
-                shoppingCart.clearCart()
+                //shoppingCart.clearCart()
                 updateView(0)
             }
         }

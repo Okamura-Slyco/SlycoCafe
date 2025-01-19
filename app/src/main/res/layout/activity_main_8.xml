@@ -12,11 +12,21 @@
     android:backgroundTintMode="add"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/supportButton2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="5dp"
+        android:alpha="0.3"
+        app:layout_constraintBottom_toTopOf="@id/imgPoweredBySlyco"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/customer_support" />
+
     <Button
         android:id="@+id/buttonEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="136dp"
         android:backgroundTint="#FF0000"
         android:text="Limpar"
         android:textAllCaps="true"

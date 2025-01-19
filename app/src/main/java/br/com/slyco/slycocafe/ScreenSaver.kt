@@ -3,12 +3,15 @@ package br.com.slyco.slycocafe
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +22,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.w3c.dom.Text
 
 
 class objectAnimationVector {
@@ -52,6 +56,10 @@ class ScreenSaver : AppCompatActivity() {
         super.onResume()
     }
 
+    fun getAndroidId(context: Context): String {
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +83,9 @@ class ScreenSaver : AppCompatActivity() {
         height = displayMetrics.heightPixels
         width = displayMetrics.widthPixels
 
+        var textView = findViewById<TextView>(R.id.didTextView)
+        textView.text = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+
 
         var button = findViewById<MaterialButton>(R.id.buttonNew)
         button.setOnClickListener(listener)
@@ -86,6 +97,10 @@ class ScreenSaver : AppCompatActivity() {
             button.setVisibility(View.VISIBLE)
             button.setOnClickListener(listener)
         }
+
+        var locationName = intent.getStringExtra("locationName")
+        findViewById<TextView>(R.id.locationNameTextView).text = locationName
+
         thisIntent = Intent()
 
         lifecycleScope.launch {

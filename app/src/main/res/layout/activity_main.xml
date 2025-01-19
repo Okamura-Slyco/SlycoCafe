@@ -681,6 +681,7 @@
         android:id="@+id/supportButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_marginStart="5dp"
         android:alpha="0.3"
         app:layout_constraintBottom_toTopOf="@id/imgPoweredBySlyco"
         app:layout_constraintStart_toStartOf="parent"

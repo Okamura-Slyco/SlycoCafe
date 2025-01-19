@@ -10,6 +10,17 @@
     android:backgroundTintMode="screen"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/supportButton3"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="5dp"
+        android:alpha="0.3"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/imgPoweredBySlyco"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/customer_support" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/g1"
         android:layout_width="wrap_content"

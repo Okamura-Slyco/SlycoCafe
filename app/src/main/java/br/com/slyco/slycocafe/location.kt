@@ -25,6 +25,7 @@ data class locationDC (
     var pos :deviceDC,
     var merchant:merchantDC,
     var items: List<inventoryStockDC>,
+    @SerializedName("demo_mode")
     var demoMode: Boolean
 )
 
@@ -107,7 +108,7 @@ public class location {
                     id = 1,
                     environment = "PRODUCTION",
                     payment_gateway = "SITEF",
-                    payment_gateway_mid = "00000000",
+                    payment_gateway_mid = "00000048",
                     tax_id = "55.833.084/0001-36"
                 ),
                 items = listOf(
