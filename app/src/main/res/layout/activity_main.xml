@@ -682,9 +682,10 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="5dp"
-        android:alpha="0.3"
-        app:layout_constraintBottom_toTopOf="@id/imgPoweredBySlyco"
+        android:layout_marginTop="5dp"
+        android:alpha="0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/customer_support" />
 
     <ImageView

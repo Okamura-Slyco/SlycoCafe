@@ -13,8 +13,8 @@ android {
         minSdk = 26
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 29
-        versionCode = 14
-        versionName = "1.14"
+        versionCode = 15
+        versionName = "1.15"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,6 +28,10 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
+            versionNameSuffix = "r"
+            buildConfigField("String", "SLYCO_API_URL","\"https://api.slyco.com.br/\"")
+            buildConfigField("String", "SLYCO_API_SECRET", "\"${System.getenv("SLYCO_API_SECRET_PRODUCTION")}\"")
+            buildConfigField("String", "SLYCO_API_ENVIRONMENT","\"production\"")
         }
         debug {
             isDebuggable = true
@@ -36,6 +40,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            versionNameSuffix = "d"
+            buildConfigField("String", "SLYCO_API_URL","\"https://dev-api.slyco.com.br/\"")
+            buildConfigField("String", "SLYCO_API_SECRET","\"${System.getenv("SLYCO_API_SECRET_DEVELOPMENT")}\"")
+            buildConfigField("String", "SLYCO_API_ENVIRONMENT","\"development\"")
         }
     }
     compileOptions {
@@ -46,6 +54,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
 }
@@ -59,6 +68,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -69,7 +79,7 @@ dependencies {
     implementation ("com.google.zxing:core:3.4.1")
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation ("androidx.core:core-ktx:1.6.0")
-
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     //implementation(com.clover.sdk:clover-android-sdk:228.3)
     //implementation("androidx.room:room-runtime:2.6.1")
     //kapt("androidx.room:room-compiler:2.6.1")

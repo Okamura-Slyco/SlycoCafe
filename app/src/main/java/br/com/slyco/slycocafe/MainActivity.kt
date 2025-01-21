@@ -26,14 +26,18 @@ import com.google.android.material.button.MaterialButton
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import android.content.Context
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import com.google.ar.core.Config
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.delay
-
-
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.WriterException
+import com.google.zxing.qrcode.QRCodeWriter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import android.graphics.Bitmap
 
 
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
@@ -216,12 +220,28 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
         android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
 
-        //val inventoryId = android_id // Replace with the desired post ID
+        val cryptoManager = CryptoManager()
+
+        val cryptoKey =cryptoManager.getKey()
+
+        myLog.log( "Key: ${cryptoKey.toString()}")
+
+        val encryptOutput = cryptoManager.encrypt(android_id.encodeToByteArray())
+
+        myLog.log("IV size ${encryptOutput.ivSize.toString()}")
+        myLog.log("IV ${encryptOutput.iv.decodeToString()}")
+        myLog.log("Enc data size ${encryptOutput.encryptedDataSize.toString()}")
+        myLog.log("Enc data ${encryptOutput.encryptedData.decodeToString()}")
+
+        myLog.log("Dec data ${cryptoManager.decrypt(encryptOutput).decodeToString()}")
+
+        myLog.log("API Secret: ${BuildConfig.SLYCO_API_SECRET}")
+
 
         myLocation = location(android_id)
 
         myInventory = inventory(android_id,myLocation.getLocation().items,myLocation.getLocation().dispenserModel.capacityPerFlavor,myLocation.getLocation().dispenserModel.flavors)
-        shoppingCart = shoppingCart(myLocation.getLocation().items)
+        shoppingCart = shoppingCart(myInventory.getInventory())
 
         Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}   DeviceID ${android_id}")
 
@@ -540,7 +560,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
     private fun finishTransaction(mySaleResponse: saleResponseDC){
         releaseCoffee()
-        myInventory.putInventory(myLocation.getLocation().id,myLocation.getLocation().items)
+
+        myInventory.patchtInventoryQty(myLocation.getLocation().id,myLocation.getLocation().items)
 
         var saleItems = ""
 
@@ -979,14 +1000,15 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                     "@@PRE_PAYMENT_SAMPLE@@",
                     "customerReceipt: " + data!!.getStringExtra("customerReceipt")
                 )
+                var returnedFields = data!!.getStringExtra("returnedFields")
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "returnedFields: " + data!!.getStringExtra("returnedFields")
+                    "returnedFields: $returnedFields"
                 )
 
                 val gson = Gson()
                 val mapType = object : TypeToken<Map<String, Any>>() {}.type
-                val genericMap: Map<String, Any> = gson.fromJson(data!!.getStringExtra("returnedFields"), mapType)
+                val genericMap: Map<String, Any> = gson.fromJson(returnedFields, mapType)
                 println(genericMap)
                 var mydata = genericMap["2021"]
 
@@ -995,30 +1017,30 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 var mySaleResponseData = saleResponseDC(
                     locationId = android_id,
-                    transactionType = (data!!.getStringExtra("transactionType") as String),
-                    installmentType = data!!.getStringExtra("installmentType") as String,
-                    cashbackAmount = data!!.getStringExtra("cashbackAmount") as String,
-                    acquirerId = data!!.getStringExtra("acquirerId") as String,
-                    cardBrand = data!!.getStringExtra("cardBrand") as String,
-                    sitefTransactionId = data!!.getStringExtra("sitefTransactionId") as String,
-                    hostTrasactionId = data!!.getStringExtra("hostTrasactionId") as String,
-                    authCode = data!!.getStringExtra("authCode") as String,
-                    transactionInstallments = data!!.getStringExtra("transactionInstallments") as String,
-                    pan = (genericMap["2021"] as ArrayList<String>).get(0), // pan
-                    goodThru = (genericMap["1002"] as ArrayList<String>)!!.get(0), // good thru
-                    cardType = (genericMap["2090"] as ArrayList<String>)!!.get(0), // card_type
-                    cardReadStatus = (genericMap["2091"] as ArrayList<String>)!!.get(0), // card read status
-                    paymentSourceTaxID = (genericMap["950"] as ArrayList<String>)!!.get(0), // payment source tax id
-                    invoiceBrandID = (genericMap["951"] as ArrayList<String>)!!.get(0), // brand id for invoice
-                    invoiceNumber = (genericMap["953"] as ArrayList<String>)!!.get(0), // invoice number
-                    authorizerResponseCode = (genericMap["2010"] as ArrayList<String>)!!.get(0), // authorizer response code
-                    authorizationCode = (genericMap["135"] as ArrayList<String>)!!.get(0), // authorization code
-                    transactionTimestamp = (genericMap["105"] as ArrayList<String>)!!.get(0).toLong(), //transaction timestamp
-                    authorizationNetworkID = (genericMap["158"] as ArrayList<String>)!!.get(0), // authorization network id
-                    merchantID = (genericMap["157"] as ArrayList<String>)!!.get(0), //merchant id,
-                    sitefIf = (genericMap["131"] as ArrayList<String>)!!.get(0), //if sitef,
-                    cardBrandID = (genericMap["132"] as ArrayList<String>)!!.get(0), // sitef cardbrand id
-                    invoiceAuthorizationCode = (genericMap["952"] as ArrayList<String>)!!.get(0), // invoice authorization code
+                    transactionType = (data?.getStringExtra("transactionType") as? String ?: ""),
+                    installmentType = data?.getStringExtra("installmentType") as? String ?: "",
+                    cashbackAmount = data?.getStringExtra("cashbackAmount") as? String ?: "",
+                    acquirerId = data?.getStringExtra("acquirerId") as? String ?: "",
+                    cardBrand = data?.getStringExtra("cardBrand") as? String ?: "",
+                    sitefTransactionId = data?.getStringExtra("sitefTransactionId") as? String ?: "",
+                    hostTrasactionId = data?.getStringExtra("hostTrasactionId") as? String ?: "",
+                    authCode = data?.getStringExtra("authCode") as? String ?: "",
+                    transactionInstallments = data?.getStringExtra("transactionInstallments") as? String ?: "",
+                    pan = (genericMap["2021"] as ArrayList<String>).get(0) as? String ?: "", // pan
+                    goodThru = (genericMap["1002"] as ArrayList<String>)?.get(0) as? String ?: "", // good thru
+                    cardType = (genericMap["2090"] as ArrayList<String>)?.get(0) as? String ?: "", // card_type
+                    cardReadStatus = (genericMap["2091"] as ArrayList<String>)?.get(0) as? String ?: "", // card read status
+                    paymentSourceTaxID = (genericMap["950"] as? ArrayList<String>)?.getOrNull(0) ?: "", // payment source tax id
+                    invoiceBrandID = (genericMap["951"] as? ArrayList<String>)?.getOrNull(0) ?: "", // brand id for invoice
+                    invoiceNumber = (genericMap["953"] as? ArrayList<String>)?.getOrNull(0) ?: "", // invoice number
+                    authorizerResponseCode = (genericMap["2010"]  as? ArrayList<String>)?.getOrNull(0) ?: "", // authorizer response code
+                    authorizationCode = (genericMap["135"]  as? ArrayList<String>)?.getOrNull(0) ?: "", // authorization code
+                    transactionTimestamp = (genericMap["105"] as? ArrayList<String>)?.getOrNull(0) as? Long ?: 0, //transaction timestamp
+                    authorizationNetworkID = (genericMap["158"] as? ArrayList<String>)?.getOrNull(0) ?: "", // authorization network id
+                    merchantID = (genericMap["157"] as? ArrayList<String>)?.getOrNull(0) ?: "", //merchant id,
+                    sitefIf = (genericMap["131"] as? ArrayList<String>)?.getOrNull(0) ?: "", //if sitef,
+                    cardBrandID = (genericMap["132"] as? ArrayList<String>)?.getOrNull(0) ?: "", // sitef cardbrand id
+                    invoiceAuthorizationCode = (genericMap["952"] as? ArrayList<String>)?.getOrNull(0) ?: "", // invoice authorization code
                     saleItems = ""
                 )
 
@@ -1026,7 +1048,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                 myLog.log(mySaleResponseData.toString())
 
-                var cupom: String? = data!!.getStringExtra("merchantReceipt")
+                var cupom: String? = data?.getStringExtra("merchantReceipt")
 
                 if (cupom != null) {
                     finishTransaction(mySaleResponseData)
