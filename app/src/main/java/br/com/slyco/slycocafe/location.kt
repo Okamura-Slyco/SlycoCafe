@@ -51,19 +51,12 @@ public class location {
             return myLocation
     }
 
-    constructor(myLoc:String){
+    constructor(myLoc:String) {
         this.myLoc = myLoc
-        try {
-            runBlocking {
-                val result = async(Dispatchers.IO) {
-                    fetchLocation()
-                }.await()
-            }
-        } catch(e: Exception){
-            mylog.log("${e.printStackTrace().toString()}")
 
-        }
+        fetchLocation()
     }
+
 
     private fun initMyLocationDefault(){
         myLocation = locationDC(
@@ -112,7 +105,7 @@ public class location {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 1,
-                    price = 600,
+                    price = 300,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -124,7 +117,7 @@ public class location {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 2,
-                    price = 600,
+                    price = 300,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -136,7 +129,7 @@ public class location {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 3,
-                    price = 600,
+                    price = 300,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -148,7 +141,7 @@ public class location {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 4,
-                    price = 600,
+                    price = 300,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -160,7 +153,7 @@ public class location {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 5,
-                    price = 600,
+                    price = 300,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -172,7 +165,7 @@ public class location {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 6,
-                    price = 600,
+                    price = 300,
                     quantity = 50
                 ),
 
@@ -191,25 +184,39 @@ public class location {
     }
 
     fun fetchLocation() {
-        val call = apiService.fetchLocation(myLoc)
-
         try {
-            var callReturn: Response<locationDC> = call.execute()
-            if ((callReturn.body() != null) && (callReturn.code()) == 200) {
-                myLocation = callReturn.body()!!
-            }
-            else {
-                initMyLocationDefault()
-            }
-        }
-        catch (e: Exception){
-            mylog.log("${e.printStackTrace().toString()}")
-        }
+            runBlocking {
+                val result = async(Dispatchers.IO) {
+                    val call = apiService.fetchLocation(myLoc)
 
-        if (!::myLocation.isInitialized)
-        {
-            initMyLocationDefault()
+                    try {
+                        var callReturn: Response<locationDC> = call.execute()
+                        if ((callReturn.body() != null) && (callReturn.code()) == 200) {
+                            myLocation = callReturn.body()!!
+                        } else if (callReturn.code() == 403) {
+                            var callReturn: Response<locationDC> = call.execute()
+                            if ((callReturn.body() != null) && (callReturn.code()) == 200) {
+                                myLocation = callReturn.body()!!
+                            } else {
+                                initMyLocationDefault()
+                            }
+                        } else {
+                            initMyLocationDefault()
+                        }
+                    } catch (e: Exception) {
+                        mylog.log("${e.printStackTrace().toString()}")
+                    }
+
+                    if (!::myLocation.isInitialized) {
+                        initMyLocationDefault()
+                    }
+                    //return myLocation
+                }.await()
+            }
         }
-        //return myLocation
-    }
+         catch(e: Exception){
+            mylog.log("${e.printStackTrace().toString()}")
+
+        }
+}
 }
