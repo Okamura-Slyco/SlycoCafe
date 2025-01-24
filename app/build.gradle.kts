@@ -1,3 +1,5 @@
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -7,6 +9,7 @@ plugins {
 android {
     namespace = "br.com.slyco.slycocafe"
     compileSdk = 34
+
 
     defaultConfig {
         applicationId = "br.com.slyco.slycocafe"

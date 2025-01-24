@@ -230,7 +230,7 @@ class inventory {
                     recommendedPrice = 600
                 ),
                 dispenserNumber = 1,
-                price = 600,
+                price = 300,
                 quantity = 50
             ),
             inventoryStockDC(
@@ -242,7 +242,7 @@ class inventory {
                     recommendedPrice = 600
                 ),
                 dispenserNumber = 2,
-                price = 600,
+                price = 300,
                 quantity = 50
             ),
             inventoryStockDC(
@@ -254,7 +254,7 @@ class inventory {
                     recommendedPrice = 600
                 ),
                 dispenserNumber = 3,
-                price = 600,
+                price = 300,
                 quantity = 50
             ),
             inventoryStockDC(
@@ -266,7 +266,7 @@ class inventory {
                     recommendedPrice = 600
                 ),
                 dispenserNumber = 4,
-                price = 600,
+                price = 300,
                 quantity = 50
             ),
             inventoryStockDC(
@@ -278,7 +278,7 @@ class inventory {
                     recommendedPrice = 600
                 ),
                 dispenserNumber = 5,
-                price = 600,
+                price = 300,
                 quantity = 50
             ),
             inventoryStockDC(
@@ -290,7 +290,7 @@ class inventory {
                     recommendedPrice = 600
                 ),
                 dispenserNumber = 6,
-                price = 600,
+                price = 300,
                 quantity = 50
             )
         )
