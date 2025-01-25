@@ -1,4 +1,5 @@
-
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 plugins {
     alias(libs.plugins.android.application)
@@ -22,6 +23,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    var buildTimestamp = "\"${
+        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    }\""
+
     buildTypes {
         release {
             isDebuggable = false
@@ -31,10 +36,10 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
-            versionNameSuffix = "r"
             buildConfigField("String", "SLYCO_API_URL","\"https://api.slyco.com.br/\"")
             buildConfigField("String", "SLYCO_API_SECRET", "\"${System.getenv("SLYCO_API_SECRET_PRODUCTION")}\"")
-            buildConfigField("String", "SLYCO_API_ENVIRONMENT","\"production\"")
+            buildConfigField("String", "SLYCO_API_ENVIRONMENT","\"p\"")
+            buildConfigField("String", "SLYCO_APP_BUILD_TIMESTAMP",buildTimestamp)
         }
         debug {
             isDebuggable = true
@@ -43,10 +48,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            versionNameSuffix = "d"
             buildConfigField("String", "SLYCO_API_URL","\"https://dev-api.slyco.com.br/\"")
             buildConfigField("String", "SLYCO_API_SECRET","\"${System.getenv("SLYCO_API_SECRET_DEVELOPMENT")}\"")
-            buildConfigField("String", "SLYCO_API_ENVIRONMENT","\"development\"")
+            buildConfigField("String", "SLYCO_API_ENVIRONMENT","\"s\"")
+            buildConfigField("String", "SLYCO_APP_BUILD_TIMESTAMP",buildTimestamp)
         }
     }
     compileOptions {

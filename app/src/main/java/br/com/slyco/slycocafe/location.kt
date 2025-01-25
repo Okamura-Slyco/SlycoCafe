@@ -76,8 +76,8 @@ public class location {
                 brand = myLoc,
                 model = myLoc,
                 name = myLoc,
-                payment_device = true,
-                pos_device = true
+                paymentDevice = true,
+                posDevice = true
             ),
 
             pos = deviceDC(
@@ -85,15 +85,15 @@ public class location {
                 brand = myLoc,
                 model = myLoc,
                 name = myLoc,
-                payment_device = true,
-                pos_device = true
+                paymentDevice = true,
+                posDevice = true
             ),
             merchant = merchantDC(
                 id = 1,
                 environment = "DEVELOPMENT",
-                payment_gateway = "SITEF",
-                payment_gateway_mid = "00000048",
-                tax_id = "55.833.084/0001-36"
+                paymentGateway = "SITEF",
+                paymentGatewayMid = "00000048",
+                taxId = "55.833.084/0001-36"
             ),
             items = listOf(
                 inventoryStockDC(
