@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.DisplayMetrics
@@ -86,6 +87,8 @@ class ScreenSaver : AppCompatActivity() {
         var textView = findViewById<TextView>(R.id.didTextView)
         textView.text = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
 
+        textView = findViewById<TextView>(R.id.buildInfoTextView)
+        textView.text = "${BuildConfig.VERSION_NAME}${BuildConfig.SLYCO_API_ENVIRONMENT} ${BuildConfig.SLYCO_APP_BUILD_TIMESTAMP}"
 
         var button = findViewById<MaterialButton>(R.id.buttonNew)
         button.setOnClickListener(listener)

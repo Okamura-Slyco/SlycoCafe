@@ -789,7 +789,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
                     paymentParameters.amountStr = totalStr
                     paymentParameters.invoiceNumberStr = sdf.format(timestamp)
-                    paymentParameters.merchant_TIDStr = myLocation.getLocation().merchant.tax_id
+                    paymentParameters.merchant_TIDStr = myLocation.getLocation().merchant.taxId
                     paymentParameters.isv_TIDStr = AppConstants.isvTaxId
                     paymentParameters.operatorIdStr = "1"
 
@@ -872,7 +872,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             functionIdStr = "121",
             amountStr = "0",
             invoiceNumberStr = "",
-            merchant_TIDStr = myLocation.getLocation().merchant.tax_id.replace(".", "").replace("/", "").replace("-", ""),
+            merchant_TIDStr = myLocation.getLocation().merchant.taxId.replace(".", "").replace("/", "").replace("-", ""),
             isv_TIDStr = AppConstants.isvTaxId
         )
         callPaymentApp(test)
