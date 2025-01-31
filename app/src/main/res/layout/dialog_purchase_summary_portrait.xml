@@ -11,13 +11,14 @@
     android:backgroundTintMode="screen">
 
 
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/frameLeft"
+        android:id="@+id/chunk1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_marginTop="25dp"
-        app:layout_constraintEnd_toStartOf="@id/frameRight"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -26,7 +27,6 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/frameLayout2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -72,16 +72,14 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/frameLayout3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout1">
+            app:layout_constraintStart_toEndOf="@id/frameLayout1"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/imageViewDialog2"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:layout_marginStart="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/brasil_organic_trn" />
@@ -111,15 +109,23 @@
                 app:layout_constraintTop_toTopOf="@+id/xTextView2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/chunk2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chunk1">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/frameLayout3"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout2">
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/imageViewDialog3"
@@ -156,25 +162,13 @@
                 app:layout_constraintTop_toTopOf="@+id/xTextView3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/frameRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="25dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/frameLeft"
-        app:layout_constraintTop_toTopOf="@+id/frameLeft">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/frameLayout4"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/frameLayout5"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/frameLayout3"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -213,15 +207,25 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/chunk3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chunk2">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/frameLayout5"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/frameLayout6"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout4">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <ImageView
                 android:id="@+id/imageViewDialog5"
@@ -264,9 +268,8 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout5">
+            app:layout_constraintStart_toEndOf="@id/frameLayout5"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/imageViewDialog6"
@@ -303,6 +306,106 @@
                 app:layout_constraintTop_toTopOf="@+id/xTextView6" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/chunk4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginStart="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chunk3">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/frameLayout7"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:visibility="visible"
+            android:layout_marginTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/imageViewDialog7"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/brasil_organic_trn" />
+
+            <TextView
+                android:id="@+id/xTextView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="x"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewDialog7"
+                app:layout_constraintStart_toEndOf="@+id/imageViewDialog7"
+                app:layout_constraintTop_toTopOf="@+id/imageViewDialog7" />
+
+            <TextView
+                android:id="@+id/qtyTextView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="50"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/xTextView7"
+                app:layout_constraintStart_toEndOf="@+id/xTextView7"
+                app:layout_constraintTop_toTopOf="@+id/xTextView7" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/frameLayout8"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/frameLayout7">
+
+            <ImageView
+                android:id="@+id/imageViewDialog8"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/brasil_organic_trn" />
+
+            <TextView
+                android:id="@+id/xTextView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="5dp"
+                android:text="x"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewDialog8"
+                app:layout_constraintStart_toEndOf="@+id/imageViewDialog8"
+                app:layout_constraintTop_toTopOf="@+id/imageViewDialog8" />
+
+            <TextView
+                android:id="@+id/qtyTextView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="50"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/xTextView8"
+                app:layout_constraintStart_toEndOf="@+id/xTextView8"
+                app:layout_constraintTop_toTopOf="@+id/xTextView8" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -312,9 +415,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/frameRight"
-        app:layout_constraintStart_toStartOf="@id/frameLeft"
-        app:layout_constraintTop_toBottomOf="@+id/frameLeft">
+        app:layout_constraintStart_toStartOf="@+id/chunk1"
+        app:layout_constraintEnd_toEndOf="@id/chunk1"
+        app:layout_constraintTop_toBottomOf="@id/chunk4">
 
         <TextView
             android:id="@+id/totalTextView"
@@ -346,13 +449,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        app:layout_constraintStart_toStartOf="@id/frameBottom"
 
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameBottom">
+        app:layout_constraintEnd_toEndOf="@id/frameBottom"
+        app:layout_constraintTop_toBottomOf="@id/frameBottom">
 
         <ImageView
             android:id="@+id/botaoGrandeSlycoWallet"
@@ -423,6 +523,7 @@
             android:layout_width="110dp"
             android:layout_height="75dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/botaopequeno" />
 
         <ImageView
@@ -522,15 +623,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/imageView28"
             app:layout_constraintStart_toStartOf="@+id/imageView28"
             app:layout_constraintTop_toTopOf="@+id/imageView28"
-            app:srcCompat="@drawable/slyco_icon" /><![CDATA[
+            app:srcCompat="@drawable/slyco_icon" />
 
-
-
-        " />
-
-
-
-    ]]>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

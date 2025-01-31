@@ -144,8 +144,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 R.id.imageViewDialog3,
                 R.id.qtyTextView3),
             ITEM_VIEW_COMPONENTS(
-                R.id.g2,
-                R.id.i1g2,
+                R.id.g1,
+                R.id.i4g1,
                 R.id.imageViewCapsula4,
                 R.id.floatingActionButtonItem4Plus,
                 R.id.floatingActionButtonItem4Minus,
@@ -170,7 +170,7 @@ class MainActivity<Bitmap> : AppCompatActivity() {
 
             ITEM_VIEW_COMPONENTS(
                 R.id.g2,
-                R.id.i3g2,
+                R.id.i2g2,
                 R.id.imageViewCapsula6,
                 R.id.floatingActionButtonItem6Plus,
                 R.id.floatingActionButtonItem6Minus,
@@ -179,8 +179,34 @@ class MainActivity<Bitmap> : AppCompatActivity() {
                 R.id.textViewPrice6,
                 R.id.frameLayout6,
                 R.id.imageViewDialog6,
-                R.id.qtyTextView6)
+                R.id.qtyTextView6),
+            ITEM_VIEW_COMPONENTS(
+                R.id.g2,
+                R.id.i3g2,
+                R.id.imageViewCapsula6,
+                R.id.floatingActionButtonItem6Plus,
+                R.id.floatingActionButtonItem7Minus,
+                R.id.editTextNumberItem7,
+                R.id.textViewAttributes7,
+                R.id.textViewPrice7,
+                R.id.frameLayout7,
+                R.id.imageViewDialog7,
+                R.id.qtyTextView7),
+
+            ITEM_VIEW_COMPONENTS(
+                R.id.g2,
+                R.id.i4g2,
+                R.id.imageViewCapsula8,
+                R.id.floatingActionButtonItem8Plus,
+                R.id.floatingActionButtonItem8Minus,
+                R.id.editTextNumberItem8,
+                R.id.textViewAttributes8,
+                R.id.textViewPrice8,
+                R.id.frameLayout8,
+                R.id.imageViewDialog8,
+                R.id.qtyTextView8)
         )
+
     }
 
     fun activate_msitef(){
@@ -273,7 +299,8 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             paymentParameters.merchant_TIDStr="55833084000136"
             paymentParameters.isv_TIDStr = "55833084000136"
         }
-        else if ((DeviceInfoModule.deviceBrand.toUpperCase() == "GOOGLE") && (DeviceInfoModule.deviceModel.toUpperCase() == "ANDROID SDK BUILT FOR X86") ) {
+        else if (((DeviceInfoModule.deviceBrand.toUpperCase() == "GOOGLE") && (DeviceInfoModule.deviceModel.toUpperCase() == "ANDROID SDK BUILT FOR X86") )||
+            ((DeviceInfoModule.deviceBrand.toUpperCase() == "CLOVER") && (DeviceInfoModule.deviceModel.toUpperCase() == "C506") )){
             Log.d ("Dettected Device","Clover Kiosk")
             viewLayout = R.layout.activity_main_large_screen_toten
             purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
@@ -561,6 +588,14 @@ class MainActivity<Bitmap> : AppCompatActivity() {
         }
         var totalText = dialogView.findViewById<TextView>(R.id.totalAmountTextView)
         totalText.text = String.format("%.2f",shoppingCart.returnTotal())
+
+
+        if (myLocation.getLocation().dispenserModel.flavors >=8){
+            var frameLayout = dialogView?.findViewById<ConstraintLayout>(R.id.chunk4)
+            if (frameLayout != null) {
+                frameLayout.visibility = View.VISIBLE
+            }
+        }
 
     }
 
