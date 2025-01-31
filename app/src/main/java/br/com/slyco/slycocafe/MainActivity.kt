@@ -273,6 +273,12 @@ class MainActivity<Bitmap> : AppCompatActivity() {
             paymentParameters.merchant_TIDStr="55833084000136"
             paymentParameters.isv_TIDStr = "55833084000136"
         }
+        else if ((DeviceInfoModule.deviceBrand.toUpperCase() == "GOOGLE") && (DeviceInfoModule.deviceModel.toUpperCase() == "ANDROID SDK BUILT FOR X86") ) {
+            Log.d ("Dettected Device","Clover Kiosk")
+            viewLayout = R.layout.activity_main_large_screen_toten
+            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
+
+        }
         else {
             Log.d ("Dettected Device","Unknown")
         }
