@@ -1,14 +1,9 @@
 package br.com.slyco.slycocafe
 
 import com.google.gson.annotations.SerializedName
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 
 data class locationDC (
@@ -32,9 +27,8 @@ data class locationDC (
 
 
 
-public class location {
+class location(private var myLoc: String) {
     private lateinit var myLocation: locationDC
-    private var myLoc: String
     val mylog = log("LOCATION CLASS")
 
 //    suspend fun initializeDataAsync() {
@@ -51,12 +45,9 @@ public class location {
             return myLocation
     }
 
-    constructor(myLoc:String) {
-        this.myLoc = myLoc
-
+    init {
         fetchLocation()
     }
-
 
     private fun initMyLocationDefault(){
         myLocation = locationDC(
@@ -175,11 +166,11 @@ public class location {
         )
         val call = apiService.putLocation(myLoc,myLocation)
         try {
-            var callReturn: Response<locationDC> = call.execute()
+            val callReturn: Response<locationDC> = call.execute()
             mylog.log("PUT " + callReturn.body()!!.toString())
         }
         catch (e: Exception){
-            mylog.log("${e.printStackTrace().toString()}")
+            mylog.log(e.printStackTrace().toString())
         }
     }
 
@@ -190,11 +181,11 @@ public class location {
                     val call = apiService.fetchLocation(myLoc)
 
                     try {
-                        var callReturn: Response<locationDC> = call.execute()
+                        val callReturn: Response<locationDC> = call.execute()
                         if ((callReturn.body() != null) && (callReturn.code()) == 200) {
                             myLocation = callReturn.body()!!
                         } else if (callReturn.code() == 403) {
-                            var callReturn: Response<locationDC> = call.execute()
+                            val callReturn: Response<locationDC> = call.execute()
                             if ((callReturn.body() != null) && (callReturn.code()) == 200) {
                                 myLocation = callReturn.body()!!
                             } else {

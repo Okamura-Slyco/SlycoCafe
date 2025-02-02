@@ -37,30 +37,26 @@ class shoppingCart {
         myLog.log( "${total}")
     }
 
-    fun addItemToCart(item: NESPRESSOFLAVORS, qty: Int, inventory: inventory) :Int{
-        var myItem = itens.find { it?.flavor == item }
+    fun addItemToCart(itemId: Int, qty: Int, inventory: inventory) :Int{
+        var myItem = itens[itemId]
         var myQty = myItem!!.qty!! + qty
         if (myQty >= 0) {
-            if (myQty <= inventory.getQty(item)!!) {
+            if (myQty <= inventory.getQty(itemId)!!) {
                 myItem!!.qty = myQty
             }
             else{
-                return -1
+                return -1001
             }
         }
         else{
-            return -2
+            return -1002
         }
         this.calculateTotal()
-        myLog.log( "${item} ${qty}")
-        return 0
+        myLog.log( "${itemId} ${qty}")
+        return qty
     }
 
-    fun getCartItemQuantity(flavor: NESPRESSOFLAVORS,index:Int = 0): Int {
-        if (flavor != NESPRESSOFLAVORS.NONE) {
-            var myItem = itens.find { it?.flavor == flavor }
-            return myItem!!.qty!!
-        }
+    fun getCartItemQuantity(index:Int = 0): Int {
         return itens[index]!!.qty!!
     }
 

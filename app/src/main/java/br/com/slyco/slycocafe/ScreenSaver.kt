@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
+import android.view.WindowManager.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -73,10 +74,10 @@ class ScreenSaver : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         enableEdgeToEdge()
         setContentView(R.layout.activity_screen_saver)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
+            LayoutParams.FLAG_FULLSCREEN,
+            LayoutParams.FLAG_FULLSCREEN
         )
 
         val displayMetrics = DisplayMetrics()

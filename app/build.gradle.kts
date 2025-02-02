@@ -88,6 +88,7 @@ dependencies {
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation ("androidx.core:core-ktx:1.6.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    implementation ("com.google.android.material:material:1.11.0")
     //implementation(com.clover.sdk:clover-android-sdk:228.3)
     //implementation("androidx.room:room-runtime:2.6.1")
     //kapt("androidx.room:room-compiler:2.6.1")

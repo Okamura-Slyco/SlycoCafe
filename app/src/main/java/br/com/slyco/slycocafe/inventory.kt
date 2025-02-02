@@ -72,47 +72,31 @@ class inventory {
         return this.myItems[index]?.flavor
     }
 
-    fun getQty(flavor: NESPRESSOFLAVORS) : Int? {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        return myItem?.qty
+    fun getQty(index:Int = 0) : Int {
+        return myItems[index].qty
     }
 
-    fun setQty(flavor: NESPRESSOFLAVORS,qty:Int) {
-        var myItem = myItems.find{ it?.flavor == flavor }
+    fun setQty(index:Int,qty:Int) {
+        myItems[index].qty = qty
+    }
 
-        myItem!!.qty = qty
+    fun setPrice(index:Int,price:Float) {
+
+        myItems[index].price = price
+    }
+
+    fun getPrice(index: Int): Float {
+
+        return myItems[index]!!.price!!
+    }
+
+    fun getIntensity(index:Int): Int? {
+        return myItems[index].intensity
 
     }
 
-    fun setPrice(flavor: NESPRESSOFLAVORS,price:Float) {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        myItem!!.price = price
-    }
-
-    fun getPrice(flavor: NESPRESSOFLAVORS): Float {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        return myItem!!.price!!
-    }
-
-    fun getIntensity(flavor: NESPRESSOFLAVORS): Int? {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        if (myItem != null) {
-            return myItem.intensity
-        }
-        return 0
-    }
-
-    fun getSize(flavor: NESPRESSOFLAVORS): Int? {
-        var myItem = myItems.find{ it?.flavor == flavor }
-
-        if (myItem != null) {
-            return myItem.size
-        }
-        return 0
+    fun getSize(index:Int): Int? {
+        return myItems[index].size
     }
     fun getFlavorsQty():Int{
         return myItems.size
@@ -162,7 +146,7 @@ class inventory {
                 values = patchInventoryQtyValuesDC(
                     item = null,
                     price = null,
-                    qty = this.getQty(NESPRESSOFLAVORS.from(NESPRESSOFLAVORSHASH.getValue(items[i].item.id)))!!
+                    qty = this.getQty(i)!!
                 )
             )
             myData.add(myItem)

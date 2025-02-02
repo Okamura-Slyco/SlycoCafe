@@ -176,7 +176,7 @@ data class merchantDC (
 
 data class ITEM(
     var flavor: NESPRESSOFLAVORS = NESPRESSOFLAVORS.NONE,
-    var qty: Int?,
+    var qty: Int,
     var price: Float?,
     var size: Int?,
     var intensity: Int?

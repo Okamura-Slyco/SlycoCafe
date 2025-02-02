@@ -64,9 +64,13 @@ object GlobalVariables {
 
 class DispenserProgress : AppCompatActivity()
 {
-    var dispenserPort: UsbSerialPort? = null
+    private var dispenserPort: UsbSerialPort? = null
 
-    var thisIntent: Intent? = null
+    private var thisIntent: Intent? = null
+    private var widthDp:Float = 0f
+    private var heightDp:Float = 0f
+    private var widthPixels:Int = 0
+    private var heightPixels:Int =0
 
     override fun onResume() {
         val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
@@ -96,12 +100,12 @@ class DispenserProgress : AppCompatActivity()
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        val widthPixels = displayMetrics.widthPixels
-        val heightPixels = displayMetrics.heightPixels
+        widthPixels = displayMetrics.widthPixels
+        heightPixels = displayMetrics.heightPixels
         val densityDpi = displayMetrics.densityDpi
 
-        val widthDp = widthPixels / (densityDpi / 160f)
-        val heightDp = heightPixels / (densityDpi / 160f)
+        widthDp = widthPixels / (densityDpi / 160f)
+        heightDp = heightPixels / (densityDpi / 160f)
 
         var myDispensers = intent.getIntExtra("dispensersQty", 0)
 
@@ -111,6 +115,7 @@ class DispenserProgress : AppCompatActivity()
         for (i in 0..< myDispensers) {
             if (GlobalVariables.dispenserElements[i] != null) {
                 GlobalVariables.animationElements[i]?.counter = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+AppConstants.dispenserIdSufix, 0)
+
                 GlobalVariables.dispenserElements[i]?.counter = GlobalVariables.animationElements[i].counter
                 if (GlobalVariables.animationElements[i]?.counter!! > 0){
                     GlobalVariables.animationElements[i]?.imgSrcId = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+"_itemFlavor", 0)
@@ -119,6 +124,7 @@ class DispenserProgress : AppCompatActivity()
                     var image = findViewById<ImageView>(GlobalVariables.animationElements[i].imgId)
                     image.alpha = 0.0f
                     image.setImageResource(GlobalVariables.animationElements[i].imgSrcId)
+
                     image.layoutParams.height = capsuleDp.toInt()
 
                     image.layoutParams.width = capsuleDp.toInt()
@@ -236,7 +242,7 @@ class DispenserProgress : AppCompatActivity()
 
                 //delay(500L)
 
-                ObjectAnimator.ofFloat(coffeeImageView,"translationY",1000.0f)
+                ObjectAnimator.ofFloat(coffeeImageView,"translationY",heightPixels.toFloat() + 1000f)
                     .setDuration(1000L)
                     .start()
             }
