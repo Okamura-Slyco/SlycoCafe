@@ -170,11 +170,12 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
     override fun setPlusOnClickListener(listId:Int , position: Int) {
         val clickedItem = "${listId}: $position"
-        updateItem(listId, position, 1)
+        updateView(0,1, listId,position)
+        //updateItem(listId, position, 1)
         resetWatchDog()
         hideActionBar()
 // Handle the click
-        Toast.makeText(this, "setPlusOnClickListener: $clickedItem", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "setPlusOnClickListener: $clickedItem", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateItem(listId: Int, position: Int,qtyToAdd:Int) {
@@ -205,23 +206,23 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         // Handle the click
         resetWatchDog()
         hideActionBar()
-        Toast.makeText(this, "setPlusLongOnClickListener : $clickedItem", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "setPlusLongOnClickListener : $clickedItem", Toast.LENGTH_SHORT).show()
     }
 
     override fun setMinusOnClickListener(listId:Int , position: Int) {
         val clickedItem = "${listId}: $position"
-
-        updateItem(listId,position,-1)
+        updateView(0,-1)
+        //updateItem(listId,position,-1)
         resetWatchDog()
         hideActionBar()
-        Toast.makeText(this, "setMinusOnClickListener: $clickedItem", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "setMinusOnClickListener: $clickedItem", Toast.LENGTH_SHORT).show()
     }
     override fun setMinusLongOnClickListener(listId:Int , position: Int) {
         val clickedItem = "${listId}: $position"
         // Handle the click
         resetWatchDog()
         hideActionBar()
-        Toast.makeText(this, "setMinusLongOnClickListener : $clickedItem", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "setMinusLongOnClickListener : $clickedItem", Toast.LENGTH_SHORT).show()
     }
 
     private fun setupArrayList(items:List<inventoryStockDC>,dispenserFlavors:Int){
@@ -829,14 +830,27 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
 
     }
-    fun updateView(res:Int)
+    fun updateView(res:Int, qtyToAdd: Int=0, listId: Int=-1,position: Int = -1)
     {
         if (res == 0) {
-            for (displayListColumn in displayList){
-                for (displayItem in displayListColumn){
-                    updateItem(displayList.indexOf(displayListColumn),displayListColumn.indexOf(displayItem),0)
-                }
+            if ((listId <0) || (position <0)) {
+                for (displayListColumn in displayList) {
+                    for (displayItem in displayListColumn) {
+                        updateItem(
+                            displayList.indexOf(displayListColumn),
+                            displayListColumn.indexOf(displayItem),
+                            qtyToAdd
+                        )
+                    }
 
+                }
+            }
+            else {
+                updateItem(
+                    listId,
+                    position,
+                    qtyToAdd
+                )
             }
             var textView1 = findViewById<TextView>(R.id.textViewTotal)
             textView1.setText(String.format("%.2f", shoppingCart.returnTotal()))
@@ -964,9 +978,11 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
                 myLog.log(mySaleResponseData.toString())
 
-                var cupom: String? = data?.getStringExtra("merchantReceipt")
+                var merchantReceipt: String? = data?.getStringExtra("merchantReceipt")
+                var customerReceipt: String? = data?.getStringExtra("customerReceipt")
 
-                if (cupom != null) {
+                if ((merchantReceipt != null)||
+                    (customerReceipt != null)){
                     finishTransaction(mySaleResponseData)
                 }
             }

@@ -3,6 +3,7 @@ package br.com.slyco.slycocafe
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 
@@ -96,7 +97,7 @@ class location(private var myLoc: String) {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 1,
-                    price = 300,
+                    price = 600,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -108,7 +109,7 @@ class location(private var myLoc: String) {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 2,
-                    price = 300,
+                    price = 600,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -120,7 +121,7 @@ class location(private var myLoc: String) {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 3,
-                    price = 300,
+                    price = 600,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -132,7 +133,7 @@ class location(private var myLoc: String) {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 4,
-                    price = 300,
+                    price = 600,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -144,7 +145,7 @@ class location(private var myLoc: String) {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 5,
-                    price = 300,
+                    price = 600,
                     quantity = 50
                 ),
                 inventoryStockDC(
@@ -156,7 +157,7 @@ class location(private var myLoc: String) {
                         recommendedPrice = 600
                     ),
                     dispenserNumber = 6,
-                    price = 300,
+                    price = 600,
                     quantity = 50
                 ),
 
@@ -174,40 +175,68 @@ class location(private var myLoc: String) {
         }
     }
 
-    fun fetchLocation() {
+    fun fetchLocation(maxRetries: Int = 3, initialDelayMs: Long = 1000) {
         try {
             runBlocking {
                 val result = async(Dispatchers.IO) {
-                    val call = apiService.fetchLocation(myLoc)
+                    var currentRetry = 0
+                    var currentDelay = initialDelayMs
 
-                    try {
-                        val callReturn: Response<locationDC> = call.execute()
-                        if ((callReturn.body() != null) && (callReturn.code()) == 200) {
-                            myLocation = callReturn.body()!!
-                        } else if (callReturn.code() == 403) {
+                    while (currentRetry <= maxRetries) {
+                        try {
+                            val call = apiService.fetchLocation(myLoc)
                             val callReturn: Response<locationDC> = call.execute()
-                            if ((callReturn.body() != null) && (callReturn.code()) == 200) {
-                                myLocation = callReturn.body()!!
-                            } else {
-                                initMyLocationDefault()
+
+                            when (callReturn.code()) {
+                                200 -> {
+                                    if (callReturn.body() != null) {
+                                        myLocation = callReturn.body()!!
+                                        return@async // Success, exit the retry loop
+                                    }
+                                }
+                                403 -> {
+                                    // Handle 403 case with one immediate retry
+                                    val retryCall = apiService.fetchLocation(myLoc)
+                                    val retryReturn: Response<locationDC> = retryCall.execute()
+                                    if (retryReturn.code() == 200 && retryReturn.body() != null) {
+                                        myLocation = retryReturn.body()!!
+                                        return@async // Success, exit the retry loop
+                                    }
+                                }
                             }
-                        } else {
-                            initMyLocationDefault()
+
+                            // If we reach here, the call wasn't successful
+                            if (currentRetry < maxRetries) {
+                                delay(currentDelay)
+                                currentDelay *= 2 // Exponential backoff
+                                currentRetry++
+                            } else {
+                                // Max retries reached, use default
+                                initMyLocationDefault()
+                                return@async
+                            }
+
+                        } catch (e: Exception) {
+                            mylog.log("Attempt ${currentRetry + 1} failed: ${e.message}")
+                            if (currentRetry >= maxRetries) {
+                                initMyLocationDefault()
+                                return@async
+                            }
+                            delay(currentDelay)
+                            currentDelay *= 2 // Exponential backoff
+                            currentRetry++
                         }
-                    } catch (e: Exception) {
-                        mylog.log("${e.printStackTrace().toString()}")
                     }
 
+                    // Ensure myLocation is initialized
                     if (!::myLocation.isInitialized) {
                         initMyLocationDefault()
                     }
-                    //return myLocation
                 }.await()
             }
+        } catch (e: Exception) {
+            mylog.log("${e.printStackTrace()}")
+            initMyLocationDefault()
         }
-         catch(e: Exception){
-            mylog.log("${e.printStackTrace().toString()}")
-
-        }
-}
+    }
 }

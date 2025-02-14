@@ -262,7 +262,7 @@ class ShoppingCartAdapter(
         }
         else
         {
-            maxViewHeight = (screeenHeight-100).toFloat() / 2.0f
+            maxViewHeight = (screeenHeight-120).toFloat() / 2.0f
             maxViewWidth = (screeenWidth).toFloat() / (elementsInView).toFloat()
             viewWidth = maxViewWidth.toInt()
             Log.d ("Recycler","Horizontal - maxViewHeight: ${maxViewHeight}   maxViewWidth: ${maxViewWidth}")
