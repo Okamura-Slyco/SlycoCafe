@@ -315,8 +315,8 @@ interface ApiService {
     @PATCH("inventory/{id}")
     fun patchInventoryQty(@Path("id") inventoryId: String, @Body patchInventory: List<patchInventoryQtyElementDC>): Call<patchInventoryQtyElementDC>
 
-    @PUT("sale/{id}")
-    fun putSale(@Path("id") inventoryId: String, @Body putInventory: saleResponseDC): Call<saleResponseDC>
+    @PUT("sale")
+    fun putSale(@Body putInventory: saleResponseDC): Call<saleResponseDC>
 
 }
 

@@ -24,8 +24,9 @@ class putSale {
     }
     fun intPutSale(mySaleId: String, mySaleResponseData:saleResponseDC){
 
-        val call = apiService.putSale(mySaleId,mySaleResponseData)
+        val call = apiService.putSale(mySaleResponseData)
         try {
+            myLog.log("mySaleResponseData: ${mySaleResponseData.toString()}")
             var callReturn: Response<saleResponseDC> = call.execute()
             myLog.log("PUT " + callReturn.body()?.toString())
         }

@@ -175,7 +175,8 @@ class location(private var myLoc: String) {
         }
     }
 
-    fun fetchLocation(maxRetries: Int = 3, initialDelayMs: Long = 1000) {
+    fun fetchLocation(maxRetries: Int = 20, initialDelayMs: Long = 1000) {
+
         try {
             runBlocking {
                 val result = async(Dispatchers.IO) {
@@ -184,6 +185,7 @@ class location(private var myLoc: String) {
 
                     while (currentRetry <= maxRetries) {
                         try {
+                            mylog.log("fetchLocation: try $currentRetry ($currentDelay)")
                             val call = apiService.fetchLocation(myLoc)
                             val callReturn: Response<locationDC> = call.execute()
 
@@ -206,7 +208,7 @@ class location(private var myLoc: String) {
                             }
 
                             // If we reach here, the call wasn't successful
-                            if (currentRetry < maxRetries) {
+                            if ((currentRetry < maxRetries) && (callReturn.code() != 404)) {
                                 delay(currentDelay)
                                 currentDelay *= 2 // Exponential backoff
                                 currentRetry++

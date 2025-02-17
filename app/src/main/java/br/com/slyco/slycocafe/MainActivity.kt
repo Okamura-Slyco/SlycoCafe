@@ -54,6 +54,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     private var easterEgg3 = 0
     private lateinit var android_id:String
 
+    private lateinit var loadingDialog: LoadingDialog
+
     private lateinit var watchDog: Handler
 
 
@@ -75,8 +77,6 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
     private var displayList: MutableList<MutableList<shoppingCartItemModel>> = mutableListOf()
     private lateinit var summaryDisplayList: MutableList<MutableList<purchaseSummaryItemModel>>
-
-    private var viewScale:Float = 1.0f
 
     private var displayOrientation:Int = LinearLayoutManager.HORIZONTAL
 
@@ -286,6 +286,12 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        loadingDialog = LoadingDialog(this)
+        // Show loading
+        if (!isFinishing) {
+            loadingDialog.show()
+        }
+
         // Using constructor
         val hashMap: HashMap<String, Int> = HashMap()
 
@@ -309,8 +315,6 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
         myLog.log("Dec data ${cryptoManager.decrypt(encryptOutput).decodeToString()}")
 
-        myLog.log("API Secret: ${BuildConfig.SLYCO_API_SECRET}")
-
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         screeenHeight = displayMetrics.heightPixels
@@ -325,7 +329,6 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             Log.d ("Dettected Device","Clover Mini")
             viewLayout = R.layout.activity_main
             purchaseSummaryLayout = R.layout.dialog_purchase_summary
-            this.viewScale = 0.8f
         }
         else if ((DeviceInfoModule.deviceBrand.toUpperCase() == "CLOVER") && ((DeviceInfoModule.deviceModel.toUpperCase() == "C405")||(DeviceInfoModule.deviceModel.toUpperCase() == "C406"))) {
             Log.d ("Dettected Device","Clover Flex")
@@ -334,7 +337,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             this.displayOrientation = LinearLayoutManager.VERTICAL
         }
         else if (((DeviceInfoModule.deviceBrand.toUpperCase() == "INGENICO") && (DeviceInfoModule.deviceModel.toUpperCase() == "DX8000") )||
-            ((DeviceInfoModule.deviceBrand == "SUNMI") && (DeviceInfoModule.deviceModel == "P2-A11"))) {
+            ((DeviceInfoModule.deviceBrand.toUpperCase() == "SUNMI") && (DeviceInfoModule.deviceModel.toUpperCase() == "P2-A11"))||
+            ((DeviceInfoModule.deviceBrand.toUpperCase() == "INGENICO") && (DeviceInfoModule.deviceModel.toUpperCase() == "DX6000"))) {
 
             Log.d ("Dettected Device","Smart Terminal")
             viewLayout = R.layout.activity_main_smart_terminal
@@ -469,7 +473,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         watchDog = Handler(Looper.getMainLooper())
 
         resetWatchDog()
-
+        if (loadingDialog.isShowing) {
+            loadingDialog.dismiss()
+        }
         //updateView(0)
 
     }

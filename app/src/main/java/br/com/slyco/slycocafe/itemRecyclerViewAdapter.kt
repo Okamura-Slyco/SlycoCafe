@@ -232,6 +232,7 @@ class ShoppingCartAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        Log.d("itemRecyclerViewAdapter", "onCreateViewHolder")
 
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.shopping_cart_item, parent, false)
@@ -249,7 +250,7 @@ class ShoppingCartAdapter(
 
         var viewWidth = view.measuredWidth
         var viewHeigth = view.measuredHeight
-
+        Log.d("DisplaySize", "$screeenWidth $screeenHeight")
         var maxViewWidth = 0.0f
         var maxViewHeight = 0.0f
 
@@ -275,25 +276,25 @@ class ShoppingCartAdapter(
 
         with(holder) {
             shoppingCartConstraintLayout.scaleLayout(currentScale)
-            shoppingCartConstraintLayout.layoutParams.height = viewHeigth
-            shoppingCartConstraintLayout.layoutParams.width = viewWidth
+            //shoppingCartConstraintLayout.layoutParams.height = viewHeigth
+            //shoppingCartConstraintLayout.layoutParams.width = viewWidth
 //            // Scale buttons
-//            minusButton.apply {
-//                val originalIconSize = minusButton.iconSize
-//                iconSize = (originalIconSize * currentScale).toInt()
-//            }
-//
-//            plusButton.apply {
-//                val originalIconSize = plusButton.iconSize
-//                iconSize = (originalIconSize * currentScale).toInt()
-//            }
-//
-//            // Scale image if needed
-//            flavorImage.apply {
-//                scaleX = currentScale
-//                scaleY = currentScale
-//            }
-//
+            //minusButton.apply {
+            //    val originalIconSize = minusButton.iconSize
+            //    iconSize = (originalIconSize * currentScale).toInt()
+           // }
+
+            //plusButton.apply {
+            //    val originalIconSize = plusButton.iconSize
+            //    iconSize = (originalIconSize * currentScale).toInt()
+           // }
+
+            // Scale image if needed
+            //flavorImage.apply {
+            //    scaleX = currentScale
+            //    scaleY = currentScale
+           // }
+
 //            priceButton.apply{
 //
 //            }
