@@ -28,7 +28,7 @@ data class locationDC (
 
 
 
-class location(private var myLoc: String) {
+class location(private var myLoc: String, private var myBrand:String="", private var myModel:String="") {
     private lateinit var myLocation: locationDC
     val mylog = log("LOCATION CLASS")
 
@@ -65,18 +65,18 @@ class location(private var myLoc: String) {
             ),
             paymentDevice = deviceDC(
                 id = 1,
-                brand = myLoc,
-                model = myLoc,
-                name = myLoc,
+                brand = myBrand,
+                model = myModel,
+                name = "${myBrand} ${myModel}",
                 paymentDevice = true,
                 posDevice = true
             ),
 
             pos = deviceDC(
                 id = 1,
-                brand = myLoc,
-                model = myLoc,
-                name = myLoc,
+                brand = myBrand,
+                model = myModel,
+                name = "${myBrand} ${myModel}",
                 paymentDevice = true,
                 posDevice = true
             ),

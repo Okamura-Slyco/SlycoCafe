@@ -17,8 +17,8 @@ android {
         minSdk = 26
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 29
-        versionCode = 17
-        versionName = "1.17"
+        versionCode = 18
+        versionName = "1.18"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -90,6 +90,7 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.google.android.material:material:1.11.0")
     implementation ("com.airbnb.android:lottie:6.6.2")
+    implementation ("com.amazonaws:aws-android-sdk-iot:2.78.0")
     //implementation(com.clover.sdk:clover-android-sdk:228.3)
     //implementation("androidx.room:room-runtime:2.6.1")
     //kapt("androidx.room:room-compiler:2.6.1")

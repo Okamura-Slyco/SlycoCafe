@@ -321,7 +321,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         screenWidth = displayMetrics.widthPixels
 
 
-        myLocation = location(android_id)
+        myLocation = location(android_id,DeviceInfoModule.deviceBrand, DeviceInfoModule.deviceModel)
 
         Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}   DeviceID ${android_id}")
 
@@ -338,6 +338,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
         else if (((DeviceInfoModule.deviceBrand.toUpperCase() == "INGENICO") && (DeviceInfoModule.deviceModel.toUpperCase() == "DX8000") )||
             ((DeviceInfoModule.deviceBrand.toUpperCase() == "SUNMI") && (DeviceInfoModule.deviceModel.toUpperCase() == "P2-A11"))||
+            ((DeviceInfoModule.deviceBrand.toUpperCase() == "NEWPOS") && (DeviceInfoModule.deviceModel.toUpperCase() == "NEW9220"))||
+            ((DeviceInfoModule.deviceBrand.toUpperCase() == "VERIFONE") && (DeviceInfoModule.deviceModel.toUpperCase() == "X990"))||
             ((DeviceInfoModule.deviceBrand.toUpperCase() == "INGENICO") && (DeviceInfoModule.deviceModel.toUpperCase() == "DX6000"))) {
 
             Log.d ("Dettected Device","Smart Terminal")
@@ -946,14 +948,14 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 val mapType = object : TypeToken<Map<String, Any>>() {}.type
                 val genericMap: Map<String, Any> = gson.fromJson(returnedFields, mapType)
                 println(genericMap)
-                var mydata = genericMap["2021"]
+                //var mydata = genericMap["2021"]
 
-                myLog.log("genericMap: ${(mydata as ArrayList<String>).get(0)}")
+                //myLog.log("genericMap: ${(mydata as ArrayList<String>).get(0)}")
 
 
-                var mySaleResponseData = saleResponseDC(
+                val mySaleResponseData = saleResponseDC(
                     locationId = android_id,
-                    transactionType = (data?.getStringExtra("transactionType") as? String ?: ""),
+                    transactionType = data?.getStringExtra("transactionType") as? String ?: "",
                     installmentType = data?.getStringExtra("installmentType") as? String ?: "",
                     cashbackAmount = data?.getStringExtra("cashbackAmount") as? String ?: "",
                     acquirerId = data?.getStringExtra("acquirerId") as? String ?: "",
@@ -962,23 +964,24 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     hostTrasactionId = data?.getStringExtra("hostTrasactionId") as? String ?: "",
                     authCode = data?.getStringExtra("authCode") as? String ?: "",
                     transactionInstallments = data?.getStringExtra("transactionInstallments") as? String ?: "",
-                    pan = (genericMap["2021"] as ArrayList<String>).get(0) as? String ?: "", // pan
-                    goodThru = (genericMap["1002"] as ArrayList<String>)?.get(0) as? String ?: "", // good thru
-                    cardType = (genericMap["2090"] as ArrayList<String>)?.get(0) as? String ?: "", // card_type
-                    cardReadStatus = (genericMap["2091"] as ArrayList<String>)?.get(0) as? String ?: "", // card read status
+                    pan = (genericMap["2021"] as? ArrayList<String>)?.getOrNull(0) as? String ?: "", // pan
+                    goodThru = (genericMap["1002"] as? ArrayList<String>)?.getOrNull(0) as? String ?: "", // good thru
+                    cardType = (genericMap["2090"] as? ArrayList<String>)?.getOrNull(0) as? String ?: "", // card_type
+                    cardReadStatus = (genericMap["2091"] as? ArrayList<String>)?.getOrNull(0) as? String ?: "", // card read status
                     paymentSourceTaxID = (genericMap["950"] as? ArrayList<String>)?.getOrNull(0) ?: "", // payment source tax id
                     invoiceBrandID = (genericMap["951"] as? ArrayList<String>)?.getOrNull(0) ?: "", // brand id for invoice
                     invoiceNumber = (genericMap["953"] as? ArrayList<String>)?.getOrNull(0) ?: "", // invoice number
-                    authorizerResponseCode = (genericMap["2010"]  as? ArrayList<String>)?.getOrNull(0) ?: "", // authorizer response code
-                    authorizationCode = (genericMap["135"]  as? ArrayList<String>)?.getOrNull(0) ?: "", // authorization code
-                    transactionTimestamp = (genericMap["105"] as? ArrayList<String>)?.getOrNull(0) as? Long ?: 0, //transaction timestamp
+                    authorizerResponseCode = (genericMap["2010"] as? ArrayList<String>)?.getOrNull(0) ?: "", // authorizer response code
+                    authorizationCode = (genericMap["135"] as? ArrayList<String>)?.getOrNull(0) ?: "", // authorization code
+                    transactionTimestamp = (genericMap["105"] as? ArrayList<String>)?.getOrNull(0)?.toLongOrNull() ?: 0L, //transaction timestamp
                     authorizationNetworkID = (genericMap["158"] as? ArrayList<String>)?.getOrNull(0) ?: "", // authorization network id
-                    merchantID = (genericMap["157"] as? ArrayList<String>)?.getOrNull(0) ?: "", //merchant id,
-                    sitefIf = (genericMap["131"] as? ArrayList<String>)?.getOrNull(0) ?: "", //if sitef,
+                    merchantID = (genericMap["157"] as? ArrayList<String>)?.getOrNull(0) ?: "", //merchant id
+                    sitefIf = (genericMap["131"] as? ArrayList<String>)?.getOrNull(0) ?: "", //if sitef
                     cardBrandID = (genericMap["132"] as? ArrayList<String>)?.getOrNull(0) ?: "", // sitef cardbrand id
                     invoiceAuthorizationCode = (genericMap["952"] as? ArrayList<String>)?.getOrNull(0) ?: "", // invoice authorization code
                     saleItems = ""
                 )
+
 
 
 
