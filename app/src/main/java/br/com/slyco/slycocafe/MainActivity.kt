@@ -370,6 +370,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
         else {
             Log.d ("Dettected Device","Unknown")
+            viewLayout = R.layout.activity_main_smart_terminal
+            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
+            this.displayOrientation = LinearLayoutManager.VERTICAL
         }
 
 
