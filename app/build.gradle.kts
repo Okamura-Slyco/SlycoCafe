@@ -36,7 +36,7 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
-            buildConfigField("String", "SLYCO_API_URL","\"${System.getenv("SLYCO_API_SECRET_PRODUCTION")}\"")
+            buildConfigField("String", "SLYCO_API_URL","\"${System.getenv("SLYCO_API_PRODUCTION")}\"")
             buildConfigField("String", "SLYCO_API_SECRET", "\"${System.getenv("SLYCO_API_SECRET_PRODUCTION")}\"")
             buildConfigField("String", "SLYCO_API_ENVIRONMENT","\"p\"")
             buildConfigField("String", "SLYCO_APP_BUILD_TIMESTAMP",buildTimestamp)

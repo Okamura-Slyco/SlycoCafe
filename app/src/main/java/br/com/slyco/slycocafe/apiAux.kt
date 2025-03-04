@@ -16,7 +16,46 @@ import retrofit2.http.PATCH
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-
+data class MAIN_VIEW_ATTRIBUTES (
+    @SerializedName("plus_minus_height")
+    var plusMinusHeigth: Int,
+    @SerializedName("tag_alpha")
+    var tagAlpha: Float,
+    @SerializedName("margin_top")
+    var marginTop: Int,
+    @SerializedName("qty_ems")
+    var qtyEms: Int,
+    @SerializedName("img_size")
+    var imgSize: Int,
+    @SerializedName("plus_minus_width")
+    var plusMinusWidth: Int,
+    @SerializedName("recycler_margin_top")
+    var recyclerMarginTop: Int,
+    @SerializedName("plus_minus_margin")
+    var plusMinusMargin: Int,
+    @SerializedName("qty_margin_top")
+    var qtyMarginTop: Int,
+    @SerializedName("tag_icon_size")
+    var tagIconSize: Int,
+    @SerializedName("tag_width")
+    var tagWidth: Int,
+    @SerializedName("minus_tint")
+    var minusTint: String,
+    @SerializedName("tag_text_size")
+    var tagTextSize: Int,
+    @SerializedName("plus_tint")
+    var plusTint: String,
+    @SerializedName("plus_minus_icon_size")
+    var plusMinusIconSize: Int,
+    @SerializedName("tag_height")
+    var tagHeight: Int,
+    @SerializedName("qty_text_size")
+    var qtyTextSize: Int,
+    @SerializedName("layout_height")
+    var layoutHeight: Int,
+    @SerializedName("layout_width")
+    var layoutWidth: Int,
+)
 
 
 
@@ -158,7 +197,11 @@ data class deviceDC (
     @SerializedName("payment_device")
     var paymentDevice:Boolean,
     @SerializedName("pos_device")
-    var posDevice:Boolean
+    var posDevice:Boolean,
+    @SerializedName("main_view_attributes")
+    var mainViewAttributes: MAIN_VIEW_ATTRIBUTES,
+    @SerializedName("screen_format")
+    var screenFormat: String
 )
 
 data class merchantDC (

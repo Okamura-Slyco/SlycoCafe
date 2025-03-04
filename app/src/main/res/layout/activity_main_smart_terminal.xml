@@ -72,15 +72,15 @@
         android:text="Total: R$"
         android:textSize="30sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/textViewTotal"
         app:layout_constraintEnd_toStartOf="@id/textViewTotal"
-        app:layout_constraintTop_toTopOf="@id/textViewTotal"
-        app:layout_constraintBottom_toBottomOf="@id/textViewTotal"/>
+        app:layout_constraintTop_toTopOf="@id/textViewTotal" />
 
     <Button
         android:id="@+id/buttonCheckout"
         android:layout_width="190dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="5dp"
         android:backgroundTint="#228800"
         android:text="Comprar"

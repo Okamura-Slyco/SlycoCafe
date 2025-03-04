@@ -54,8 +54,6 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     private var easterEgg3 = 0
     private lateinit var android_id:String
 
-    private lateinit var loadingDialog: LoadingDialog
-
     private lateinit var watchDog: Handler
 
 
@@ -133,6 +131,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             screeenHeight = screeenHeight,
             screeenWidth = screenWidth,
             displayOrientation = displayOrientation,
+            mainViewAttributes = myLocation.getLocation().pos.mainViewAttributes
         )
         recyclerView1.adapter = adapter1
 
@@ -141,7 +140,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             elementsInView = displayList[1].size,
             screeenHeight = screeenHeight,
             screeenWidth = screenWidth,
-            displayOrientation = displayOrientation
+            displayOrientation = displayOrientation,
+            mainViewAttributes = myLocation.getLocation().pos.mainViewAttributes
         )
         recyclerView2.adapter = adapter2
 
@@ -283,209 +283,30 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         hideActionBar()
+
+        // Calculate how long to display the splash screen
+        val startTime = System.currentTimeMillis()
+
+        // Apply splash theme before super.onCreate()
+        setTheme(R.style.Theme_SlycoCafé)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
 
-        loadingDialog = LoadingDialog(this)
-        // Show loading
-        if (!isFinishing) {
-            loadingDialog.show()
+        // Do initialization work
+        initializeApp()
+
+        // Ensure minimum display time if needed
+        val endTime = System.currentTimeMillis()
+        val displayTime = endTime - startTime
+        val minDisplayTime = 3000 // 1 second minimum
+
+        if (displayTime < minDisplayTime) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                // Any post-splash operations
+            }, minDisplayTime - displayTime)
         }
-
-        // Using constructor
-        val hashMap: HashMap<String, Int> = HashMap()
-
-// Using hashMapOf function
-
-
-        android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
-
-        val cryptoManager = CryptoManager()
-
-        val cryptoKey =cryptoManager.getKey()
-
-        myLog.log( "Key: ${cryptoKey.toString()}")
-
-        val encryptOutput = cryptoManager.encrypt(android_id.encodeToByteArray())
-
-        myLog.log("IV size ${encryptOutput.ivSize.toString()}")
-        myLog.log("IV ${encryptOutput.iv.decodeToString()}")
-        myLog.log("Enc data size ${encryptOutput.encryptedDataSize.toString()}")
-        myLog.log("Enc data ${encryptOutput.encryptedData.decodeToString()}")
-
-        myLog.log("Dec data ${cryptoManager.decrypt(encryptOutput).decodeToString()}")
-
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        screeenHeight = displayMetrics.heightPixels
-        screenWidth = displayMetrics.widthPixels
-
-
-        myLocation = location(android_id,DeviceInfoModule.deviceBrand, DeviceInfoModule.deviceModel)
-
-        Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}   DeviceID ${android_id}")
-
-        if ((DeviceInfoModule.deviceBrand.toUpperCase() == "CLOVER") && (DeviceInfoModule.deviceModel.toUpperCase() == "C305")) {
-            Log.d ("Dettected Device","Clover Mini")
-            viewLayout = R.layout.activity_main
-            purchaseSummaryLayout = R.layout.dialog_purchase_summary
-        }
-        else if ((DeviceInfoModule.deviceBrand.toUpperCase() == "CLOVER") && ((DeviceInfoModule.deviceModel.toUpperCase() == "C405")||(DeviceInfoModule.deviceModel.toUpperCase() == "C406"))) {
-            Log.d ("Dettected Device","Clover Flex")
-            viewLayout = R.layout.activity_main_smart_terminal
-            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
-            this.displayOrientation = LinearLayoutManager.VERTICAL
-        }
-        else if (((DeviceInfoModule.deviceBrand.toUpperCase() == "INGENICO") && (DeviceInfoModule.deviceModel.toUpperCase() == "DX8000") )||
-            ((DeviceInfoModule.deviceBrand.toUpperCase() == "SUNMI") && (DeviceInfoModule.deviceModel.toUpperCase() == "P2-A11"))||
-            ((DeviceInfoModule.deviceBrand.toUpperCase() == "NEWPOS") && (DeviceInfoModule.deviceModel.toUpperCase() == "NEW9220"))||
-            ((DeviceInfoModule.deviceBrand.toUpperCase() == "VERIFONE") && (DeviceInfoModule.deviceModel.toUpperCase() == "X990"))||
-            ((DeviceInfoModule.deviceBrand.toUpperCase() == "INGENICO") && (DeviceInfoModule.deviceModel.toUpperCase() == "DX6000"))) {
-
-            Log.d ("Dettected Device","Smart Terminal")
-            viewLayout = R.layout.activity_main_smart_terminal
-            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
-            this.displayOrientation = LinearLayoutManager.VERTICAL
-        }
-        else if ((DeviceInfoModule.deviceBrand.toUpperCase() == "GERTEC") && (DeviceInfoModule.deviceModel.toUpperCase() == "SK-210") ) {
-            Log.d ("Dettected Device","Gertec SK210")
-            viewLayout = R.layout.activity_main_smart_terminal
-            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
-            paymentParameters.pinpadTypeStr="ANDROID_USB"
-            paymentParameters.sitefMIDStr="00000048"
-            paymentParameters.endpointStr="tls-prod.fiservapp.com"
-            paymentParameters.comProtocolString="4"
-            paymentParameters.merchant_TIDStr="55833084000136"
-            paymentParameters.isv_TIDStr = "55833084000136"
-
-            this.displayOrientation = LinearLayoutManager.VERTICAL
-        }
-        else if (((DeviceInfoModule.deviceBrand.toUpperCase() == "GOOGLE") && (DeviceInfoModule.deviceModel.toUpperCase() == "ANDROID SDK BUILT FOR X86") )||
-            ((DeviceInfoModule.deviceBrand.toUpperCase() == "CLOVER") && (DeviceInfoModule.deviceModel.toUpperCase() == "C506") )){
-            Log.d ("Dettected Device","Clover Kiosk")
-            viewLayout = R.layout.activity_main_large_screen_toten
-            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
-            this.displayOrientation = LinearLayoutManager.VERTICAL
-
-        }
-        else {
-            Log.d ("Dettected Device","Unknown")
-            viewLayout = R.layout.activity_main_smart_terminal
-            purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
-            this.displayOrientation = LinearLayoutManager.VERTICAL
-        }
-
-        when  (myLocation.getLocation().merchant.paymentApp) {
-
-            "SiTef Sales App" -> {
-                Log.d("TRANSACTION", "SiTef Sales App")
-                paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
-                    INTEGRATION_APP.SITEF_SALES_APP,
-                    "com.fiserv.sitef.action.TRANSACTION",
-                    "",
-                    "",
-                    "",
-                    "functionId",
-                    "",
-                    "transactionAmount",
-                    "functionAdditionalParameters",
-                    "tenderOperator",
-                    "invoiceDate",
-                    "invoiceTime",
-                    "invoiceNumber",
-                    "transactionInstallments",
-                    "",
-                    "enabledTransactions",
-                    "",
-                    "",
-                    "",
-                    "isvTaxId",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "subAcquirerParameters",
-                    "autoFields",
-                    "",
-                    "",
-                    "",
-                    ""
-                )
-                Log.d("TRANSACTION", "SiTef Sales App")
-            }
-
-            "m-SiTef" -> {
-                paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
-                    INTEGRATION_APP.MSITEF,
-                    "br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF",
-                    "empresaSitef",
-                    "enderecoSitef",
-                    "terminalSitef",
-                    "modalidade",
-                    "CNPJ_CPF",
-                    "valor",
-                    "restricoes",
-                    "operador",
-                    "Data",
-                    "Hora",
-                    "numeroCupom",
-                    "numParcelas",
-                    "Otp",
-                    "transacoesHabilitadas",
-                    "pinpadMac",
-                    "comExterna",
-                    "isDoubleValidation",
-                    "cnpj_automacao",
-                    "cnpj_facilitador",
-                    "timeoutColeta",
-                    "acessibilidadeVisual",
-                    "tipoPinpad",
-                    "dadosSubAdqui",
-                    "tipoCampos",
-                    "habilitaColetaTaxaEmbarqueIATA",
-                    "habilitaColetaValorEntradaIATA",
-                    "clsit",
-                    "tokenRegistroTls"
-                )
-                Log.d("TRANSACTION", "m-SiTef")
-            }
-
-            else -> {
-                Log.d("TRANSACTION", "none")
-            }
-        }
-
-        myInventory = inventory(android_id,myLocation.getLocation().items,myLocation.getLocation().dispenserModel.capacityPerFlavor,myLocation.getLocation().dispenserModel.flavors)
-        setupArrayList(myLocation.getLocation().items,myLocation.getLocation().dispenserModel.flavors)
-        shoppingCart = shoppingCart(myInventory.getInventory())
-
-        setContentView(viewLayout)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-
-        initDialogElements()
-
-        var productImage = findViewById<ImageView>(R.id.helpButton)
-        productImage.setOnClickListener(listener)
-
-        var button1 = findViewById<Button>(R.id.buttonEmpty)
-        button1.setOnClickListener(listener)
-        button1 = findViewById<Button>(R.id.buttonCheckout)
-        button1.setOnClickListener(listener)
-
-        var text1 = findViewById<TextView>(R.id.textViewTotalFix)
-        text1.setOnClickListener(listener)
-
-        watchDog = Handler(Looper.getMainLooper())
-
-        resetWatchDog()
-        if (loadingDialog.isShowing) {
-            loadingDialog.dismiss()
-        }
-        //updateView(0)
 
     }
 
@@ -955,10 +776,6 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 val mapType = object : TypeToken<Map<String, Any>>() {}.type
                 val genericMap: Map<String, Any> = gson.fromJson(returnedFields, mapType)
                 println(genericMap)
-                //var mydata = genericMap["2021"]
-
-                //myLog.log("genericMap: ${(mydata as ArrayList<String>).get(0)}")
-
 
                 val mySaleResponseData = saleResponseDC(
                     locationId = android_id,
@@ -1080,4 +897,151 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         startActivityForResult(intent, 2)
     }
 
+    fun setupView(){
+
+        when (myLocation.getLocation().pos.screenFormat) {
+            "portrait" ->{
+                this.displayOrientation = LinearLayoutManager.VERTICAL
+                viewLayout = R.layout.activity_main_smart_terminal
+                purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
+            }
+            else ->{
+                this.displayOrientation = LinearLayoutManager.HORIZONTAL
+                viewLayout = R.layout.activity_main
+                purchaseSummaryLayout = R.layout.dialog_purchase_summary
+            }
+        }
+
+    }
+
+    fun setupPaymentApp(){
+        when  (myLocation.getLocation().merchant.paymentApp) {
+
+            "SiTef Sales App" -> {
+                Log.d("TRANSACTION", "SiTef Sales App")
+                paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
+                    INTEGRATION_APP.SITEF_SALES_APP,
+                    "com.fiserv.sitef.action.TRANSACTION",
+                    "",
+                    "",
+                    "",
+                    "functionId",
+                    "",
+                    "transactionAmount",
+                    "functionAdditionalParameters",
+                    "tenderOperator",
+                    "invoiceDate",
+                    "invoiceTime",
+                    "invoiceNumber",
+                    "transactionInstallments",
+                    "",
+                    "enabledTransactions",
+                    "",
+                    "",
+                    "",
+                    "isvTaxId",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "subAcquirerParameters",
+                    "autoFields",
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+                Log.d("TRANSACTION", "SiTef Sales App")
+            }
+
+            "m-SiTef" -> {
+                paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
+                    INTEGRATION_APP.MSITEF,
+                    "br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF",
+                    "empresaSitef",
+                    "enderecoSitef",
+                    "terminalSitef",
+                    "modalidade",
+                    "CNPJ_CPF",
+                    "valor",
+                    "restricoes",
+                    "operador",
+                    "Data",
+                    "Hora",
+                    "numeroCupom",
+                    "numParcelas",
+                    "Otp",
+                    "transacoesHabilitadas",
+                    "pinpadMac",
+                    "comExterna",
+                    "isDoubleValidation",
+                    "cnpj_automacao",
+                    "cnpj_facilitador",
+                    "timeoutColeta",
+                    "acessibilidadeVisual",
+                    "tipoPinpad",
+                    "dadosSubAdqui",
+                    "tipoCampos",
+                    "habilitaColetaTaxaEmbarqueIATA",
+                    "habilitaColetaValorEntradaIATA",
+                    "clsit",
+                    "tokenRegistroTls"
+                )
+                Log.d("TRANSACTION", "m-SiTef")
+            }
+
+            else -> {
+                Log.d("TRANSACTION", "none")
+            }
+        }
+
+    }
+    fun initializeApp(){
+
+        android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        screeenHeight = displayMetrics.heightPixels
+        screenWidth = displayMetrics.widthPixels
+
+
+        myLocation = location(android_id,DeviceInfoModule.deviceBrand, DeviceInfoModule.deviceModel)
+
+        Log.d ("DeviceInfo","Name: ${DeviceInfoModule.deviceName}  Brand: ${DeviceInfoModule.deviceBrand}    Model: ${DeviceInfoModule.deviceModel}   DeviceID ${android_id}")
+
+        setupView()
+
+        setupPaymentApp()
+
+        myInventory = inventory(android_id,myLocation.getLocation().items,myLocation.getLocation().dispenserModel.capacityPerFlavor,myLocation.getLocation().dispenserModel.flavors)
+        setupArrayList(myLocation.getLocation().items,myLocation.getLocation().dispenserModel.flavors)
+        shoppingCart = shoppingCart(myInventory.getInventory())
+
+        setContentView(viewLayout)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
+        initDialogElements()
+
+        var productImage = findViewById<ImageView>(R.id.helpButton)
+        productImage.setOnClickListener(listener)
+
+        var button1 = findViewById<Button>(R.id.buttonEmpty)
+        button1.setOnClickListener(listener)
+        button1 = findViewById<Button>(R.id.buttonCheckout)
+        button1.setOnClickListener(listener)
+
+        var text1 = findViewById<TextView>(R.id.textViewTotalFix)
+        text1.setOnClickListener(listener)
+
+        watchDog = Handler(Looper.getMainLooper())
+
+        resetWatchDog()
+
+
+    }
 }
