@@ -174,6 +174,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         //updateItem(listId, position, 1)
         resetWatchDog()
         hideActionBar()
+        easterEgg3 = 0
 // Handle the click
         //Toast.makeText(this, "setPlusOnClickListener: $clickedItem", Toast.LENGTH_SHORT).show()
     }
@@ -215,6 +216,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         //updateItem(listId,position,-1)
         resetWatchDog()
         hideActionBar()
+        easterEgg3++
         //Toast.makeText(this, "setMinusOnClickListener: $clickedItem", Toast.LENGTH_SHORT).show()
     }
     override fun setMinusLongOnClickListener(listId:Int , position: Int) {
@@ -342,7 +344,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
         if (this.myLocation.getLocation().demoMode == false) {
             try {
-                PAYMENT_INTERFACE_FIELDS_NAMES(intentActionStr = paymentInterfaceFieldNames.intentActionStr)
+                //PAYMENT_INTERFACE_FIELDS_NAMES(intentActionStr = paymentInterfaceFieldNames.intentActionStr)
                 val intent: Intent = Intent(paymentInterfaceFieldNames.intentActionStr)
 
                 Log.d ("Action","Intent ${paymentInterfaceFieldNames.intentActionStr}")
@@ -555,6 +557,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     paymentParameters.amountStr = totalStr
                     paymentParameters.invoiceNumberStr = sdf.format(timestamp)
                     paymentParameters.merchant_TIDStr = myLocation.getLocation().merchant.taxId
+                    paymentParameters.endpointStr = myLocation.getLocation().merchant.paymentEndpoint
+                    paymentParameters.sitefMIDStr = myLocation.getLocation().merchant.paymentGatewayMid
                     paymentParameters.isv_TIDStr = AppConstants.isvTaxId
                     paymentParameters.operatorIdStr = "1"
 
