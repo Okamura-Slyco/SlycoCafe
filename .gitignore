@@ -11,9 +11,11 @@
 /build
 /captures
 .externalNativeBuild
-.cxx
-.apk
+*.cxx
+*.apk
 .gitnore
-.key
-.crt
+*.key
+*.crt
+*.pem
 local.properties
+/output
