@@ -375,80 +375,84 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             this.displayOrientation = LinearLayoutManager.VERTICAL
         }
 
+        when  (myLocation.getLocation().merchant.paymentApp) {
 
-        if (isCallable(Intent("com.fiserv.sitef.action.TRANSACTION"))){
-            Log.d("TRANSACTION","SiTef Sales App")
-            paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
-                INTEGRATION_APP.SITEF_SALES_APP,
-                "com.fiserv.sitef.action.TRANSACTION",
-                "",
-                "",
-                "",
-                "functionId",
-                "",
-                "transactionAmount",
-                "functionAdditionalParameters",
-                "tenderOperator",
-                "invoiceDate",
-                "invoiceTime",
-                "invoiceNumber",
-                "transactionInstallments",
-                "",
-                "enabledTransactions",
-                "",
-                "",
-                "",
-                "isvTaxId",
-                "",
-                "",
-                "",
-                "",
-                "subAcquirerParameters",
-                "autoFields",
-                "",
-                "",
-                "",
-                ""
-            )
-        }
-        else if (isCallable(Intent("br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF"))
-        ){
-            paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
-                INTEGRATION_APP.MSITEF,
-                "br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF",
-                "empresaSitef",
-                "enderecoSitef",
-                "terminalSitef",
-                "modalidade",
-                "CNPJ_CPF",
-                "valor",
-                "restricoes",
-                "operador",
-                "Data",
-                "Hora",
-                "numeroCupom",
-                "numParcelas",
-                "Otp",
-                "transacoesHabilitadas",
-                "pinpadMac",
-                "comExterna",
-                "isDoubleValidation",
-                "cnpj_automacao",
-                "cnpj_facilitador",
-                "timeoutColeta",
-                "acessibilidadeVisual",
-                "tipoPinpad",
-                "dadosSubAdqui",
-                "tipoCampos",
-                "habilitaColetaTaxaEmbarqueIATA",
-                "habilitaColetaValorEntradaIATA",
-                "clsit",
-                "tokenRegistroTls"
-            )
-            Log.d("TRANSACTION","m-SiTef")
-        }
-        else {
-            Log.d("TRANSACTION","none")
+            "SiTef Sales App" -> {
+                Log.d("TRANSACTION", "SiTef Sales App")
+                paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
+                    INTEGRATION_APP.SITEF_SALES_APP,
+                    "com.fiserv.sitef.action.TRANSACTION",
+                    "",
+                    "",
+                    "",
+                    "functionId",
+                    "",
+                    "transactionAmount",
+                    "functionAdditionalParameters",
+                    "tenderOperator",
+                    "invoiceDate",
+                    "invoiceTime",
+                    "invoiceNumber",
+                    "transactionInstallments",
+                    "",
+                    "enabledTransactions",
+                    "",
+                    "",
+                    "",
+                    "isvTaxId",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "subAcquirerParameters",
+                    "autoFields",
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+                Log.d("TRANSACTION", "SiTef Sales App")
+            }
+
+            "m-SiTef" -> {
+                paymentInterfaceFieldNames = PAYMENT_INTERFACE_FIELDS_NAMES(
+                    INTEGRATION_APP.MSITEF,
+                    "br.com.softwareexpress.sitef.msitef.ACTIVITY_CLISITEF",
+                    "empresaSitef",
+                    "enderecoSitef",
+                    "terminalSitef",
+                    "modalidade",
+                    "CNPJ_CPF",
+                    "valor",
+                    "restricoes",
+                    "operador",
+                    "Data",
+                    "Hora",
+                    "numeroCupom",
+                    "numParcelas",
+                    "Otp",
+                    "transacoesHabilitadas",
+                    "pinpadMac",
+                    "comExterna",
+                    "isDoubleValidation",
+                    "cnpj_automacao",
+                    "cnpj_facilitador",
+                    "timeoutColeta",
+                    "acessibilidadeVisual",
+                    "tipoPinpad",
+                    "dadosSubAdqui",
+                    "tipoCampos",
+                    "habilitaColetaTaxaEmbarqueIATA",
+                    "habilitaColetaValorEntradaIATA",
+                    "clsit",
+                    "tokenRegistroTls"
+                )
+                Log.d("TRANSACTION", "m-SiTef")
+            }
+
+            else -> {
+                Log.d("TRANSACTION", "none")
+            }
         }
 
         myInventory = inventory(android_id,myLocation.getLocation().items,myLocation.getLocation().dispenserModel.capacityPerFlavor,myLocation.getLocation().dispenserModel.flavors)

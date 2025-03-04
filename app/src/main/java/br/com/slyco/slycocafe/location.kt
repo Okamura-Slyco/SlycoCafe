@@ -85,7 +85,9 @@ class location(private var myLoc: String, private var myBrand:String="", private
                 environment = "DEVELOPMENT",
                 paymentGateway = "SITEF",
                 paymentGatewayMid = "00000048",
-                taxId = "55.833.084/0001-36"
+                taxId = "55.833.084/0001-36",
+                paymentEndpoint = "https://tls-uat.fiserv.app.com",
+                paymentApp = "m-SiTef",
             ),
             items = listOf(
                 inventoryStockDC(

@@ -169,7 +169,11 @@ data class merchantDC (
     @SerializedName("payment_gateway_mid")
     var paymentGatewayMid:String,
     @SerializedName("tax_id")
-    var taxId:String
+    var taxId:String,
+    @SerializedName("payment_endpoint")
+    var paymentEndpoint:String,
+    @SerializedName("payment_app")
+    var paymentApp:String
 )
 
 
