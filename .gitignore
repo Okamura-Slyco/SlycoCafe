@@ -12,4 +12,8 @@
 /captures
 .externalNativeBuild
 .cxx
+.apk
+.gitnore
+.key
+.crt
 local.properties
