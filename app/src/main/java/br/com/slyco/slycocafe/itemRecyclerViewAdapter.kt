@@ -1,5 +1,6 @@
 package br.com.slyco.slycocafe
 
+import android.content.Context
 import android.icu.text.ListFormatter.Width
 import android.util.DisplayMetrics
 import android.util.Log
@@ -15,6 +16,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.marginTop
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -24,6 +26,66 @@ interface OnItemClickListener {
     fun setPlusLongOnClickListener(listId: Int, position: Int)
     fun setMinusOnClickListener(listId: Int, position: Int)
     fun setMinusLongOnClickListener(listId: Int, position: Int)
+}
+
+fun Int.dpToPx(context: Context): Int {
+    return (this * context.resources.displayMetrics.density).toInt()
+}
+
+fun Int.spToPx(context: Context): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        this.toFloat(),
+        context.resources.displayMetrics
+    ).toInt()
+}
+
+private fun ConstraintLayout.setLayoutConstraints( mainViewAttributes: MAIN_VIEW_ATTRIBUTES){
+
+    this.layoutParams.height = mainViewAttributes.layoutHeight.dpToPx(context)
+    this.layoutParams.width = mainViewAttributes.layoutWidth.dpToPx(context)
+
+    var image = this.findViewById<ImageView>(R.id.imageViewCapsula)
+    var imgParams = image.layoutParams as ConstraintLayout.LayoutParams
+    imgParams.topMargin = mainViewAttributes.marginTop.dpToPx(context)
+    imgParams.width = mainViewAttributes.imgSize.dpToPx(context)
+    imgParams.height = mainViewAttributes.imgSize.dpToPx(context)
+    image.layoutParams = imgParams
+
+
+    var button = this.findViewById<ImageButton>(R.id.imageButtonPlus)
+    button.layoutParams.height = mainViewAttributes.plusMinusIconSize.dpToPx(context)
+    button.layoutParams.width = mainViewAttributes.plusMinusIconSize.dpToPx(context)
+
+    var params = button.layoutParams as ConstraintLayout.LayoutParams
+    params.topMargin = mainViewAttributes.plusMinusMargin.dpToPx(context)
+    button.layoutParams = params
+
+    button.requestLayout()
+    button = this.findViewById<ImageButton>(R.id.imageButtonMinus)
+    button.layoutParams.height = mainViewAttributes.plusMinusIconSize.dpToPx(context)
+    button.layoutParams.width = mainViewAttributes.plusMinusIconSize.dpToPx(context)
+
+    params = button.layoutParams as ConstraintLayout.LayoutParams
+    params.topMargin = mainViewAttributes.plusMinusMargin.dpToPx(context)
+    button.layoutParams = params
+
+
+    var tags = this.findViewById<MaterialButton>(R.id.textViewPrice)
+    tags = this.findViewById<MaterialButton>(R.id.textViewPrice)
+    tags.iconSize = mainViewAttributes.tagIconSize.dpToPx(context)
+    tags.alpha = mainViewAttributes.tagAlpha
+    tags.layoutParams.width = mainViewAttributes.tagWidth.dpToPx(context)
+    tags.layoutParams.height = mainViewAttributes.tagHeight.dpToPx(context)
+    tags.setTextSize(TypedValue.COMPLEX_UNIT_PX, mainViewAttributes.tagTextSize.spToPx(context).toFloat())
+
+    tags = this.findViewById<MaterialButton>(R.id.textViewAttributes)
+    tags.iconSize = mainViewAttributes.tagIconSize.dpToPx(context)
+    tags.alpha = mainViewAttributes.tagAlpha
+    tags.layoutParams.width = mainViewAttributes.tagWidth.dpToPx(context)
+    tags.layoutParams.height = mainViewAttributes.tagHeight.dpToPx(context)
+    tags.setTextSize(TypedValue.COMPLEX_UNIT_PX, mainViewAttributes.tagTextSize.spToPx(context).toFloat())
+
 }
 
 private fun ConstraintLayout.scaleLayout(scaleFactor: Float) {
@@ -130,7 +192,8 @@ class ShoppingCartAdapter(
     private var elementsInView: Int = 3,
     private var screeenHeight:Int,
     private var screeenWidth:Int,
-    private var displayOrientation:Int = LinearLayoutManager.HORIZONTAL
+    private var displayOrientation:Int = LinearLayoutManager.HORIZONTAL,
+    var mainViewAttributes: MAIN_VIEW_ATTRIBUTES
 ) : RecyclerView.Adapter<ShoppingCartAdapter.ViewHolder>() {
 
     private var recyclerViewWidth:Int = 400
@@ -153,8 +216,8 @@ class ShoppingCartAdapter(
         val attributesButton: MaterialButton = itemView.findViewById(R.id.textViewAttributes)
         val quantityEditText: EditText = itemView.findViewById(R.id.editTextNumberItem)
 
-        val plusButton: MaterialButton = itemView.findViewById(R.id.floatingActionButtonItemPlus)
-        val minusButton: MaterialButton= itemView.findViewById(R.id.floatingActionButtonItemMinus)
+        val plusButton: ImageButton = itemView.findViewById(R.id.imageButtonPlus)
+        val minusButton: ImageButton= itemView.findViewById(R.id.imageButtonMinus)
 
         val qtyField: EditText = itemView.findViewById(R.id.editTextNumberItem)
 
@@ -275,34 +338,8 @@ class ShoppingCartAdapter(
         currentScale = minOf(currentScaleWidth,currentScaleHeigth)
 
         with(holder) {
-            shoppingCartConstraintLayout.scaleLayout(currentScale)
-            //shoppingCartConstraintLayout.layoutParams.height = viewHeigth
-            //shoppingCartConstraintLayout.layoutParams.width = viewWidth
-//            // Scale buttons
-            //minusButton.apply {
-            //    val originalIconSize = minusButton.iconSize
-            //    iconSize = (originalIconSize * currentScale).toInt()
-           // }
-
-            //plusButton.apply {
-            //    val originalIconSize = plusButton.iconSize
-            //    iconSize = (originalIconSize * currentScale).toInt()
-           // }
-
-            // Scale image if needed
-            //flavorImage.apply {
-            //    scaleX = currentScale
-            //    scaleY = currentScale
-           // }
-
-//            priceButton.apply{
-//
-//            }
-//
-//            qtyField.apply {
-//
-//            }
-
+            //shoppingCartConstraintLayout.scaleLayout(currentScale)
+            shoppingCartConstraintLayout.setLayoutConstraints(mainViewAttributes)
         }
         return holder
     }

@@ -4,12 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:foregroundTint="@color/green"
+    android:foregroundTintMode="src_in"
     app:layout_constraintWidth_percent="0.25">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/shoppingCartConstraintLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/green"
+        android:foregroundTint="@color/green">
 
         <ImageView
             android:id="@+id/imageViewCapsula"
@@ -25,19 +29,17 @@
             android:id="@+id/editTextNumberItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-10dp"
             android:ems="2"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:inputType="number"
             android:textAlignment="center"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/floatingActionButtonItemMinus"
-            app:layout_constraintEnd_toStartOf="@+id/floatingActionButtonItemPlus"
-            app:layout_constraintStart_toEndOf="@+id/floatingActionButtonItemMinus"
-            app:layout_constraintTop_toTopOf="@id/floatingActionButtonItemMinus" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/imageViewCapsula"
+            app:layout_constraintStart_toStartOf="@id/imageViewCapsula" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/textViewPrice"
             android:layout_width="110dp"
             android:layout_height="50dp"
@@ -45,22 +47,26 @@
             android:alpha="0.8"
             android:backgroundTint="#EEEEEE"
             android:foregroundTint="@color/black"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
             android:text="R$0,00"
             android:textAlignment="center"
             android:textAllCaps="true"
             android:textColor="@color/black"
             android:textSize="16sp"
+            app:iconPadding="0dp"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula"
-            app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonItemPlus"
-            app:layout_constraintStart_toStartOf="@+id/floatingActionButtonItemPlus" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/textViewAttributes"
             android:layout_width="110dp"
             android:layout_height="50dp"
             android:alpha="0.8"
             android:backgroundTint="#EEEEEE"
             android:foregroundTint="@color/black"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:text="0"
             android:textAlignment="center"
             android:textAllCaps="true"
@@ -70,35 +76,39 @@
             app:iconSize="28dp"
             app:iconTint="@color/black"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewCapsula"
-            app:layout_constraintEnd_toEndOf="@id/floatingActionButtonItemMinus"
-            app:layout_constraintStart_toStartOf="@id/floatingActionButtonItemMinus"
-            tools:layout_editor_absoluteX="26dp" />
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/floatingActionButtonItemPlus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="-20dp"
-            android:backgroundTint="@color/design_default_color_background"
-            app:icon="@drawable/baseline_add_circle_outline_24"
-            app:iconPadding="0dp"
-            app:iconSize="60dp"
-            app:iconTint="#228800"
-            app:layout_constraintEnd_toEndOf="@+id/imageViewCapsula"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula" />
+        <ImageButton
+            android:id="@+id/imageButtonPlus"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTintMode="add"
+            android:padding="0dp"
+            android:paddingHorizontal="0dp"
+            android:paddingVertical="0dp"
+            android:paddingStart="0dp"
+            android:paddingLeft="0dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="0dp"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/imageViewCapsula"
+            app:srcCompat="@drawable/baseline_add_circle_outline_24"
+            app:tint="@color/green" />
 
-        <Button
-            android:id="@+id/floatingActionButtonItemMinus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="-20dp"
-            android:backgroundTint="#FFFFFF"
-            app:icon="@drawable/baseline_remove_circle_outline_24"
-            app:iconPadding="0dp"
-            app:iconSize="60dp"
-            app:iconTint="#FF0000"
-            app:layout_constraintStart_toStartOf="@+id/imageViewCapsula"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewCapsula" />
+        <ImageButton
+            android:id="@+id/imageButtonMinus"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTintMode="add"
+            android:padding="0dp"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/imageViewCapsula"
+            app:srcCompat="@drawable/baseline_remove_circle_outline_24"
+            app:tint="@color/red" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
