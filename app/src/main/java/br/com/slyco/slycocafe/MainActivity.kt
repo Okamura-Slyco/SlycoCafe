@@ -561,6 +561,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     paymentParameters.sitefMIDStr = myLocation.getLocation().merchant.paymentGatewayMid
                     paymentParameters.isv_TIDStr = AppConstants.isvTaxId
                     paymentParameters.operatorIdStr = "1"
+                    if ((myLocation.getLocation().merchant.tlsFiservToken != null) && (myLocation.getLocation().merchant.tlsFiservToken != "")) {
+                        paymentParameters.tlsToken = myLocation.getLocation().merchant.tlsFiservToken
+                    }
 
                     var myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
                     myButton.setOnClickListener{

@@ -216,7 +216,9 @@ data class merchantDC (
     @SerializedName("payment_endpoint")
     var paymentEndpoint:String,
     @SerializedName("payment_app")
-    var paymentApp:String
+    var paymentApp:String,
+    @SerializedName("tls_fiserv_token")
+    var tlsFiservToken: String
 )
 
 
