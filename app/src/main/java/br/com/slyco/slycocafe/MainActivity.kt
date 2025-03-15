@@ -30,6 +30,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import kotlin.math.roundToInt
 
 
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
@@ -548,7 +549,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     // Show the dialog
                     val customDialog = dialogBuilder.create()
 
-                    val totalStr = (shoppingCart.returnTotal() * 100).toInt().toString()
+                    val totalStr = (shoppingCart.returnTotal() * 100).roundToInt().toString()
+
 
                     val timestamp = Timestamp(System.currentTimeMillis())
 
