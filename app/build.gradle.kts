@@ -17,8 +17,8 @@ android {
         minSdk = 26
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 29
-        versionCode = 21
-        versionName = "1.21"
+        versionCode = 22
+        versionName = "1.22"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,6 +26,7 @@ android {
     var buildTimestamp = "\"${
         LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
     }\""
+
 
     buildTypes {
         release {
@@ -66,6 +67,8 @@ android {
         viewBinding = true
     }
 }
+
+
 
 dependencies {
 

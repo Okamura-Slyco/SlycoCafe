@@ -4,9 +4,11 @@ package br.com.slyco.slycocafe
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -97,7 +99,22 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     
     }
 
-
+    private fun defineHomeApp() {
+        val packageName = BuildConfig.APPLICATION_ID
+        val appLabel = resources.getString(R.string.app_name)
+        val intent = Intent()
+        intent.setComponent(ComponentName("br.com.bin", "br.com.bin.service.DefineHomeAppService"))
+        intent.setAction("br.com.bin.service.DefineHomeAppService.action.DEFINE_HOME_APP")
+        intent.putExtra("br.com.bin.service.DefineHomeAppService.extra.PACKAGE_NAME", packageName)
+        intent.putExtra("br.com.bin.service.DefineHomeAppService.extra.APP_LABEL", appLabel)
+        if (isCallable(intent)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+        }
+    }
     override fun onActivityReenter(resultCode: Int, data: Intent?) {
         hideActionBar()
         super.onActivityReenter(resultCode, data)
@@ -1008,6 +1025,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     fun initializeApp(){
 
         android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+
+        defineHomeApp()
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
