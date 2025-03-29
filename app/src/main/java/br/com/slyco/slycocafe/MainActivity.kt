@@ -970,7 +970,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 cardBrand = "Slyco Wallet",
                 sitefTransactionId = "",
                 hostTrasactionId = data?.getStringExtra("hostTrasactionId") as? String ?: "",
-                authCode = data?.getStringExtra("authCode") as? String ?: "",
+                authCode = data?.getStringExtra("authCode") as? String ?: "NOK",
                 transactionInstallments = "1",
                 pan = data?.getStringExtra("pan") as? String ?: "", // pan
                 goodThru = "", // good thru
@@ -989,7 +989,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 invoiceAuthorizationCode = "", // invoice authorization code
                 saleItems = ""
             )
-            finishTransaction(mySaleResponseData)
+            if (mySaleResponseData.authCode == "OK") {
+                finishTransaction(mySaleResponseData)
+            }
         }
         else if (requestCode == ACTIVITY_IDS.REQUEST_ACTIVATE_TEF.value){
             if (resultCode == RESULT_OK){

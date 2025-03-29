@@ -1,59 +1,35 @@
 package br.com.slyco.slycocafe
 
-import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
+import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.content.pm.PackageManager
+import android.hardware.Camera
 import android.os.Bundle
-import android.provider.Settings
-import android.util.DisplayMetrics
+import android.util.Log
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.view.View
 import android.view.WindowManager
-import android.view.WindowManager.*
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.w3c.dom.Text
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.zxing.*
+import com.google.zxing.common.HybridBinarizer
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 
-class SlycoWallet : AppCompatActivity() {
-    var thisIntent: Intent? = null
-    var origin:Int = 0
-    var destination:Int = 0
-    var origin_coord:IntArray = IntArray(2)
-    var destination_coord:IntArray = IntArray(2)
-    var height = 0
-    var width = 0
 
-    override fun onResume() {
-        val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
-        if (actionBar != null) actionBar.hide()
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+class SlycoWallet : AppCompatActivity(), SurfaceHolder.Callback {
+    private lateinit var surfaceView: SurfaceView
+    private var camera: Camera? = null
+    private val processing = AtomicBoolean(false)
+    private val executor = Executors.newSingleThreadExecutor()
+    private val multiFormatReader = MultiFormatReader()
 
-        super.onResume()
-    }
-
-    fun getAndroidId(context: Context): String {
-        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-    }
-
-    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
@@ -64,138 +40,207 @@ class SlycoWallet : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_screen_saver)
-        window.addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON)
+        setContentView(R.layout.slyco_wallet_purchase)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.setFlags(
-            LayoutParams.FLAG_FULLSCREEN,
-            LayoutParams.FLAG_FULLSCREEN
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
 
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        height = displayMetrics.heightPixels
-        width = displayMetrics.widthPixels
 
-        var textView = findViewById<TextView>(R.id.didTextView)
-        textView.text = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+        var thisIntent = Intent()
 
-        textView = findViewById<TextView>(R.id.buildInfoTextView)
-        textView.text = "${BuildConfig.VERSION_NAME}${BuildConfig.SLYCO_API_ENVIRONMENT} ${BuildConfig.SLYCO_APP_BUILD_TIMESTAMP}"
+        thisIntent?.putExtra("hostTrasactionId", "TODO")
+        thisIntent?.putExtra("authCode", "TODO")
+        thisIntent?.putExtra("pan", "TODO")
+        thisIntent?.putExtra("idMethod", "TODO")
+        thisIntent?.putExtra("transactionTimestamp", "123456789")
 
-        var button = findViewById<MaterialButton>(R.id.buttonNew)
-        button.setOnClickListener(listener)
+        initMultiFormatReader()
 
-        var activateContinueButton = intent.getIntExtra("activateContinueButton", 0)
-        if (activateContinueButton == 1) {
-            button.text = "Nova Compra"
-            button = findViewById<MaterialButton>(R.id.buttonContinue)
-            button.setVisibility(View.VISIBLE)
-            button.setOnClickListener(listener)
+        // Create SurfaceView
+        surfaceView = SurfaceView(this)
+        setContentView(surfaceView)
+
+        // Request camera permission
+        if (checkCameraPermission()) {
+            initializeCamera()
+        } else {
+            requestCameraPermission()
         }
 
-        var locationName = intent.getStringExtra("locationName")
-        findViewById<TextView>(R.id.locationNameTextView).text = locationName
-
-        thisIntent = Intent()
-
-        lifecycleScope.launch {
-            // Perform any UI-related tasks here
-            processAfterUILoad()
-        }
-
-
-    }
-
-    @OptIn(ExperimentalStdlibApi::class)
-    private suspend fun processAfterUILoad() {
-        withContext(Dispatchers.Main) {
-            var ids:IntArray = intArrayOf(R.id.imageView, R.id.imageView2,R.id.imageView3,R.id.imageView4,R.id.imageView5,R.id.imageView6,R.id.imageView7,R.id.imageView8,R.id.imageView9,R.id.imageView10,R.id.imageView11,R.id.imageView12,R.id.imageView13,R.id.imageView14,R.id.imageView15,R.id.imageView16)
-            while (true)
-            {
-                for (imageElement in ids) {
-                    origin = (1..4).random()
-                    destination = (1..4).random()
-
-                    while (destination == origin) {
-                        destination = (1..4).random()
-                    }
-
-                    origin_coord = selectCoordinates(origin)
-                    destination_coord = selectCoordinates(destination)
-
-//                    Log.d(
-//                        "ScreenSaver",
-//                        "ori_x,ori_y: " + origin_coord[0].toString() + "," + origin_coord[1].toString()
-//                    )
-//                    Log.d(
-//                        "ScreenSaver",
-//                        "dest_x,dest_y: " + destination_coord[0].toString() + "," + destination_coord[1].toString()
-//                    )
-
-                    screenSaverAnimation(
-                        findViewById<ImageView>(imageElement),
-                        origin_coord,
-                        destination_coord
-                    )
-                    delay(((7..10).random()*1000L)/ids.size)
-                }
-
-            }
-        }
-    }
-    private suspend fun screenSaverAnimation(coffeeImageView: ImageView,origin: IntArray,destination:IntArray ){
-        coroutineScope {
-            async {
-                coffeeImageView.alpha = 0.6f
-                coffeeImageView.translationX = origin[0].toFloat()
-                coffeeImageView.translationY = origin[1].toFloat()
-
-                //delay(500L)
-                val time = (4..6).random()*1000
-                ObjectAnimator.ofFloat(coffeeImageView,"translationX",destination[0].toFloat())
-                    .setDuration(time.toLong())
-                    .start()
-                ObjectAnimator.ofFloat(coffeeImageView,"translationY",destination[1].toFloat())
-                    .setDuration(time.toLong())
-                    .start()
-                ObjectAnimator.ofFloat(coffeeImageView,"alpha",0.0f,0.8f,0.0f)
-                    .setDuration(time.toLong())
-                    .start()
-            }
-        }
-
-    }
-
-    fun selectCoordinates(side:Int):IntArray
-    {
-        val retArray = IntArray(2)
-        when (side)
-        {
-            1,2 -> { // top or botton
-                if (side == 1) retArray[0] = -50
-                else retArray[0] = (width * 1.1).toInt()
-                retArray[1] = (-50..(height * 1.1).toInt()).random()
-            }
-            3,4 -> { // left or right
-                retArray[0] = (-50..(width * 1.1).toInt()).random()
-                if (side == 3) retArray[1] = -50
-                else retArray[1] = (height * 1.1).toInt()
-            }
-        }
-        return retArray
-    }
-
-    val listener= View.OnClickListener { view ->
-
-        when (view.getId()) {
-            R.id.buttonContinue -> {
-                thisIntent?.putExtra("action", "Continue")
-            }
-            R.id.buttonNew -> {
-                thisIntent?.putExtra("action", "New")
-            }
-        }
         setResult(Activity.RESULT_OK, thisIntent)
-        finish()
+        //finish()
     }
+
+    private fun initMultiFormatReader() {
+        val hints = mapOf(
+            DecodeHintType.POSSIBLE_FORMATS to arrayListOf(
+                BarcodeFormat.QR_CODE,
+                BarcodeFormat.CODE_128,
+                BarcodeFormat.EAN_13,
+                // Add other formats as needed
+            )
+        )
+        multiFormatReader.setHints(hints)
+    }
+
+
+    private fun checkCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_REQUEST
+        )
+    }
+
+    private fun initializeCamera() {
+        surfaceView.holder.addCallback(this)
+    }
+
+    private fun getOptimalPreviewSize(
+        sizes: List<Camera.Size>,
+        width: Int,
+        height: Int
+    ): Camera.Size {
+        val targetRatio = width.toDouble() / height
+        return sizes.minByOrNull { size ->
+            val ratio = size.width.toDouble() / size.height
+            Math.abs(ratio - targetRatio)
+        } ?: sizes.first()
+    }
+
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        try {
+            camera = Camera.open()
+            camera?.setPreviewDisplay(holder)
+            camera?.setDisplayOrientation(90)
+
+            // Set camera parameters
+            camera?.parameters = camera?.parameters?.apply {
+                focusMode = Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
+                // Optimize preview size
+                val sizes = supportedPreviewSizes
+                val optimalSize = getOptimalPreviewSize(sizes, surfaceView.width, surfaceView.height)
+                setPreviewSize(optimalSize.width, optimalSize.height)
+            }
+            startPreviewAndDecode()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up camera: ${e.message}")
+            Toast.makeText(this, "Error setting up camera", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        if (holder.surface == null) {
+            return
+        }
+
+        try {
+            camera?.stopPreview()
+        } catch (e: Exception) {
+            // Ignore: tried to stop a non-existent preview
+        }
+
+        try {
+            camera?.setPreviewDisplay(holder)
+            camera?.startPreview()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error starting camera preview: ${e.message}")
+        }
+    }
+
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        camera?.stopPreview()
+        camera?.release()
+        camera = null
+    }
+
+    private fun startPreviewAndDecode() {
+        camera?.startPreview()
+
+        camera?.setPreviewCallback { data, camera ->
+            if (!processing.get()) {
+                processing.set(true)
+                executor.execute {
+                    try {
+                        val size = camera.parameters.previewSize
+                        val source = PlanarYUVLuminanceSource(
+                            data,
+                            size.width,
+                            size.height,
+                            0,
+                            0,
+                            size.width,
+                            size.height,
+                            false
+                        )
+
+                        val bitmap = BinaryBitmap(HybridBinarizer(source))
+                        try {
+                            val result = multiFormatReader.decode(bitmap)
+                            onBarcodeDetected(result)
+                        } catch (e: NotFoundException) {
+                            // No barcode found, continue scanning
+                            Log.d("ttt","tt")
+                        }
+                    } finally {
+                        processing.set(false)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onBarcodeDetected(result: Result) {
+        runOnUiThread {
+            handleBarcodeResult(result.text)
+        }
+    }
+
+    private fun handleBarcodeResult(barcodeValue: String?) {
+        barcodeValue?.let { value ->
+            // Handle the barcode value
+            Toast.makeText(this, "Barcode: $value", Toast.LENGTH_SHORT).show()
+            // Add your business logic here
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initializeCamera()
+            } else {
+                Toast.makeText(this, "Camera permission required", Toast.LENGTH_LONG).show()
+                finish()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        executor.shutdown()
+        camera?.release()
+    }
+
+    companion object {
+        private const val TAG = "BarcodeScannerActivity"
+        private const val CAMERA_PERMISSION_REQUEST = 100
+    }
+
+
 }
