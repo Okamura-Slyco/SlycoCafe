@@ -19,3 +19,5 @@
 *.pem
 local.properties
 /output
+*.jks
+sign-gpos700.bat
