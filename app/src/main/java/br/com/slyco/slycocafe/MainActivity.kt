@@ -194,7 +194,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         var activationIntent = Intent ("br.com.bin.ACTION_SITEF_ACTIVATION")
         if (isCallable(Intent(activationIntent))){
             activationIntent.putExtra("ACTIVATION_MODE",1)
-            startActivityForResult(activationIntent,99)
+            startActivityForResult(activationIntent,ACTIVITY_IDS.REQUEST_ACTIVATE_TEF.value)
             Log.d ("Smart Fiserv", "m-SiTef Activation")
             toast("m-SiTef Activation")
         }
@@ -358,7 +358,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         if (shoppingCart.returnTotal() == 0.0) intent.putExtra("activateContinueButton", 0)
         else intent.putExtra("activateContinueButton", 1)
         intent.putExtra("locationName", myLocation.getLocation().name)
-        startActivityForResult(intent, 3)
+        startActivityForResult(intent, ACTIVITY_IDS.SCREEN_SAVER.value)
     }
 
     private fun disableWatchdog() {
@@ -377,11 +377,21 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
     }
 
+    fun callSlycoWallet(transactionParameters:PAYMENT_INTERFACE_FIELDS_NAMES) {
+
+        val intent: Intent = Intent(this, SlycoWallet::class.java)
+        intent.putExtra(
+            "dispensersQty",
+            myLocation.getLocation().dispenserModel.flavors
+        )
+
+        resetWatchDog(10)
+        startActivityForResult(intent, ACTIVITY_IDS.SLYCO_WALLET.value)
+    }
+
     fun callPaymentApp(transactionParameters:PAYMENT_INTERFACE_FIELDS_NAMES) {
         // Handle positive button click
-
         hideActionBar()
-
 
         if (this.myLocation.getLocation().demoMode == false) {
             try {
@@ -446,7 +456,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
                 disableWatchdog()
 
-                startActivityForResult(intent, 1)
+                startActivityForResult(intent, ACTIVITY_IDS.PAYMENT.value)
 
                 toast("Call SiTef Sales App")
             }
@@ -545,103 +555,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             }
             R.id.buttonCheckout -> {
                 if (shoppingCart.returnTotal() > 0.0) {
-
-                    val dialogView = LayoutInflater.from(this).inflate(purchaseSummaryLayout, null)
-
-                    summaryRecyclerView1 = dialogView.findViewById(R.id.summaryRecyclerView1)
-                    summaryRecyclerView1.layoutManager = LinearLayoutManager(this)
-
-                    summaryRecyclerView2 = dialogView.findViewById(R.id.summaryRecyclerView2)
-                    summaryRecyclerView2.layoutManager = LinearLayoutManager(this)
-
-                    summaryDisplayList = mutableListOf()
-                    summaryDisplayList.add(mutableListOf())
-                    summaryDisplayList.add(mutableListOf())
-
-                    for (i in 0..myLocation.getLocation().dispenserModel.flavors-1){
-                        lateinit var listToAdd: MutableList<purchaseSummaryItemModel>
-                        if (i%2 == 0)
-                        {
-                            listToAdd = summaryDisplayList[0]
-                        }
-                        else
-                        {
-                            listToAdd = summaryDisplayList[1]
-                        }
-                        listToAdd.add(purchaseSummaryItemModel(shoppingCart.getFlavor(i),shoppingCart.getCartItemQuantity(i)))
-                    }
-
-                    summaryAdapter1 = purchaseSummaryRecyclerViewAdapter(summaryDisplayList[0])
-                    summaryRecyclerView1.adapter = summaryAdapter1
-
-                    summaryAdapter2 = purchaseSummaryRecyclerViewAdapter(summaryDisplayList[1])
-                    summaryRecyclerView2.adapter = summaryAdapter2
-
-                    var totalText = dialogView.findViewById<TextView>(R.id.totalAmountTextView)
-                    totalText.text = String.format("%.2f",shoppingCart.returnTotal())
-
-                    disableWatchdog()
-
-                    val dialogBuilder = AlertDialog.Builder(this)
-                        .setView(dialogView)
-                        .setTitle("COMPRAR")
-
-                    // Show the dialog
-                    val customDialog = dialogBuilder.create()
-
-                    val totalStr = (shoppingCart.returnTotal() * 100).roundToInt().toString()
-
-
-                    val timestamp = Timestamp(System.currentTimeMillis())
-
-                    val sdf = SimpleDateFormat("yyyyMMddHHmmss")
-
-                    paymentParameters.amountStr = totalStr
-                    paymentParameters.invoiceNumberStr = sdf.format(timestamp)
-                    paymentParameters.merchant_TIDStr = myLocation.getLocation().merchant.taxId
-                    paymentParameters.endpointStr = myLocation.getLocation().merchant.paymentEndpoint
-                    paymentParameters.sitefMIDStr = myLocation.getLocation().merchant.paymentGatewayMid
-                    paymentParameters.isv_TIDStr = AppConstants.isvTaxId
-                    paymentParameters.operatorIdStr = "1"
-                    if ((myLocation.getLocation().merchant.tlsFiservToken != null) && (myLocation.getLocation().merchant.tlsFiservToken != "")) {
-                        paymentParameters.tlsToken = myLocation.getLocation().merchant.tlsFiservToken
-                    }
-
-                    var myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "122"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
-                    }
-
-                    myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "3"
-                        paymentParameters.enabledTransactionsStr = "26"
-                        paymentParameters.restrictionStr = "{TransacoesHabilitadas=26}"
-                        paymentParameters.installmentsStr = "1"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
-                    }
-
-                    myButton = dialogView.findViewById<ImageView>(R.id.botaoDebito)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "2"
-                        paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
-                    }
-
-                    myButton = dialogView.findViewById<ImageView>(R.id.botaoVoucher)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "2"
-                        paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
-                    }
-                    customDialog.show()
-                    hideActionBar()
-
+                    buildPurchaseSummaryDialog()
                 } else {
                     toast("Adicione itens ao carrinho.")
                 }
@@ -674,8 +588,161 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
 
 
-    fun intentCallback(){
+    fun buildPurchaseSummaryDialog(){
+        val dialogView = LayoutInflater.from(this).inflate(purchaseSummaryLayout, null)
 
+        summaryRecyclerView1 = dialogView.findViewById(R.id.summaryRecyclerView1)
+        summaryRecyclerView1.layoutManager = LinearLayoutManager(this)
+
+        summaryRecyclerView2 = dialogView.findViewById(R.id.summaryRecyclerView2)
+        summaryRecyclerView2.layoutManager = LinearLayoutManager(this)
+
+        summaryDisplayList = mutableListOf()
+        summaryDisplayList.add(mutableListOf())
+        summaryDisplayList.add(mutableListOf())
+
+        for (i in 0..myLocation.getLocation().dispenserModel.flavors-1){
+            lateinit var listToAdd: MutableList<purchaseSummaryItemModel>
+            if (i%2 == 0)
+            {
+                listToAdd = summaryDisplayList[0]
+            }
+            else
+            {
+                listToAdd = summaryDisplayList[1]
+            }
+            listToAdd.add(purchaseSummaryItemModel(shoppingCart.getFlavor(i),shoppingCart.getCartItemQuantity(i)))
+        }
+
+        summaryAdapter1 = purchaseSummaryRecyclerViewAdapter(summaryDisplayList[0])
+        summaryRecyclerView1.adapter = summaryAdapter1
+
+        summaryAdapter2 = purchaseSummaryRecyclerViewAdapter(summaryDisplayList[1])
+        summaryRecyclerView2.adapter = summaryAdapter2
+
+        var totalText = dialogView.findViewById<TextView>(R.id.totalAmountTextView)
+        totalText.text = String.format("%.2f",shoppingCart.returnTotal())
+
+        disableWatchdog()
+
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle("COMPRAR")
+
+        // Show the dialog
+        val customDialog = dialogBuilder.create()
+
+        val totalStr = (shoppingCart.returnTotal() * 100).roundToInt().toString()
+
+
+        val timestamp = Timestamp(System.currentTimeMillis())
+
+        val sdf = SimpleDateFormat("yyyyMMddHHmmss")
+
+        paymentParameters.amountStr = totalStr
+        paymentParameters.invoiceNumberStr = sdf.format(timestamp)
+        paymentParameters.merchant_TIDStr = myLocation.getLocation().merchant.taxId
+        paymentParameters.endpointStr = myLocation.getLocation().merchant.paymentEndpoint
+        paymentParameters.sitefMIDStr = myLocation.getLocation().merchant.paymentGatewayMid
+        paymentParameters.isv_TIDStr = AppConstants.isvTaxId
+        paymentParameters.operatorIdStr = "1"
+        if ((myLocation.getLocation().merchant.tlsFiservToken != null) && (myLocation.getLocation().merchant.tlsFiservToken != "")) {
+            paymentParameters.tlsToken = myLocation.getLocation().merchant.tlsFiservToken
+        }
+
+        var myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
+        if (myLocation.getLocation().merchant.enabledPaymentMethods.digitalWallet) {
+            myButton.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myButton.setOnClickListener {
+                paymentParameters.functionIdStr = "122"
+                callPaymentApp(paymentParameters)
+                customDialog.dismiss()
+            }
+        }
+        else
+        {
+            myButton.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+        }
+
+        myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
+        var myTextView = dialogView.findViewById<TextView>(R.id.textBotaoCredito)
+        if (myLocation.getLocation().merchant.enabledPaymentMethods.credit) {
+            myButton.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myButton.setOnClickListener{
+                paymentParameters.functionIdStr = "3"
+                paymentParameters.enabledTransactionsStr = "26"
+                paymentParameters.restrictionStr = "{TransacoesHabilitadas=26}"
+                paymentParameters.installmentsStr = "1"
+                callPaymentApp(paymentParameters)
+                customDialog.dismiss()
+            }
+        }
+        else
+        {
+            myButton.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+        }
+
+        myButton = dialogView.findViewById<ImageView>(R.id.botaoDebito)
+        myTextView = dialogView.findViewById<TextView>(R.id.textBotaoDebito)
+        if (myLocation.getLocation().merchant.enabledPaymentMethods.debit) {
+            myButton.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myButton.setOnClickListener {
+                paymentParameters.functionIdStr = "2"
+                paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
+                callPaymentApp(paymentParameters)
+                customDialog.dismiss()
+            }
+        }
+        else
+        {
+            myButton.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+        }
+
+        myButton = dialogView.findViewById<ImageView>(R.id.botaoVoucher)
+        myTextView = dialogView.findViewById<TextView>(R.id.textBotaoVoucher)
+        if (myLocation.getLocation().merchant.enabledPaymentMethods.voucher) {
+            myButton.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myButton.setOnClickListener{
+                paymentParameters.functionIdStr = "2"
+                paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
+                callPaymentApp(paymentParameters)
+                customDialog.dismiss()
+            }
+        }
+        else
+        {
+            myButton.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+        }
+
+        myButton = dialogView.findViewById<ImageView>(R.id.botaoGrandeSlycoWallet)
+        myTextView = dialogView.findViewById<TextView>(R.id.textBotaoSlycoWallet)
+        var myIcon = dialogView.findViewById<ImageView>(R.id.imageSlycoIcon)
+        var myImage = dialogView.findViewById<ImageView>(R.id.imageWallet)
+        if (myLocation.getLocation().merchant.enabledPaymentMethods.slycoWallet) {
+            myButton.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myIcon.alpha = AppConstants.ON_STOCK_ALPHA_FLOAT
+            myImage.alpha = 2.0f * AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            myButton.setOnClickListener{
+                callSlycoWallet(paymentParameters)
+                customDialog.dismiss()
+            }
+        }
+        else
+        {
+            myButton.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            myTextView.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+            myIcon.alpha = AppConstants.OUT_OF_STOCK_ALPHA_FLOAT
+        }
+
+        customDialog.show()
+        hideActionBar()
     }
 
     fun sendDmp(){
@@ -762,7 +829,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         resetWatchDog()
         Log.d ("onActivityResult requestCode",requestCode.toString())
 
-        if (requestCode == 1) {
+        if (requestCode == ACTIVITY_IDS.PAYMENT.value) {
             try {
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@", this.javaClass.getName() + " | "
@@ -854,10 +921,6 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     invoiceAuthorizationCode = (genericMap["952"] as? ArrayList<String>)?.getOrNull(0) ?: "", // invoice authorization code
                     saleItems = ""
                 )
-
-
-
-
                 myLog.log(mySaleResponseData.toString())
 
                 var merchantReceipt: String? = data?.getStringExtra("merchantReceipt")
@@ -875,7 +938,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 updateView(0)
             }
         }
-        else if (requestCode == 3) {
+        else if (requestCode == ACTIVITY_IDS.SCREEN_SAVER.value) {
             try {
                 val retVal = data!!.getStringExtra("action")
                 when (retVal) {
@@ -896,7 +959,39 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 Log.e ("ScreenSaver",e.toString())
             }
         }
-        else if (requestCode == 99){
+        else if (requestCode == ACTIVITY_IDS.SLYCO_WALLET.value)
+        {
+            val mySaleResponseData = saleResponseDC(
+                locationId = android_id,
+                transactionType = "Slyco Wallet",
+                installmentType = "",
+                cashbackAmount = "",
+                acquirerId = "Slyco",
+                cardBrand = "Slyco Wallet",
+                sitefTransactionId = "",
+                hostTrasactionId = data?.getStringExtra("hostTrasactionId") as? String ?: "",
+                authCode = data?.getStringExtra("authCode") as? String ?: "",
+                transactionInstallments = "1",
+                pan = data?.getStringExtra("pan") as? String ?: "", // pan
+                goodThru = "", // good thru
+                cardType = data?.getStringExtra("idMethod") as? String ?: "", // card_type
+                cardReadStatus = "", // card read status
+                paymentSourceTaxID = "", // payment source tax id
+                invoiceBrandID = "", // brand id for invoice
+                invoiceNumber = "", // invoice number
+                authorizerResponseCode = "", // authorizer response code
+                authorizationCode = "", // authorization code
+                transactionTimestamp = data?.getStringExtra("transactionTimestamp") as? Long ?: 0L, //transaction timestamp
+                authorizationNetworkID = "", // authorization network id
+                merchantID = "", //merchant id
+                sitefIf = "", //if sitef
+                cardBrandID = "", // sitef cardbrand id
+                invoiceAuthorizationCode = "", // invoice authorization code
+                saleItems = ""
+            )
+            finishTransaction(mySaleResponseData)
+        }
+        else if (requestCode == ACTIVITY_IDS.REQUEST_ACTIVATE_TEF.value){
             if (resultCode == RESULT_OK){
                 if (data == null){
                     Log.i ("Smart Fiserv","REQUEST_ACTIVATE_TEF null data")
@@ -943,7 +1038,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
         }
         resetWatchDog(10)
-        startActivityForResult(intent, 2)
+        startActivityForResult(intent, ACTIVITY_IDS.RELEASE_COFFEE.value)
     }
 
     fun setupView(){

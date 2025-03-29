@@ -9,4 +9,15 @@ object AppConstants {
     const val dispenserIdSufix = "_itemQty"
     const val dispenserFlavorSufix = "_itemFlavor"
     const val isvTaxId = "55833084000136"
+
+}
+
+enum class ACTIVITY_IDS (val value:Int){
+    NONE (0),
+
+    PAYMENT(1),
+    RELEASE_COFFEE(2),
+    SCREEN_SAVER(3),
+    SLYCO_WALLET (4),
+    REQUEST_ACTIVATE_TEF(99)
 }
