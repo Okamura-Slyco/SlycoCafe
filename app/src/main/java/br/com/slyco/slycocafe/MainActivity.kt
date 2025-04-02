@@ -4,9 +4,11 @@ package br.com.slyco.slycocafe
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -97,8 +99,46 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
     
     }
+    /**
+     * Define o app de início, quando o terminal for ligado é este app que será chamado
+     */
+    private fun defineHomeApp() {
+        try {
+            val packageName = BuildConfig.APPLICATION_ID
+            val appLabel = resources.getString(R.string.app_name)
+            val intent = Intent().apply {
+                component = ComponentName("br.com.bin", "br.com.bin.service.DefineHomeAppService")
+                action = "br.com.bin.service.DefineHomeAppService.action.DEFINE_HOME_APP"
+                putExtra("br.com.bin.service.DefineHomeAppService.extra.PACKAGE_NAME", packageName)
+                putExtra("br.com.bin.service.DefineHomeAppService.extra.APP_LABEL", appLabel)
+            }
 
+            // Check if the service is callable
+            if (isServiceCallable(intent)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent)
+                } else {
+                    startService(intent)
+                }
+            } else {
+                Log.w("MainActivity", "DefineHomeAppService is not available")
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error defining home app", e)
+        }
+    }
 
+    /**
+     * Checks if the service is callable
+     */
+    private fun isServiceCallable(intent: Intent): Boolean {
+        return try {
+            packageManager.queryIntentServices(intent, 0).isNotEmpty()
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error checking service availability", e)
+            false
+        }
+    }
     override fun onActivityReenter(resultCode: Int, data: Intent?) {
         hideActionBar()
         super.onActivityReenter(resultCode, data)
@@ -214,7 +254,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
     override fun setMinusOnClickListener(listId:Int , position: Int) {
         val clickedItem = "${listId}: $position"
-        updateView(0,-1)
+        updateView(0,-1,listId,position)
         //updateItem(listId,position,-1)
         resetWatchDog()
         hideActionBar()
@@ -1024,6 +1064,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     fun initializeApp(){
 
         android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+
+        defineHomeApp()
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
