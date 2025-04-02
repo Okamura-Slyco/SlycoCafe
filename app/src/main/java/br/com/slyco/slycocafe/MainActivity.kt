@@ -43,6 +43,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
     private lateinit var paymentInterfaceFieldNames: PAYMENT_INTERFACE_FIELDS_NAMES
     private var paymentParameters :PAYMENT_INTERFACE_FIELDS_NAMES = PAYMENT_INTERFACE_FIELDS_NAMES()
+    private var paymentReturnFields: PAYMENT_INTERFACE_RESPONSE_FIELDS = PAYMENT_INTERFACE_RESPONSE_FIELDS()
 
     private lateinit var myLocation:location
 
@@ -404,6 +405,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
                 if ((paymentInterfaceFieldNames.clsitStr != "") && (transactionParameters.clsitStr != "")) { intent.putExtra(paymentInterfaceFieldNames.clsitStr, transactionParameters.clsitStr); Log.d ("PaymentIntentParam","${paymentInterfaceFieldNames.clsitStr}:${transactionParameters.clsitStr}")}
 
+                resetWatchDog(100)
                 disableWatchdog()
 
                 startActivityForResult(intent, 1)
@@ -562,6 +564,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     paymentParameters.endpointStr = myLocation.getLocation().merchant.paymentEndpoint
                     paymentParameters.sitefMIDStr = myLocation.getLocation().merchant.paymentGatewayMid
                     paymentParameters.isv_TIDStr = AppConstants.isvTaxId
+                    paymentParameters.comProtocolString = "4"
                     paymentParameters.operatorIdStr = "1"
                     if ((myLocation.getLocation().merchant.tlsFiservToken != null) && (myLocation.getLocation().merchant.tlsFiservToken != "")) {
                         paymentParameters.tlsToken = myLocation.getLocation().merchant.tlsFiservToken
@@ -576,7 +579,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
                     myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "3"
+                        paymentParameters.functionIdStr = "0"
                         paymentParameters.enabledTransactionsStr = "26"
                         paymentParameters.restrictionStr = "{TransacoesHabilitadas=26}"
                         paymentParameters.installmentsStr = "1"
@@ -735,47 +738,47 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "responseCode: " + data!!.getStringExtra("responseCode")
+                    "responseCode: " + data!!.getStringExtra(paymentReturnFields.responseCode)
                 )
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "transactionType: " + data!!.getStringExtra("transactionType")
+                    "transactionType: " + data!!.getStringExtra(paymentReturnFields.transactionType)
                 )
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "installmentType: " + data!!.getStringExtra("installmentType")
+                    "installmentType: " + data!!.getStringExtra(paymentReturnFields.installmentType)
                 )
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "cashbackAmount: " + data!!.getStringExtra("cashbackAmount")
+                    "cashbackAmount: " + data!!.getStringExtra(paymentReturnFields.cashbackAmount)
                 )
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "acquirerId: " + data!!.getStringExtra("acquirerId")
+                    "acquirerId: " + data!!.getStringExtra(paymentReturnFields.acquirerId)
                 )
-                Log.d("@@PRE_PAYMENT_SAMPLE@@", "cardBrand: " + data!!.getStringExtra("cardBrand"))
+                Log.d("@@PRE_PAYMENT_SAMPLE@@", "cardBrand: " + data!!.getStringExtra(paymentReturnFields.cardBrand))
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "sitefTransactionId: " + data!!.getStringExtra("sitefTransactionId")
-                )
-                Log.d(
-                    "@@PRE_PAYMENT_SAMPLE@@",
-                    "hostTrasactionId: " + data!!.getStringExtra("hostTrasactionId")
-                )
-                Log.d("@@PRE_PAYMENT_SAMPLE@@", "authCode: " + data!!.getStringExtra("authCode"))
-                Log.d(
-                    "@@PRE_PAYMENT_SAMPLE@@",
-                    "transactionInstallments: " + data!!.getStringExtra("transactionInstallments")
+                    "sitefTransactionId: " + data!!.getStringExtra(paymentReturnFields.sitefTransactionId)
                 )
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "merchantReceipt: " + data!!.getStringExtra("merchantReceipt")
+                    "hostTrasactionId: " + data!!.getStringExtra(paymentReturnFields.hostTrasactionId)
+                )
+                Log.d("@@PRE_PAYMENT_SAMPLE@@", "authCode: " + data!!.getStringExtra(paymentReturnFields.authCode))
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "transactionInstallments: " + data!!.getStringExtra(paymentReturnFields.transactionInstallments)
                 )
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
-                    "customerReceipt: " + data!!.getStringExtra("customerReceipt")
+                    "merchantReceipt: " + data!!.getStringExtra(paymentReturnFields.merchantReceipt)
                 )
-                var returnedFields = data!!.getStringExtra("returnedFields")
+                Log.d(
+                    "@@PRE_PAYMENT_SAMPLE@@",
+                    "customerReceipt: " + data!!.getStringExtra(paymentReturnFields.customerReceipt)
+                )
+                var returnedFields = data!!.getStringExtra(paymentReturnFields.returnedFields)
                 Log.d(
                     "@@PRE_PAYMENT_SAMPLE@@",
                     "returnedFields: $returnedFields"
@@ -788,15 +791,15 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
                 val mySaleResponseData = saleResponseDC(
                     locationId = android_id,
-                    transactionType = data?.getStringExtra("transactionType") as? String ?: "",
-                    installmentType = data?.getStringExtra("installmentType") as? String ?: "",
-                    cashbackAmount = data?.getStringExtra("cashbackAmount") as? String ?: "",
-                    acquirerId = data?.getStringExtra("acquirerId") as? String ?: "",
-                    cardBrand = data?.getStringExtra("cardBrand") as? String ?: "",
-                    sitefTransactionId = data?.getStringExtra("sitefTransactionId") as? String ?: "",
-                    hostTrasactionId = data?.getStringExtra("hostTrasactionId") as? String ?: "",
-                    authCode = data?.getStringExtra("authCode") as? String ?: "",
-                    transactionInstallments = data?.getStringExtra("transactionInstallments") as? String ?: "",
+                    transactionType = data?.getStringExtra(paymentReturnFields.transactionType) as? String ?: "",
+                    installmentType = data?.getStringExtra(paymentReturnFields.installmentType) as? String ?: "",
+                    cashbackAmount = data?.getStringExtra(paymentReturnFields.cashbackAmount) as? String ?: "",
+                    acquirerId = data?.getStringExtra(paymentReturnFields.acquirerId) as? String ?: "",
+                    cardBrand = data?.getStringExtra(paymentReturnFields.cardBrand) as? String ?: "",
+                    sitefTransactionId = data?.getStringExtra(paymentReturnFields.sitefTransactionId) as? String ?: "",
+                    hostTrasactionId = data?.getStringExtra(paymentReturnFields.hostTrasactionId) as? String ?: "",
+                    authCode = data?.getStringExtra(paymentReturnFields.authCode) as? String ?: "",
+                    transactionInstallments = data?.getStringExtra(paymentReturnFields.transactionInstallments) as? String ?: "",
                     pan = (genericMap["2021"] as? ArrayList<String>)?.getOrNull(0) as? String ?: "", // pan
                     goodThru = (genericMap["1002"] as? ArrayList<String>)?.getOrNull(0) as? String ?: "", // good thru
                     cardType = (genericMap["2090"] as? ArrayList<String>)?.getOrNull(0) as? String ?: "", // card_type
@@ -815,13 +818,10 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     saleItems = ""
                 )
 
-
-
-
                 myLog.log(mySaleResponseData.toString())
 
-                var merchantReceipt: String? = data?.getStringExtra("merchantReceipt")
-                var customerReceipt: String? = data?.getStringExtra("customerReceipt")
+                var merchantReceipt: String? = data?.getStringExtra(paymentReturnFields.merchantReceipt)
+                var customerReceipt: String? = data?.getStringExtra(paymentReturnFields.customerReceipt)
 
                 if ((merchantReceipt != null)||
                     (customerReceipt != null)){
@@ -995,6 +995,22 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     "habilitaColetaValorEntradaIATA",
                     "clsit",
                     "tokenRegistroTls"
+                )
+
+                paymentReturnFields = PAYMENT_INTERFACE_RESPONSE_FIELDS(
+                    responseCode = "CODRESP",
+                    transactionType = "CODTRANS",
+                    installmentType = "TIPO_PARC",
+                    cashbackAmount = "VLTROCO",
+                    acquirerId = "REDE_AUT",
+                    cardBrand = "BANDEIRA",
+                    sitefTransactionId = "NSU_SITEF",
+                    hostTrasactionId = "NSU_HOST",
+                    authCode = "COD_AUTORIZACAO",
+                    transactionInstallments = "NUM_PARC",
+                    merchantReceipt = "VIA_ESTABELECIMENTO",
+                    customerReceipt = "VIA_CLIENTE",
+                    returnedFields = "TIPO_CAMPOS"
                 )
                 Log.d("TRANSACTION", "m-SiTef")
             }

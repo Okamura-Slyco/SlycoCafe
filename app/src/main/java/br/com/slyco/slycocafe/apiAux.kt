@@ -106,6 +106,22 @@ data class PAYMENT_INTERFACE_FIELDS_NAMES (
     var tlsToken:String = ""
 )
 
+data class PAYMENT_INTERFACE_RESPONSE_FIELDS(
+    var responseCode: String = "responseCode",
+    var transactionType: String = "transactionType",
+    var installmentType: String = "installmentType",
+    var cashbackAmount: String = "cashbackAmount",
+    var acquirerId: String = "acquirerId",
+    var cardBrand: String = "cardBrand",
+    var sitefTransactionId: String = "sitefTransactionId",
+    var hostTrasactionId: String = "hostTrasactionId",
+    var authCode: String = "authCode",
+    var transactionInstallments: String = "transactionInstallments",
+    var merchantReceipt: String = "merchantReceipt",
+    var customerReceipt: String = "customerReceipt",
+    var returnedFields: String = "returnedFields"
+)
+
 enum class INTEGRATION_APP(val value: Int) {
     MSITEF (0),
     SITEF_SALES_APP (1),
