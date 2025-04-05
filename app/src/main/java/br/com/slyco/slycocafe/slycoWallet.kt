@@ -1,34 +1,47 @@
 package br.com.slyco.slycocafe
 
-import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.hardware.Camera
+import android.content.IntentFilter
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
-import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.zxing.*
-import com.google.zxing.common.HybridBinarizer
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import com.clover.sdk.util.CustomerMode
+import com.clover.sdk.v3.scanner.BarcodeResult
+import com.clover.sdk.v3.scanner.BarcodeScanner
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
+import okio.ByteString.Companion.decodeBase64
+
+data class QrCodeData(
+    var uid:String?="",
+    var tid:String?="",
+    var v:Int?=0,
+    var cts:String?=""
+)
 
 
+class SlycoWallet : AppCompatActivity() {
 
-class SlycoWallet : AppCompatActivity(), SurfaceHolder.Callback {
-    private lateinit var surfaceView: SurfaceView
-    private var camera: Camera? = null
-    private val processing = AtomicBoolean(false)
-    private val executor = Executors.newSingleThreadExecutor()
-    private val multiFormatReader = MultiFormatReader()
+    private var mBarcodeScanner: BarcodeScanner? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,191 +69,154 @@ class SlycoWallet : AppCompatActivity(), SurfaceHolder.Callback {
         thisIntent?.putExtra("idMethod", "TODO")
         thisIntent?.putExtra("transactionTimestamp", "123456789")
 
-        initMultiFormatReader()
+        mBarcodeScanner = BarcodeScanner(this)
+        mBarcodeScanner!!.startScan()
 
-        // Create SurfaceView
-        surfaceView = SurfaceView(this)
-        setContentView(surfaceView)
+        registerBarcodeScanner()
 
-        // Request camera permission
-        if (checkCameraPermission()) {
-            initializeCamera()
-        } else {
-            requestCameraPermission()
-        }
 
         setResult(Activity.RESULT_OK, thisIntent)
         //finish()
     }
 
-    private fun initMultiFormatReader() {
-        val hints = mapOf(
-            DecodeHintType.POSSIBLE_FORMATS to arrayListOf(
-                BarcodeFormat.QR_CODE,
-                BarcodeFormat.CODE_128,
-                BarcodeFormat.EAN_13,
-                // Add other formats as needed
-            )
-        )
-        multiFormatReader.setHints(hints)
-    }
+    private val barcodeReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val barcodeResult = BarcodeResult(intent)
+            if (barcodeResult.isBarcodeAction) {
+                lifecycleScope.launch {
+                    getBarcode(barcodeResult.barcode)
+                }
+            } else {
 
-
-    private fun checkCameraPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestCameraPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.CAMERA),
-            CAMERA_PERMISSION_REQUEST
-        )
-    }
-
-    private fun initializeCamera() {
-        surfaceView.holder.addCallback(this)
-    }
-
-    private fun getOptimalPreviewSize(
-        sizes: List<Camera.Size>,
-        width: Int,
-        height: Int
-    ): Camera.Size {
-        val targetRatio = width.toDouble() / height
-        return sizes.minByOrNull { size ->
-            val ratio = size.width.toDouble() / size.height
-            Math.abs(ratio - targetRatio)
-        } ?: sizes.first()
-    }
-
-
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        try {
-            camera = Camera.open()
-            camera?.setPreviewDisplay(holder)
-            camera?.setDisplayOrientation(90)
-
-            // Set camera parameters
-            camera?.parameters = camera?.parameters?.apply {
-                focusMode = Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
-                // Optimize preview size
-                val sizes = supportedPreviewSizes
-                val optimalSize = getOptimalPreviewSize(sizes, surfaceView.width, surfaceView.height)
-                setPreviewSize(optimalSize.width, optimalSize.height)
             }
-            startPreviewAndDecode()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error setting up camera: ${e.message}")
-            Toast.makeText(this, "Error setting up camera", Toast.LENGTH_SHORT).show()
-            finish()
         }
     }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        if (holder.surface == null) {
-            return
-        }
-
-        try {
-            camera?.stopPreview()
-        } catch (e: Exception) {
-            // Ignore: tried to stop a non-existent preview
-        }
-
-        try {
-            camera?.setPreviewDisplay(holder)
-            camera?.startPreview()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error starting camera preview: ${e.message}")
-        }
+    private fun registerBarcodeScanner() {
+        registerReceiver(barcodeReceiver, IntentFilter("com.clover.BarcodeBroadcast"))
     }
 
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        camera?.stopPreview()
-        camera?.release()
-        camera = null
+    private fun unregisterBarcodeScanner() {
+        unregisterReceiver(barcodeReceiver)
     }
 
-    private fun startPreviewAndDecode() {
-        camera?.startPreview()
+    private fun showPinDialog() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.pin_entry_dialog, null)
+        val pinEditText = dialogLayout.findViewById<EditText>(R.id.pinEditText)
 
-        camera?.setPreviewCallback { data, camera ->
-            if (!processing.get()) {
-                processing.set(true)
-                executor.execute {
-                    try {
-                        val size = camera.parameters.previewSize
-                        val source = PlanarYUVLuminanceSource(
-                            data,
-                            size.width,
-                            size.height,
-                            0,
-                            0,
-                            size.width,
-                            size.height,
-                            false
-                        )
+        // Create dialog instance first
+        val dialog = builder.setView(dialogLayout)
+            .setTitle("Enter PIN")
+            .setPositiveButton("OK", null) // Set to null to override default behavior
+            .setNegativeButton("Cancel") { dialog, _ ->
+                // Hide keyboard before dismissing
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(pinEditText.windowToken, 0)
+                dialog.cancel()
+            }
+            .create()
 
-                        val bitmap = BinaryBitmap(HybridBinarizer(source))
-                        try {
-                            val result = multiFormatReader.decode(bitmap)
-                            onBarcodeDetected(result)
-                        } catch (e: NotFoundException) {
-                            // No barcode found, continue scanning
-                            Log.d("ttt","tt")
-                        }
-                    } finally {
-                        processing.set(false)
-                    }
+        // Add TextWatcher after dialog creation
+        pinEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s?.length == 4) {
+                    // Automatically validate when PIN is complete
+                    validateAndSubmit(pinEditText, dialog)
                 }
             }
-        }
-    }
+        })
 
-    private fun onBarcodeDetected(result: Result) {
-        runOnUiThread {
-            handleBarcodeResult(result.text)
-        }
-    }
+        // Set window attributes for keyboard
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
-    private fun handleBarcodeResult(barcodeValue: String?) {
-        barcodeValue?.let { value ->
-            // Handle the barcode value
-            Toast.makeText(this, "Barcode: $value", Toast.LENGTH_SHORT).show()
-            // Add your business logic here
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initializeCamera()
+        // Handle keyboard done action
+        pinEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                validateAndSubmit(pinEditText, dialog)
+                true
             } else {
-                Toast.makeText(this, "Camera permission required", Toast.LENGTH_LONG).show()
-                finish()
+                false
             }
         }
+
+        dialog.setOnShowListener {
+            // Show keyboard using multiple approaches
+            pinEditText.requestFocus()
+
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(pinEditText, InputMethodManager.SHOW_IMPLICIT)
+
+            // Backup approach with delay
+            pinEditText.postDelayed({
+                if (!imm.isActive(pinEditText)) {
+                    imm.showSoftInput(pinEditText, InputMethodManager.SHOW_FORCED)
+                }
+            }, 100)
+
+            // Set up positive button click listener
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setOnClickListener {
+                validateAndSubmit(pinEditText, dialog)
+            }
+        }
+
+        // Make sure EditText is focusable
+        pinEditText.isFocusableInTouchMode = true
+        pinEditText.isFocusable = true
+
+        dialog.show()
+    }
+    // Helper function to validate and submit PIN
+    private fun validateAndSubmit(pinEditText: EditText, dialog: AlertDialog) {
+        val enteredPin = pinEditText.text.toString()
+        if (validatePin(enteredPin)) {
+            // Hide keyboard before dismissing
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(pinEditText.windowToken, 0)
+            dialog.dismiss()
+
+            // submit to server
+            onCorrectPin()
+        } else {
+            pinEditText.error = "Incorrect PIN"
+            pinEditText.setText("")
+            pinEditText.requestFocus() // Keep focus for retry
+        }
+    }
+    private fun validatePin(pin: String): Boolean {
+        return pin.length == AppConstants.PIN_LENGTH
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        executor.shutdown()
-        camera?.release()
+    private fun onCorrectPin() {
+
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
+    private fun getBarcode(barcode: String) {
+        try {
+            Log.d("BarCode", "${barcode}")
 
-    companion object {
-        private const val TAG = "BarcodeScannerActivity"
-        private const val CAMERA_PERMISSION_REQUEST = 100
+            val decodedBytes = android.util.Base64.decode(barcode, android.util.Base64.DEFAULT)
+            val decodedString = String(decodedBytes, Charsets.UTF_8)
+            Log.d("decodedString", decodedString)
+
+            val gson = Gson()
+
+            // Parse JSON to object
+            var person = gson.fromJson(decodedString, QrCodeData::class.java)
+            var text1 = findViewById<TextView>(R.id.txtContent)
+            unregisterBarcodeScanner()
+            showPinDialog()
+            //finish()
+
+        } catch (e: Exception) {
+            mBarcodeScanner!!.startScan()
+            Log.e("JSON Parse Error", e.message ?: "Unknown error")
+
+
+        }
     }
-
-
 }

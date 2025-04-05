@@ -9,6 +9,7 @@ object AppConstants {
     const val dispenserIdSufix = "_itemQty"
     const val dispenserFlavorSufix = "_itemFlavor"
     const val isvTaxId = "55833084000136"
+    const val PIN_LENGTH = 6
 
 }
 
