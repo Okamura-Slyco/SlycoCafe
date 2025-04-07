@@ -44,6 +44,7 @@ android {
             buildConfigField("String", "SLYCO_WALLET_API_KEY","\"${System.getenv("SLYCO_WALLET_API_KEY")}\"")
             buildConfigField("String", "SLYCO_WALLET_BASE_PATH","\"${System.getenv("SLYCO_WALLET_BASE_PATH")}\"")
             buildConfigField("String", "SLYCO_WALLET_HMAC_KEY","\"${System.getenv("SLYCO_WALLET_HMAC_KEY")}\"")
+            buildConfigField("String", "SLYCO_WALLET_KEYSTORE_PASSWORD","\"${System.getenv("SLYCO_WALLET_KEYSTORE_PASSWORD")}\"")
         }
         debug {
             isDebuggable = true
@@ -59,6 +60,7 @@ android {
             buildConfigField("String", "SLYCO_WALLET_API_KEY","\"${System.getenv("SLYCO_WALLET_API_KEY")}\"")
             buildConfigField("String", "SLYCO_WALLET_BASE_PATH","\"${System.getenv("SLYCO_WALLET_BASE_PATH")}\"")
             buildConfigField("String", "SLYCO_WALLET_HMAC_KEY","\"${System.getenv("SLYCO_WALLET_HMAC_KEY")}\"")
+            buildConfigField("String", "SLYCO_WALLET_KEYSTORE_PASSWORD","\"${System.getenv("SLYCO_WALLET_KEYSTORE_PASSWORD")}\"")
 
         }
     }

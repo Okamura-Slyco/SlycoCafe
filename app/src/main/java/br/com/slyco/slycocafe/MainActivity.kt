@@ -26,10 +26,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.launch
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
@@ -58,6 +60,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     private lateinit var android_id:String
 
     private lateinit var watchDog: Handler
+
+    private lateinit var walletObj: SlycoWallet
 
 
     private var viewLayout = R.layout.activity_main_smart_terminal
@@ -322,6 +326,10 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         Log.d("teste","123")
     }
 
+    fun initializeWallet(){
+        walletObj = SlycoWallet()
+    }
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -339,6 +347,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
         // Do initialization work
         initializeApp()
+
+        initializeWallet()
 
         // Ensure minimum display time if needed
         val endTime = System.currentTimeMillis()
@@ -379,14 +389,14 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
     fun callSlycoWallet(transactionParameters:PAYMENT_INTERFACE_FIELDS_NAMES) {
 
-        val intent: Intent = Intent(this, SlycoWallet::class.java)
-        intent.putExtra(
-            "dispensersQty",
-            myLocation.getLocation().dispenserModel.flavors
-        )
-
-        resetWatchDog(10)
-        startActivityForResult(intent, ACTIVITY_IDS.SLYCO_WALLET.value)
+//        val intent: Intent = Intent(this, SlycoWallet::class.java)
+//        intent.putExtra(
+//            "dispensersQty",
+//            myLocation.getLocation().dispenserModel.flavors
+//        )
+//
+//        resetWatchDog(10)
+//        startActivityForResult(intent, ACTIVITY_IDS.SLYCO_WALLET.value)
     }
 
     fun callPaymentApp(transactionParameters:PAYMENT_INTERFACE_FIELDS_NAMES) {
