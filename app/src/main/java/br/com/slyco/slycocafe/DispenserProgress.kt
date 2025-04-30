@@ -41,7 +41,8 @@ import java.net.URLEncoder
 data class DISPENSER_ELEMENTS (
     var counter:Int = 0,
     var id:String = "",
-    var flavor:Int = 0
+    var flavor:Int = 0,
+    var flavorName: String = ""
 )
 data class ANIMATION_ELEMENTS (
     var counter: Int = 0,
@@ -92,10 +93,14 @@ class DispenserProgress : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var statusText: TextView
     private lateinit var capsuleContainer: FrameLayout
+    private var itemLine: String = ""
 
     private var lastDataReceivedTime: Long = System.currentTimeMillis()
     private var totalIterations = 0
     private var currentIteration = 0
+
+    private lateinit var locationName: String
+    private lateinit var locationCode: String
 
     private var flavorsQty = 0
     private var lastActivityToSetWatchdog = 0
@@ -137,6 +142,7 @@ class DispenserProgress : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_dispenser_progress)
@@ -179,26 +185,43 @@ class DispenserProgress : AppCompatActivity() {
         }
         bounceAnim.start()
 
-        helpDialog = helperDialog(this)
-
-        helpIcon.setOnClickListener {
-            helpDialog.show("myLocation","sale ID")
-        }
-
         flavorsQty = intent.getIntExtra(
             "dispensersQty",
             0
         )
 
-        for (i in 0..< flavorsQty) {
-            if (GlobalVariables.dispenserElements[i] != null) {
-                GlobalVariables.dispenserElements[i]?.counter = intent.getIntExtra(
-                    GlobalVariables.dispenserElements[i]?.id + AppConstants.dispenserIdSufix,
-                    0
-                )
+        val flavorsList = StringBuilder()
+        locationName = intent.getStringExtra(AppConstants.locationNameFieldName).orEmpty()
+        locationCode = intent.getStringExtra(AppConstants.locationCodeFieldName).orEmpty()
+
+
+        for (i in 0 until flavorsQty) {
+            val dispenser = GlobalVariables.dispenserElements[i]
+            val animation = GlobalVariables.animationElements[i]
+
+            if (dispenser != null) {
+                val counter = intent.getIntExtra(dispenser.id + AppConstants.dispenserIdSufix, 0)
+                val flavorName = intent.getStringExtra(dispenser.id + AppConstants.dispenserFlavorNameSufix).orEmpty()
+                if (counter > 0) itemLine += "- ${counter}x *$flavorName*\n"
+                flavorsList.appendLine(itemLine)
+
+                // Also set values back to your global model if needed
+                dispenser.counter = counter
+                dispenser.flavorName = flavorName
+                animation?.imgId = intent.getIntExtra("${dispenser.id}_itemFlavor", 0)
             }
-            GlobalVariables.animationElements[i]?.imgId =  intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+"_itemFlavor", 0)
         }
+
+        helpDialog = helperDialog(this)
+
+        helpIcon.setOnClickListener {
+            helpDialog.show(locationName = locationName,locationCode = locationCode, flavorsList = itemLine)
+        }
+        helpDialog.onDismissCallback = {
+            Log.d("HelpDialog", "Help dialog dismissed")
+            finishThisActivity(4)  // Or a dedicated code for help dismiss
+        }
+
 
         manager = getSystemService(USB_SERVICE) as UsbManager
         val availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)

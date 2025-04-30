@@ -5,19 +5,27 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.DisplayMetrics
+import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.view.WindowManager.*
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Canvas
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -25,6 +33,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.w3c.dom.Text
+import java.net.URLEncoder
+
+import android.util.Log
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 
 
 class objectAnimationVector {
@@ -44,6 +57,10 @@ class ScreenSaver : AppCompatActivity() {
     var destination_coord:IntArray = IntArray(2)
     var height = 0
     var width = 0
+    var deviceId: String = ""
+    lateinit var parentLayout : ConstraintLayout
+    var set = ConstraintSet()
+
 
     override fun onResume() {
         val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
@@ -85,8 +102,10 @@ class ScreenSaver : AppCompatActivity() {
         height = displayMetrics.heightPixels
         width = displayMetrics.widthPixels
 
+        deviceId = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+
         var textView = findViewById<TextView>(R.id.didTextView)
-        textView.text = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
+        textView.text = deviceId
 
         textView = findViewById<TextView>(R.id.buildInfoTextView)
         textView.text = "${BuildConfig.VERSION_NAME}${BuildConfig.SLYCO_API_ENVIRONMENT} ${BuildConfig.SLYCO_APP_BUILD_TIMESTAMP}"
@@ -102,18 +121,87 @@ class ScreenSaver : AppCompatActivity() {
             button.setOnClickListener(listener)
         }
 
+
         var locationName = intent.getStringExtra("locationName")
         findViewById<TextView>(R.id.locationNameTextView).text = locationName
+
+        val encodedLocationName = URLEncoder.encode(locationName, "UTF-8")
+        val encodedDeviceId = URLEncoder.encode(deviceId, "UTF-8")
+
+        val fullUrl = "https://www.slyco.com.br/contact?locationName=$encodedLocationName&locationCode=$encodedDeviceId"
+        val qrCodeContainer = findViewById<View>(R.id.qrCodeContainer)
+        val qrCodeImageView = findViewById<ImageView>(R.id.qrCodeImageView)
+        val qrBitmap = generateQrCodeWithLogo(this, fullUrl)
+        qrCodeImageView.setImageBitmap(qrBitmap)
+
+        parentLayout = findViewById<ConstraintLayout>(R.id.parentLayout)
+
+        // Set the constraints for qrCodeContainer directly
+        val params = qrCodeContainer.layoutParams as ConstraintLayout.LayoutParams
+        params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+
+        // Apply the modified layout params back to qrCodeContainer
+        qrCodeContainer.layoutParams = params
+
+        // If you want to apply more constraints to qrCodeImageView, you can do it similarly
+        val qrImageParams = qrCodeImageView.layoutParams as ConstraintLayout.LayoutParams
+        qrImageParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        qrImageParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+        qrCodeImageView.layoutParams = qrImageParams
 
         thisIntent = Intent()
 
         lifecycleScope.launch {
-            // Perform any UI-related tasks here
-            processAfterUILoad()
+            val positions = listOf("topLeft", "topRight", "bottomRight")
+            while (true) {
+                val nextPosition = positions.random()
+                Log.d ("lifecycleScope.launch", nextPosition)
+                positionQrCode(nextPosition, qrCodeContainer,parentLayout)
+                delay(30000L)
+            }
         }
 
-
+        // Coroutine 2: Long-running UI logic
+        lifecycleScope.launch(Dispatchers.Default) {
+            processAfterUILoad()
+        }
     }
+
+
+    private fun positionQrCode(position: String, qrCodeContainer: View, parentLayout: ConstraintLayout) {
+        // Get the layout params of the qrCodeContainer
+        val params = qrCodeContainer.layoutParams as ConstraintLayout.LayoutParams
+
+        when (position) {
+            "topLeft" -> {
+                params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+                params.endToEnd = ConstraintLayout.LayoutParams.UNSET
+                params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
+            }
+            "topRight" -> {
+                params.startToStart = ConstraintLayout.LayoutParams.UNSET
+                params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+                params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
+            }
+            "bottomRight" -> {
+                params.startToStart = ConstraintLayout.LayoutParams.UNSET
+                params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+                params.topToTop = ConstraintLayout.LayoutParams.UNSET
+                params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+            }
+        }
+
+        // Apply the modified layout parameters to the qrCodeContainer
+        qrCodeContainer.layoutParams = params
+
+        // Optionally, if you need to update the layout immediately:
+        parentLayout.requestLayout()
+    }
+
+
 
     @OptIn(ExperimentalStdlibApi::class)
     private suspend fun processAfterUILoad() {
@@ -207,4 +295,28 @@ class ScreenSaver : AppCompatActivity() {
         setResult(Activity.RESULT_OK, thisIntent)
         finish()
     }
+
+    fun generateQrCodeWithLogo(context: Context, content: String, size: Int = 512): Bitmap {
+        val bitMatrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size)
+        val qrBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+
+        for (x in 0 until size) {
+            for (y in 0 until size) {
+                qrBitmap.setPixel(x, y, if (bitMatrix[x, y]) Color
+                    .BLACK else Color.WHITE)
+            }
+        }
+
+        val overlaySize = size / 6
+        val logo = BitmapFactory.decodeResource(context.resources, R.drawable.slyco_icon_zero_alpha)
+        val scaledLogo = Bitmap.createScaledBitmap(logo, overlaySize, overlaySize, true)
+
+        val canvas = Canvas(qrBitmap)
+        val left = (qrBitmap.width - scaledLogo.width) / 2
+        val top = (qrBitmap.height - scaledLogo.height) / 2
+        canvas.drawBitmap(scaledLogo, left.toFloat(), top.toFloat(), null)
+
+        return qrBitmap
+    }
+
 }

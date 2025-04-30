@@ -18,6 +18,7 @@ class shoppingCart {
         for (i in 0..<items.size) {
             var myItem = ITEM(
                 NESPRESSOFLAVORS.from(NESPRESSOFLAVORSHASH.getValue(items[i].item.id)),
+                items[i].item.name,
                 0,
                 items[i].price.toFloat()/100,
                 items[i].item.coffeeSize,
@@ -58,6 +59,10 @@ class shoppingCart {
 
     fun getCartItemQuantity(index:Int = 0): Int {
         return itens[index]!!.qty!!
+    }
+
+    fun getCartItemName(index:Int = 0): String {
+        return itens[index]!!.name!!
     }
 
     fun getFlavor (id: Int): NESPRESSOFLAVORS {

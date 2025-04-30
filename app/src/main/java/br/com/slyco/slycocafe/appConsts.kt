@@ -8,5 +8,8 @@ object AppConstants {
     const val INACTIVITY_TIMEOUT = 30000L // 30s (em milissegundos)
     const val dispenserIdSufix = "_itemQty"
     const val dispenserFlavorSufix = "_itemFlavor"
+    const val dispenserFlavorNameSufix = "_itemName"
+    const val locationNameFieldName = "location_name"
+    const val locationCodeFieldName = "location_code"
     const val isvTaxId = "55833084000136"
 }

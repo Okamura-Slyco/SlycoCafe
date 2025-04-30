@@ -17,6 +17,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
@@ -69,6 +70,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
     private lateinit var dialogElements : List<ITEM_VIEW_COMPONENTS>
 
+    private lateinit var helpDialog: helperDialog
 
     private lateinit var recyclerView1: RecyclerView
     private lateinit var recyclerView2: RecyclerView
@@ -344,6 +346,20 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         // Do initialization work
         initializeApp()
 
+        val content = findViewById<View>(android.R.id.content)
+        content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                // ✅ Ready to render
+                content.viewTreeObserver.removeOnPreDrawListener(this)
+
+                // Notify SplashActivity via callback, flag, or event
+                sendBroadcast(Intent("br.com.slyco.slycocafe.MAIN_READY"))
+
+                return true
+            }
+        })
+
+
         // Ensure minimum display time if needed
         val endTime = System.currentTimeMillis()
         val displayTime = endTime - startTime
@@ -366,10 +382,12 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     }
 
     private fun disableWatchdog() {
+        Log.d ("DisableWatchdog", "")
         watchDog.removeCallbacks(watchDogCallback)
     }
 
     private fun resetWatchDog(n:Int = 1) {
+        Log.d ("resetWatchDog", "")
         disableWatchdog()
         watchDog.postDelayed(watchDogCallback, n* AppConstants.INACTIVITY_TIMEOUT)
     }
@@ -587,7 +605,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
                     disableWatchdog()
 
-                    val dialogBuilder = AlertDialog.Builder(this)
+                    val dialogBuilder = AlertDialog.Builder(this, R.style.NoActionBarDialog)
                         .setView(dialogView)
                         .setTitle("COMPRAR")
 
@@ -665,11 +683,10 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 easterEgg2 = 0
                 easterEgg3 = 0
 
-                val intent: Intent = Intent(this, helperDialog::class.java)
-
                 resetWatchDog(10)
-                startActivityForResult(intent, 10)
 
+                helpDialog = helperDialog(this)
+                helpDialog.show(myLocation.getLocation().name, android_id,  cancellable = true)
             }
 
         }
@@ -880,6 +897,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
         else if (requestCode == 3) {
             try {
+                resetWatchDog()
                 val retVal = data!!.getStringExtra("action")
                 when (retVal) {
                     "New" -> {
@@ -918,14 +936,12 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
     }
     fun releaseCoffee (){
-
+        disableWatchdog()
         val intent: Intent = Intent(this, DispenserProgress::class.java)
         intent.putExtra(
             "dispensersQty",
             myLocation.getLocation().dispenserModel.flavors
         )
-
-
 
         for (i in 0..<myLocation.getLocation().dispenserModel.flavors){
             val myFlavor = shoppingCart.getFlavor(i)
@@ -943,8 +959,19 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 GlobalVariables.dispenserElements[i].id+AppConstants.dispenserFlavorSufix,
                 myFlavor.value
             )
-
+            intent.putExtra(
+                GlobalVariables.dispenserElements[i].id+AppConstants.dispenserFlavorNameSufix,
+                shoppingCart.getCartItemName(i)
+            )
         }
+
+        intent.putExtra(
+            AppConstants.locationNameFieldName, myLocation.getLocation().name
+        )
+
+        intent.putExtra(
+            AppConstants.locationCodeFieldName, android_id
+        )
         resetWatchDog(10)
         startActivityForResult(intent, 2)
     }

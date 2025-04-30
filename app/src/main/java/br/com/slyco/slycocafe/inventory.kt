@@ -46,6 +46,7 @@ class inventory {
                 myLog.log("${id} ${items[id]}")
                 val myItem = ITEM(
                     NESPRESSOFLAVORS.from(NESPRESSOFLAVORSHASH.getValue(items[id].item.id)),
+                    items[id].item.name,
                     items[id].quantity,
                     items[id].price.toFloat() / 100,
                     items[id].item.coffeeSize,

@@ -241,6 +241,7 @@ data class merchantDC (
 
 data class ITEM(
     var flavor: NESPRESSOFLAVORS = NESPRESSOFLAVORS.NONE,
+    var name: String,
     var qty: Int,
     var price: Float?,
     var size: Int?,
