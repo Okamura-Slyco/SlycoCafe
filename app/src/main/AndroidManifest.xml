@@ -21,10 +21,6 @@
             android:name=".support"
             android:exported="false" />
         <activity
-            android:name=".helperDialog"
-            android:exported="false"
-            android:theme="@style/Theme.SlycoCafé" />
-        <activity
             android:name=".ScreenSaver"
             android:exported="false"
             android:theme="@style/Theme.SlycoCafé" />
