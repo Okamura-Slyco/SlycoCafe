@@ -60,6 +60,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
     private lateinit var watchDog: Handler
 
+    private val tapTimestamps = mutableListOf<Long>()
+    private val tapThreshold = 10
+    private val tapWindowMs = 2000L
 
     private var viewLayout = R.layout.activity_main_smart_terminal
     private var purchaseSummaryLayout = R.layout.dialog_purchase_summary_portrait
@@ -1061,6 +1064,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
 
     }
+    @SuppressLint("MissingInflatedId")
     fun initializeApp(){
 
         android_id = getAndroidId(this).toUpperCase().chunked(4).joinToString("-")
@@ -1109,6 +1113,25 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
         resetWatchDog()
 
+        val hotspot = findViewById<View>(R.id.tapHotspot)
+        hotspot.setOnClickListener {
+            val now = System.currentTimeMillis()
+            tapTimestamps.add(now)
 
+            // Keep only taps within time window
+            tapTimestamps.removeAll { now - it > tapWindowMs }
+
+            if (tapTimestamps.size >= tapThreshold) {
+                tapTimestamps.clear()
+                restartMainActivity()
+            }
+        }
     }
+    private fun restartMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish()
+    }
+
 }

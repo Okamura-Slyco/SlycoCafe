@@ -1,147 +1,76 @@
 package br.com.slyco.slycocafe
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import android.graphics.Color
-import android.graphics.LinearGradient
-import android.graphics.Shader
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
-import android.os.Bundle
+import android.app.AlertDialog
+import android.graphics.Bitmap
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
-import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.concurrent.thread
-import kotlin.math.max
+import android.widget.Toast
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
+import java.net.URLEncoder
 
-class helperDialog : AppCompatActivity() {
-    var thisIntent: Intent? = null
+class helperDialog(private val activity: Activity) {
+    private var dialog: AlertDialog? = null
+    private var countdownAnimator: ObjectAnimator? = null
 
-    override fun onResume() {
-        val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
-        if (actionBar != null) actionBar.hide()
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+    fun show(location: String, saleId: String, phone: String = "55119152166660", timeoutMillis: Long = 45_000L) {
+        val dialogView = LayoutInflater.from(activity).inflate(R.layout.dialog_assistance, null)
+        val qrImage = dialogView.findViewById<ImageView>(R.id.qrcodeImage)
+        val countdownBar = dialogView.findViewById<ProgressBar>(R.id.helpCountdownBar)
 
-        super.onResume()
-    }
+        // Build WhatsApp message
+        val message = "Preciso de ajuda na máquina Slyco. Local: $location. Venda: #$saleId"
+        val encodedMessage = URLEncoder.encode(message, "UTF-8")
+        val whatsappUrl = "https://wa.me/$phone?text=$encodedMessage"
 
-    @SuppressLint("WrongViewCast")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val actionBar: androidx.appcompat.app.ActionBar? = supportActionBar
-        if (actionBar != null) actionBar.hide()
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        val qrBitmap = generateQrCodeBitmap(whatsappUrl)
+        qrImage.setImageBitmap(qrBitmap)
 
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_helper_dialog)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
+        dialog = AlertDialog.Builder(activity)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
 
-        thisIntent = Intent()
-        val barra = createVerticalBar()
+        dialog?.show()
 
-        var button = findViewById<Button>(R.id.buttonReturn)
-        button.setOnClickListener(listener)
-
-        val layout = findViewById<FrameLayout>(R.id.layout)
-        layout.addView(barra)
-
-
-        lifecycleScope.launch {
-            // Perform any UI-related tasks here
-            processAfterUILoad()
+        countdownAnimator = ObjectAnimator.ofInt(countdownBar, "progress", 100, 0).apply {
+            duration = timeoutMillis
+            interpolator = android.view.animation.LinearInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    if (dialog?.isShowing == true) {
+                        Log.d ("onAnimationEnd", "dismiss")
+                        dialog?.dismiss()
+                    }
+                }
+            })
+            start()
         }
-
-
-    }
-    @OptIn(ExperimentalStdlibApi::class)
-    private suspend fun processAfterUILoad() {
-        withContext(Dispatchers.Main) {
-            // Your code to run after UI load
-            // For example, updating a TextView
-
-            var progressBar = findViewById<ProgressBar>(R.id.progressBarTimeoutHelper)
-
-            progressBar.max = 100
-            progressBar.progress = 100
-
-            ObjectAnimator.ofInt(progressBar,"progress",0)
-                .setDuration(30000L)
-                .start()
-
-        }
-
-
-        delay(30000L)
-
-        setResult(Activity.RESULT_OK, thisIntent)
-        finish()
-
     }
 
-    val listener= View.OnClickListener { view ->
-
-        when (view.getId()) {
-            R.id.buttonReturn -> {
-                setResult(Activity.RESULT_OK, thisIntent)
-                finish()
+    private fun generateQrCodeBitmap(content: String, size: Int = 512): Bitmap {
+        val bits = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size)
+        val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565)
+        for (x in 0 until size) {
+            for (y in 0 until size) {
+                bmp.setPixel(x, y, if (bits[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
             }
         }
+        return bmp
     }
 
-    private fun createVerticalBar(): FrameLayout {
-        // Definindo as dimensões da barra
-        val barWidth = 15
-        val barHeight = 350
-
-        // Criando a forma arredondada
-        val radius = floatArrayOf(10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f)
-        val roundRectShape = RoundRectShape(radius, null, null)
-
-        // Definindo o gradiente de cores (do cinza escuro ao cinza claro)
-        val gradient = LinearGradient(
-            0f, 0f, 0f, barHeight.toFloat(),
-            Color.parseColor("#4B371C"), Color.parseColor("#E6B68B"),
-            Shader.TileMode.CLAMP
-        )
-
-        // Criando o Drawable com o gradiente
-        val shapeDrawable = ShapeDrawable(roundRectShape).apply {
-            paint.shader = gradient
-        }
-
-        // Criando a view que vai conter a barra
-        val bar = FrameLayout(this).apply {
-            layoutParams = FrameLayout.LayoutParams(barWidth, barHeight)
-            background = shapeDrawable
-        }
-        return bar
+    fun dismiss() {
+        countdownAnimator?.cancel()
+        Log.d ("helperDialog", "dismiss")
+        dialog?.dismiss()
     }
+
+    fun isShowing(): Boolean = dialog?.isShowing == true
 }

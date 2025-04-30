@@ -9,7 +9,16 @@
         android:id="@+id/helpText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Precisa de ajuda? Escaneie o QR code para falar conosco via WhatsApp."
+        android:text="Precisa de ajuda?"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+    <TextView
+        android:id="@+id/helpText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Escaneie o QR code para falar conosco via WhatsApp."
         android:textSize="16sp"
         android:textAlignment="center"
         android:gravity="center"
@@ -21,4 +30,15 @@
         android:layout_height="200dp"
         android:src="@drawable/customer_support"
         android:contentDescription="QR code para WhatsApp" />
+
+    <ProgressBar
+        android:id="@+id/helpCountdownBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="24dp"
+        android:max="100"
+        android:progress="100"
+        android:progressDrawable="@android:drawable/progress_horizontal" />
+
 </LinearLayout>

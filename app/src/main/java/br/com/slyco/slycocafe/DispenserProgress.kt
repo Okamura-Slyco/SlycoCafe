@@ -1,6 +1,7 @@
 package br.com.slyco.slycocafe
 
 import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -28,6 +29,13 @@ import com.airbnb.lottie.LottieAnimationView
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
+import android.view.WindowManager
+import android.view.animation.BounceInterpolator
+import android.view.animation.LinearInterpolator
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.ActionBar
 import java.net.URLEncoder
 
 data class DISPENSER_ELEMENTS (
@@ -97,7 +105,12 @@ class DispenserProgress : AppCompatActivity() {
     private lateinit var finalContainer: LinearLayout
     private lateinit var finalMessage: TextView
     private lateinit var coffeeCup: LottieAnimationView
-    private var helpDialog: AlertDialog? = null
+
+    private lateinit var helpDialog: helperDialog
+
+    private var helpBlockUntil: Long = 0
+    private var capsulesStillFalling = false
+
 
     private lateinit var helpIcon: ImageView
 
@@ -125,7 +138,22 @@ class DispenserProgress : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_dispenser_progress)
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+        val actionBar: ActionBar? = supportActionBar
+        if (actionBar != null) actionBar.hide()
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
 
         progressBar = findViewById(R.id.progressBar)
         statusText = findViewById(R.id.statusText)
@@ -143,31 +171,19 @@ class DispenserProgress : AppCompatActivity() {
         helpIcon = findViewById(R.id.helpIcon)
         helpIcon.visibility = View.VISIBLE
 
-        val saleId = "SALE123"
-        val location = "Loja 42"
-        val message = "Preciso de ajuda na máquina Slyco. Local: $location. Venda: #$saleId"
+        val bounceAnim = ObjectAnimator.ofFloat(helpIcon, "translationY", 0f, -20f, 0f).apply {
+            duration = 800
+            repeatMode = ObjectAnimator.RESTART
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = BounceInterpolator()
+        }
+        bounceAnim.start()
 
-        val encodedMessage = URLEncoder.encode(message, "UTF-8")
-        val whatsappUrl = "https://wa.me/5521999999999?text=$encodedMessage"
+        helpDialog = helperDialog(this)
 
         helpIcon.setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.dialog_assistance, null)
-            val qrImage = dialogView.findViewById<ImageView>(R.id.qrcodeImage)
-
-            // Generate QR code dynamically
-            val qrBitmap = generateQrCodeBitmap(whatsappUrl)
-            qrImage.setImageBitmap(qrBitmap)
-
-            resetWatchdog()
-
-            helpDialog = AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setPositiveButton("Fechar", null)
-                .create()
-
-            helpDialog?.show()
+            helpDialog.show("myLocation","sale ID")
         }
-
 
         flavorsQty = intent.getIntExtra(
             "dispensersQty",
@@ -181,7 +197,7 @@ class DispenserProgress : AppCompatActivity() {
                     0
                 )
             }
-            GlobalVariables.animationElements[i]?.imgSrcId = intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+"_itemFlavor", 0)
+            GlobalVariables.animationElements[i]?.imgId =  intent.getIntExtra(GlobalVariables.dispenserElements[i]?.id+"_itemFlavor", 0)
         }
 
         manager = getSystemService(USB_SERVICE) as UsbManager
@@ -256,6 +272,17 @@ class DispenserProgress : AppCompatActivity() {
         }
     }
 
+    private fun safeCloseUsb() {
+        try {
+            dispenserPort?.close()
+            connection?.close()
+            dispenserPort = null
+            connection = null
+            Log.d("Slyco-USB", "USB safely closed before finish")
+        } catch (e: Exception) {
+            Log.w("Slyco-USB", "USB close error: ${e.message}")
+        }
+    }
 
     private fun startUsbReader() {
         var messageBuffer = ""
@@ -297,6 +324,7 @@ class DispenserProgress : AppCompatActivity() {
                     currentIteration = 0
                     progressBar.max = totalIterations * 2 // because ri + rf for each
                     Log.d("Slyco-USB", "Starting dispensing: $totalIterations iterations")
+                    capsulesStillFalling = true
                 }
                 message.startsWith("ri") -> {
                     val parts = message.substring(2).split(":")
@@ -321,11 +349,14 @@ class DispenserProgress : AppCompatActivity() {
             }
         }
     }
-
-    private fun animateDispensers(binaryData: String) {
-        val activeIndices = binaryData.withIndex()
+    fun getActiveIndices(binary: String): List<Int> =
+        binary.reversed()
+            .withIndex()
             .filter { it.value == '1' }
             .map { it.index }
+
+    private fun animateDispensers(binaryData: String) {
+        val activeIndices = getActiveIndices(binaryData)
 
         val count = activeIndices.size
         if (count == 0) return
@@ -333,7 +364,7 @@ class DispenserProgress : AppCompatActivity() {
         for ((i, capsuleIndex) in activeIndices.withIndex()) {
             val positionFraction = (i + 1).toFloat() / (count + 1) // e.g., 1/2, 2/3, etc.
             val xPos = positionFraction * capsuleContainer.width
-            launchCapsule(capsuleIndex, GlobalVariables.animationElements[capsuleIndex].imgSrcId, xPos)
+            launchCapsule(capsuleIndex, GlobalVariables.animationElements[capsuleIndex].imgId, xPos)
         }
     }
 
@@ -361,10 +392,15 @@ class DispenserProgress : AppCompatActivity() {
                     override fun onAnimationStart(animation: Animator) {}
 
                     override fun onAnimationEnd(animation: Animator) {
+                        capsulesStillFalling = false
+                        Log.d("onAnimationEnd", "finish")
 
-                        Log.d ("onAnimationEnd", "finish")
-                        finishThisActivity(1)
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            Log.d("onAnimationEnd", "calling finishThisActivity")
+                            finishThisActivity(1)
+                        }, 3000)
                     }
+
 
                     override fun onAnimationCancel(animation: Animator) {}
 
@@ -374,27 +410,58 @@ class DispenserProgress : AppCompatActivity() {
             .start()
     }
 
-    private fun finishThisActivity(id: Int){
-        when (id){
-            1,2,3 -> {
+    private fun canFinishActivity(): Boolean {
+        val now = System.currentTimeMillis()
+
+        // Block if help dialog is still visible
+        if (helpDialog?.isShowing() == true) {
+            Log.d("canFinishActivity", "Blocked: help dialog still showing")
+            return false
+        }
+
+        // Block if help timeout is active
+        if (now < helpBlockUntil) {
+            Log.d("canFinishActivity", "Blocked: help timeout still active")
+            return false
+        }
+
+        // Block if capsules are still falling (animation in progress)
+        if (capsulesStillFalling) {
+            Log.d("canFinishActivity", "Blocked: capsule animation in progress")
+            return false
+        }
+
+        Log.d ("canFinishActivity", "YESSS")
+        return true // Safe to finish
+    }
+
+
+    private fun finishThisActivity(id: Int) {
+        if (!canFinishActivity()) return
+
+        when (id) {
+            1, 2, 3 -> {
                 if (id == lastActivityToSetWatchdog) {
-                    Log.d ("finishThisActivity", id.toString())
+                    Log.d("finishThisActivity", "Finishing by ID $id")
                     helpDialog?.dismiss()
+                    safeCloseUsb()
                     finish()
                 }
             }
             else -> {
-                Log.d ("finishThisActivity", "ELSE")
+                Log.d("finishThisActivity", "Finishing by ELSE")
                 helpDialog?.dismiss()
+                safeCloseUsb()
                 finish()
             }
         }
     }
 
-
     private fun launchCapsule(index: Int, resource: Int, x: Float) {
         val capsule = ImageView(this)
         capsule.setImageResource(resource)
+
+        Log.d ("launchCapsule", index.toString() )
 
         val size = capsuleContainer.width / flavorsQty // dynamically calculated
 
