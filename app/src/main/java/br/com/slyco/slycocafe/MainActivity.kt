@@ -525,9 +525,10 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         for (i in 0..myLocation.getLocation().dispenserModel.flavors-1){
             var qty = shoppingCart.getCartItemQuantity(i)
             if (qty > 0){
-                saleItems += "${INVENTORYHASH.get(shoppingCart.getFlavor(i).value)}:${i+1}:${qty};"
+                saleItems += "${INVENTORYHASH.get(shoppingCart.getFlavor(i).value)}:${i+1}:${qty}:${(shoppingCart.getPrice(i)*100.0f).roundToInt()};"
             }
         }
+        Log.d ("Sale Items" , saleItems)
         mySaleResponse.saleItems = saleItems
         putSale (android_id,mySaleResponse)
         shoppingCart.clearCart()

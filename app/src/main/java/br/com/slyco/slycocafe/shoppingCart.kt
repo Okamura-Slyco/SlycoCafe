@@ -76,6 +76,10 @@ class shoppingCart {
         this.calculateTotal()
     }
 
+    fun getPrice(id: Int): Float {
+        return itens[id]?.price ?: 0.0f
+    }
+
     fun returnTotal(): Double {
 
         return total
