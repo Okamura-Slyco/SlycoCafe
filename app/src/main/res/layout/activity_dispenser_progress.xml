@@ -1,152 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="bottom|center_horizontal"
-    android:backgroundTint="@color/white"
-    android:backgroundTintMode="add"
-    android:foregroundTint="@color/white"
-    android:foregroundTintMode="add"
-    tools:context=".DispenserProgress">
+    android:background="#FFFFFF"
+    android:gravity="center">
 
-    <TextView
-        android:id="@+id/obrigadoLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bom café! Obrigado!"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <FrameLayout
+        android:id="@+id/capsuleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
-    <ImageView
-        android:id="@+id/capsule1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/brasil_organic_trn" />
-
-    <ImageView
-        android:id="@+id/capsule2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        app:layout_constraintStart_toEndOf="@id/capsule1"
-        app:layout_constraintEnd_toStartOf="@id/capsule3"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/descafeinado_trn" />
-
-    <ImageView
-        android:id="@+id/capsule3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        app:layout_constraintStart_toEndOf="@id/capsule2"
-        app:layout_constraintEnd_toStartOf="@id/capsule4"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/forte_trn" />
-
-    <ImageView
-        android:id="@+id/capsule4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        app:layout_constraintEnd_toStartOf="@id/capsule3"
-        app:layout_constraintStart_toEndOf="@id/capsule5"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/caffe_vanilio_trn" />
-
-    <ImageView
-        android:id="@+id/capsule5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        app:layout_constraintEnd_toStartOf="@id/capsule6"
-        app:layout_constraintStart_toEndOf="@id/capsule4"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ristretto_trn" />
-
-    <ImageView
-        android:id="@+id/capsule6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        app:layout_constraintEnd_toStartOf="@id/capsule7"
-        app:layout_constraintStart_toEndOf="@id/capsule5"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/leggero_trn" />
-
-    <ImageView
-        android:id="@+id/capsule7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@id/capsule8"
-        app:layout_constraintStart_toEndOf="@id/capsule6"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/leggero_trn"
-        tools:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/capsule8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:alpha="1"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/capsule7"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/leggero_trn"
-        tools:visibility="gone" />
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="670dp"
-        android:layout_height="81dp"
-        android:layout_marginBottom="10dp"
-        android:backgroundTintMode="add"
-        android:foregroundTint="#228800"
-        android:foregroundTintMode="src_atop"
-        android:indeterminateTint="#228800"
-        android:indeterminateTintMode="src_atop"
-        android:max="100"
-        android:progress="50"
-        android:progressBackgroundTint="#AAAAAA"
-        android:progressBackgroundTintMode="src_atop"
-        android:progressTint="#228800"
-        android:progressTintMode="src_atop"
-        android:scaleY="6"
-        android:secondaryProgressTint="#228800"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imgPoweredBySlyco" />
+        android:layout_width="300dp"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:progressDrawable="@drawable/progress_bar_colors"
+        android:visibility="gone"/>
 
     <ImageView
-        android:id="@+id/imgPoweredBySlyco"
-        android:layout_width="150dp"
-        android:layout_height="70dp"
+        android:id="@+id/logoImage"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginStart="10dp"
         android:alpha="0.5"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/poweredbyslyco" />
+        android:src="@drawable/poweredbyslyco" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/finalContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/finalMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bom café!"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#6D4C41"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/coffeeCup"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@raw/coffee"
+            app:lottie_rawRes="@raw/coffee"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/helpIcon"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/customer_support"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:background="?android:selectableItemBackgroundBorderless"
+    android:contentDescription="Need Help?"
+    android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="Preparing..."
+        android:textColor="#AAAAAA"
+        android:textSize="18sp" />
+
+
+</RelativeLayout>

@@ -95,7 +95,7 @@ void setup() {
 
   //servoPosition
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   //  SerialBT.begin(device_name);
   //  SerialBT.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
 
@@ -112,23 +112,31 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) {
-    // read the incoming bytes:
     int rlen = Serial.readBytesUntil('\n', buf, BUFFER_SIZE);
+    
+    Serial.print("RECEIVED: ");
+    Serial.println((char*)buf);  // print as string
+
+    Serial.print("Size: ");
+    Serial.println(rlen, DEC);
+
     release_items(buf, rlen);
   }
   delay(DELAY_SERVO);
 }
 
+
 void release_items(char* buffer, int qty) {
   int i;
-
-  int int_releases = 0;
   int releases = 0;
   int item;
 
+  // Clear previous releases
+  for (i = 0; i < DISPENSER_STOCK; i++) {
+    release[i] = 0;
+  }
 
-  for (i = 0; i < DISPENSER_STOCK; i++) release[i] = 0;
-
+  // Build release groups
   for (i = 0; i < qty; i++) {
     switch (buffer[i]) {
       case 'A':
@@ -136,29 +144,38 @@ void release_items(char* buffer, int qty) {
       case 'C':
       case 'D':
       case 'E':
-      case 'F':
-        //case 'Z':
-        item = buffer[i] - 0x40;
-        int_releases = 0;
+      case 'F': {
+        item = buffer[i] - 0x40;  // 'A' -> 1, 'B' -> 2, etc.
+        int groupIndex = 0;
 
-        while (0 != (release[int_releases] & (0x01 << (item - 1)))) {
-          int_releases++;
+        // Find next group with free slot for this item
+        while ((release[groupIndex] & (0x01 << (item - 1))) != 0) {
+          groupIndex++;
         }
-        release[int_releases] |= 0x01 << (item - 1);
 
-
-        if (int_releases > releases) releases = int_releases;
-
+        release[groupIndex] |= (0x01 << (item - 1));
+        if (groupIndex + 1 > releases) {
+          releases = groupIndex + 1;  // count max used groups
+        }
         break;
+      }
+
       case 'z':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), DRAWER_PUSH);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) |
+                     DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) |
+                     DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F),
+                     DRAWER_PUSH);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
+
       case 'Z':
         digitalWrite(MODULO_VCC, LED_ON);
-        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) | DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) | DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F), DRAWER_REST);
+        SetDoorState(DISPENSER(DISPENSER_A) | DISPENSER(DISPENSER_B) |
+                     DISPENSER(DISPENSER_C) | DISPENSER(DISPENSER_D) |
+                     DISPENSER(DISPENSER_E) | DISPENSER(DISPENSER_F),
+                     DRAWER_REST);
         delay(DELAY_SERVO);
         digitalWrite(MODULO_VCC, LED_OFF);
         return;
@@ -166,6 +183,7 @@ void release_items(char* buffer, int qty) {
       case 'W':
         doWow();
         return;
+
       default:
         break;
     }
@@ -174,28 +192,34 @@ void release_items(char* buffer, int qty) {
   digitalWrite(MODULO_VCC, LED_ON);
 
   Serial.print("Ri");
-  Serial.print(int_releases, DEC);
-  Serial.print("\n");
-  for (item = 0; release[item] && (item <= int_releases) && (item < DISPENSER_STOCK); item++) {
-    Serial.print("ri");
-    Serial.print(item, DEC);
-    Serial.print(":");
-    Serial.print(release[item], BIN);
-    Serial.print("\n");
+  Serial.println(releases);  // Number of release groups
 
-    Release(release[item]);
-
-    release[item] = 0x00;
-    Serial.print("rf");
-    Serial.print(item, DEC);
-    Serial.print("\n");
+  for (int groupIndex = 0; groupIndex < releases; groupIndex++) {
+    if (release[groupIndex] != 0) {
+      process_capsule_group(groupIndex, release[groupIndex]);
+      release[groupIndex] = 0x00;
+    }
   }
+
   Serial.print("Rf");
-  Serial.print(int_releases, DEC);
-  Serial.print("\n");
+  Serial.println(releases);
 
   digitalWrite(MODULO_VCC, LED_OFF);
 }
+
+
+void process_capsule_group(int groupIndex, uint8_t mask) {
+  Serial.print("ri");
+  Serial.print(groupIndex);
+  Serial.print(":");
+  Serial.println(mask, BIN);
+
+  Release(mask);  // your existing function
+
+  Serial.print("rf");
+  Serial.println(groupIndex);
+}
+
 
 void doWow() {
   int state = 0;
