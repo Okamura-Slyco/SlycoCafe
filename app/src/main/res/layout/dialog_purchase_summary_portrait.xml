@@ -101,6 +101,8 @@
             android:layout_width="110dp"
             android:layout_height="75dp"
             android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/botaoPix"
             app:layout_constraintTop_toTopOf="@+id/botaoPix"
             app:srcCompat="@drawable/botaopequeno" />
@@ -121,6 +123,7 @@
             android:id="@+id/botaoDebito"
             android:layout_width="110dp"
             android:layout_height="75dp"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="@+id/botaoPix"
             app:layout_constraintTop_toBottomOf="@+id/botaoPix"
@@ -141,6 +144,7 @@
             android:id="@+id/botaoPix"
             android:layout_width="110dp"
             android:layout_height="75dp"
+            android:layout_marginStart="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/botaopequeno" />
@@ -160,6 +164,8 @@
             android:layout_width="110dp"
             android:layout_height="75dp"
             android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/botaoDebito"
             app:layout_constraintTop_toTopOf="@+id/botaoDebito"
             app:srcCompat="@drawable/botaopequeno" />
