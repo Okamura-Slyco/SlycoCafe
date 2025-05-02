@@ -369,20 +369,20 @@ interface ApiService {
     @GET("location/{id}")
     fun fetchLocation(@Path("id") inventoryId: String): Call<locationDC>
 
-    @PUT("location/{id}")
-    fun putLocation(@Path("id") inventoryId: String,@Body putLocation: locationDC): Call<locationDC>
+    @POST("location/{id}")
+    fun postLocation(@Path("id") inventoryId: String,@Body postLocation: locationDC): Call<locationDC>
 
     @GET("inventory/{id}")
     fun fetchInventory(@Path("id") inventoryId: String): Call<List<inventoryStockDC>>
 
-    @PUT("inventory/{id}")
-    fun putInventory(@Path("id") inventoryId: String, @Body putInventory: List<inventoryStockDC>): Call<inventoryStockDC>
+    @POST("inventory/{id}")
+    fun postInventory(@Path("id") inventoryId: String, @Body postInventory: List<inventoryStockDC>): Call<inventoryStockDC>
 
     @PATCH("inventory/{id}")
     fun patchInventoryQty(@Path("id") inventoryId: String, @Body patchInventory: List<patchInventoryQtyElementDC>): Call<patchInventoryQtyElementDC>
 
-    @PUT("sale/{id}")
-    fun putSale(@Path("id") inventoryId: String,@Body putInventory: saleResponseDC): Call<saleResponseDC>
+    @POST("sale/{id}")
+    fun postSale(@Path("id") inventoryId: String,@Body postInventory: saleResponseDC): Call<saleResponseDC>
 
 }
 

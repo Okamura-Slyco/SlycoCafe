@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 
-class putSale {
+class postSale {
 
     val myLog = log(javaClass.simpleName)
 
@@ -13,7 +13,7 @@ class putSale {
         try {
             runBlocking {
                 val result = async(Dispatchers.IO) {
-                    intPutSale(mySaleId, mySaleResponseData)
+                    intPostSale(mySaleId, mySaleResponseData)
                 }.await()
             }
         } catch(e: Exception){
@@ -22,9 +22,9 @@ class putSale {
         }
 
     }
-    fun intPutSale(mySaleId: String, mySaleResponseData:saleResponseDC){
+    fun intPostSale(mySaleId: String, mySaleResponseData:saleResponseDC){
 
-        val call = apiService.putSale(mySaleId,mySaleResponseData)
+        val call = apiService.postSale(mySaleId,mySaleResponseData)
         try {
             myLog.log("mySaleResponseData: ${mySaleResponseData.toString()}")
             var callReturn: Response<saleResponseDC> = call.execute()

@@ -212,7 +212,7 @@ class location(private var myLoc: String, private var myBrand:String="", private
 
             demoMode = false
         )
-        val call = apiService.putLocation(myLoc,myLocation)
+        val call = apiService.postLocation(myLoc,myLocation)
         try {
             val callReturn: Response<locationDC> = call.execute()
             mylog.log("PUT " + callReturn.body()!!.toString())

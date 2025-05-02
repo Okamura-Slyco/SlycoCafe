@@ -26,7 +26,7 @@ class inventory {
         if (items != null) {
             if (items.isEmpty()){
                 initMyInventoryDefault()
-                putInventory(myId,myInventory)
+                postInventory(myId,myInventory)
             }
             else myInventory = items
         }
@@ -60,7 +60,7 @@ class inventory {
         }
         else {
             initMyInventoryDefault()
-            putInventory(myId,myInventory)
+            postInventory(myId,myInventory)
         }
 
     }
@@ -108,7 +108,7 @@ class inventory {
         return ret
     }
 
-    fun putInventory(id:String,items: List<inventoryStockDC>){
+    fun postInventory(id:String,items: List<inventoryStockDC>){
 
 //        for (i in 0.. dispenserFlavors-1 ) {
 //            items[i].quantity = this.getQty(NESPRESSOFLAVORS.from(NESPRESSOFLAVORSHASH.getValue(items[i].item.id)))!!
@@ -117,7 +117,7 @@ class inventory {
         try {
             runBlocking {
                 val result = async(Dispatchers.IO) {
-                    val call = apiService.putInventory(id,items)
+                    val call = apiService.postInventory(id,items)
                     try {
                         var callReturn: Response<inventoryStockDC> = call.execute()
                         myLog.log("PUT " + callReturn.body()!!.toString())
@@ -192,7 +192,7 @@ class inventory {
             try {
                 runBlocking {
                     val result = async(Dispatchers.IO) {
-                        putInventory(myId,myInventory)
+                        postInventory(myId,myInventory)
                     }.await()
                 }
             } catch(e: Exception){

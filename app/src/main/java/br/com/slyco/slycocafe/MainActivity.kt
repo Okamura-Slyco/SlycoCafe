@@ -530,7 +530,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
         Log.d ("Sale Items" , saleItems)
         mySaleResponse.saleItems = saleItems
-        putSale (android_id,mySaleResponse)
+        postSale (android_id,mySaleResponse)
         shoppingCart.clearCart()
 
         updateView(0)
