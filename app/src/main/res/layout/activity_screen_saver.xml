@@ -222,25 +222,25 @@
 
         <ImageView
             android:id="@+id/qrCodeImageView"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:contentDescription="QR Code"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/qrCodeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Olá, vamos conversar?"
-            android:textSize="16sp"
-            android:textColor="#000"
+            android:layout_marginTop="3dp"
             android:gravity="center"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/qrCodeImageView"
+            android:text="Olá, vamos conversar?"
+            android:textColor="#000"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@id/qrCodeImageView"
             app:layout_constraintStart_toStartOf="@id/qrCodeImageView"
-            app:layout_constraintEnd_toEndOf="@id/qrCodeImageView"/>
+            app:layout_constraintTop_toBottomOf="@id/qrCodeImageView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

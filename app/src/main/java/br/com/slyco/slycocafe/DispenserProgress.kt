@@ -38,46 +38,45 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBar
 import java.net.URLEncoder
 
-data class DISPENSER_ELEMENTS (
-    var counter:Int = 0,
-    var id:String = "",
-    var flavor:Int = 0,
-    var flavorName: String = ""
+data class DISPENSER_ELEMENTS(
+    var counter: Int = 0, var id: String = "", var flavor: Int = 0, var flavorName: String = ""
 )
-data class ANIMATION_ELEMENTS (
-    var counter: Int = 0,
-    var imgId:Int = 0,
-    var imgSrcId:Int = 0
+
+data class ANIMATION_ELEMENTS(
+    var counter: Int = 0, var imgId: Int = 0, var imgSrcId: Int = 0
 )
 
 object GlobalVariables {
-    var dispenserElements = arrayOf <DISPENSER_ELEMENTS> (
-        DISPENSER_ELEMENTS(0,"A"),
-        DISPENSER_ELEMENTS(0,"B"),
-        DISPENSER_ELEMENTS(0,"C"),
-        DISPENSER_ELEMENTS(0,"D"),
-        DISPENSER_ELEMENTS(0,"E"),
-        DISPENSER_ELEMENTS(0,"F"),
-        DISPENSER_ELEMENTS(0,"G"),
-        DISPENSER_ELEMENTS(0,"H")
+    var dispenserElements = arrayOf<DISPENSER_ELEMENTS>(
+        DISPENSER_ELEMENTS(0, "A"),
+        DISPENSER_ELEMENTS(0, "B"),
+        DISPENSER_ELEMENTS(0, "C"),
+        DISPENSER_ELEMENTS(0, "D"),
+        DISPENSER_ELEMENTS(0, "E"),
+        DISPENSER_ELEMENTS(0, "F"),
+        DISPENSER_ELEMENTS(0, "G"),
+        DISPENSER_ELEMENTS(0, "H")
     )
-    var animationElements = arrayOf<ANIMATION_ELEMENTS> (
-        ANIMATION_ELEMENTS(0,R.drawable.brasil_organic_trn,0),
-        ANIMATION_ELEMENTS(0,R.drawable.bianco_delicato_trn,0),
-        ANIMATION_ELEMENTS(0,R.drawable.bianco_intenso_trn,0),
-        ANIMATION_ELEMENTS(0,R.drawable.caffe_caramelo_trn,0),
-        ANIMATION_ELEMENTS(0,R.drawable.caffe_vanilio_trn,0),
-        ANIMATION_ELEMENTS(0,R.drawable.caffe_nocciola_trn,0),
-        ANIMATION_ELEMENTS(0,R.drawable.descafeinado_trn,0),
-        ANIMATION_ELEMENTS(0,R.drawable.finezzo_trn,0)
+    var animationElements = arrayOf<ANIMATION_ELEMENTS>(
+        ANIMATION_ELEMENTS(0, R.drawable.brasil_organic_trn, 0),
+        ANIMATION_ELEMENTS(0, R.drawable.bianco_delicato_trn, 0),
+        ANIMATION_ELEMENTS(0, R.drawable.bianco_intenso_trn, 0),
+        ANIMATION_ELEMENTS(0, R.drawable.caffe_caramelo_trn, 0),
+        ANIMATION_ELEMENTS(0, R.drawable.caffe_vanilio_trn, 0),
+        ANIMATION_ELEMENTS(0, R.drawable.caffe_nocciola_trn, 0),
+        ANIMATION_ELEMENTS(0, R.drawable.descafeinado_trn, 0),
+        ANIMATION_ELEMENTS(0, R.drawable.finezzo_trn, 0)
     )
 }
+
 fun generateQrCodeBitmap(content: String, size: Int = 512): Bitmap {
     val bits = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size)
     val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565)
     for (x in 0 until size) {
         for (y in 0 until size) {
-            bmp.setPixel(x, y, if (bits[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+            bmp.setPixel(
+                x, y, if (bits[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE
+            )
         }
     }
     return bmp
@@ -130,7 +129,16 @@ class DispenserProgress : AppCompatActivity() {
                     val device = intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         device?.apply {
-                            openDispenserConnection()
+                            Log.i("Slyco-USB", "Permission granted for device $device")
+                            val availableDrivers =
+                                UsbSerialProber.getDefaultProber().findAllDrivers(manager)
+                            for (availableDriver in availableDrivers) {
+                                if (availableDriver.device.deviceId == device.deviceId) {
+                                    driver = availableDriver
+                                    openDispenserConnection()
+                                    break
+                                }
+                            }
                         }
                     } else {
                         Log.i("Slyco-USB", "Permission denied for device $device")
@@ -142,24 +150,18 @@ class DispenserProgress : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_dispenser_progress)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
+            WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         val actionBar: ActionBar? = supportActionBar
         if (actionBar != null) actionBar.hide()
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        window.decorView.systemUiVisibility =
+            (View.SYSTEM_UI_FLAG_LOW_PROFILE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
 
         progressBar = findViewById(R.id.progressBar)
         statusText = findViewById(R.id.statusText)
@@ -186,8 +188,7 @@ class DispenserProgress : AppCompatActivity() {
         bounceAnim.start()
 
         flavorsQty = intent.getIntExtra(
-            "dispensersQty",
-            0
+            "dispensersQty", 0
         )
 
         val flavorsList = StringBuilder()
@@ -201,7 +202,9 @@ class DispenserProgress : AppCompatActivity() {
 
             if (dispenser != null) {
                 val counter = intent.getIntExtra(dispenser.id + AppConstants.dispenserIdSufix, 0)
-                val flavorName = intent.getStringExtra(dispenser.id + AppConstants.dispenserFlavorNameSufix).orEmpty()
+                val flavorName =
+                    intent.getStringExtra(dispenser.id + AppConstants.dispenserFlavorNameSufix)
+                        .orEmpty()
                 if (counter > 0) itemLine += "- ${counter}x *$flavorName*\n"
                 flavorsList.appendLine(itemLine)
 
@@ -215,7 +218,9 @@ class DispenserProgress : AppCompatActivity() {
         helpDialog = helperDialog(this)
 
         helpIcon.setOnClickListener {
-            helpDialog.show(locationName = locationName,locationCode = locationCode, flavorsList = itemLine)
+            helpDialog.show(
+                locationName = locationName, locationCode = locationCode, flavorsList = itemLine
+            )
         }
         helpDialog.onDismissCallback = {
             Log.d("HelpDialog", "Help dialog dismissed")
@@ -224,30 +229,44 @@ class DispenserProgress : AppCompatActivity() {
 
 
         manager = getSystemService(USB_SERVICE) as UsbManager
-        val availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
+        val usbPermissionIntent = PendingIntent.getBroadcast(
+            this, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE
+        )
 
+        val filter = IntentFilter(ACTION_USB_PERMISSION)
+        registerReceiver(usbReceiver, filter)
+
+        val availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
         if (availableDrivers.isEmpty()) {
             Log.i("Slyco-USB", "No USB Driver found")
             updateStatus("No USB Dispenser detected.")
         } else {
             driver = availableDrivers[0]
-
-            val usbPermissionIntent = PendingIntent.getBroadcast(
-                this,
-                0,
-                Intent(ACTION_USB_PERMISSION),
-                PendingIntent.FLAG_MUTABLE
-            )
-
-            val filter = IntentFilter(ACTION_USB_PERMISSION)
-            registerReceiver(usbReceiver, filter)
-
             if (manager.hasPermission(driver.device)) {
                 openDispenserConnection()
             } else {
                 manager.requestPermission(driver.device, usbPermissionIntent)
             }
         }
+
+        // Also scan all USB devices in case a driver wasn't automatically found
+        val deviceList = manager.deviceList
+        for (device in deviceList.values) {
+            if (!manager.hasPermission(device)) {
+                manager.requestPermission(device, usbPermissionIntent)
+            }
+        }
+
+    }
+    private fun handleErrorAndReturn(message: String) {
+        updateStatus(message)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }, 10000) // 10 seconds delay
     }
 
     private fun openDispenserConnection() {
@@ -255,6 +274,7 @@ class DispenserProgress : AppCompatActivity() {
         if (connection == null) {
             Log.e("Slyco-USB", "Failed to open device connection")
             updateStatus("Failed to connect to dispenser.")
+            handleErrorAndReturn("Failed to connect to dispenser.")
             return
         }
 
@@ -265,10 +285,7 @@ class DispenserProgress : AppCompatActivity() {
         try {
             dispenserPort?.open(connection)
             dispenserPort?.setParameters(
-                115200,
-                8,
-                UsbSerialPort.STOPBITS_1,
-                UsbSerialPort.PARITY_NONE
+                115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE
             )
 
             progressBar.progress = 0
@@ -279,14 +296,14 @@ class DispenserProgress : AppCompatActivity() {
             resetWatchdog()
 
             var dispenserBufferString = ""
-            for (dispenserElement in GlobalVariables.dispenserElements){
+            for (dispenserElement in GlobalVariables.dispenserElements) {
                 dispenserBufferString += dispenserElement!!.id.repeat(dispenserElement.counter)
             }
             dispenserBufferString += "\n"
 
-            Log.d("DispenserProgress","Buffer: ${dispenserBufferString}")
+            Log.d("DispenserProgress", "Buffer: ${dispenserBufferString}")
 
-            dispenserPort?.write(dispenserBufferString!!.toByteArray(),100)
+            dispenserPort?.write(dispenserBufferString!!.toByteArray(), 100)
 
 
         } catch (e: Exception) {
@@ -349,6 +366,7 @@ class DispenserProgress : AppCompatActivity() {
                     Log.d("Slyco-USB", "Starting dispensing: $totalIterations iterations")
                     capsulesStillFalling = true
                 }
+
                 message.startsWith("ri") -> {
                     val parts = message.substring(2).split(":")
                     if (parts.size == 2) {
@@ -359,10 +377,12 @@ class DispenserProgress : AppCompatActivity() {
                         updateProgress()
                     }
                 }
+
                 message.startsWith("rf") -> {
                     currentIteration++
                     updateProgress()
                 }
+
                 message.startsWith("Rf") -> {
                     statusText.text = "Dispense completed!"
                     progressBar.progress = progressBar.max
@@ -372,11 +392,9 @@ class DispenserProgress : AppCompatActivity() {
             }
         }
     }
+
     fun getActiveIndices(binary: String): List<Int> =
-        binary.reversed()
-            .withIndex()
-            .filter { it.value == '1' }
-            .map { it.index }
+        binary.reversed().withIndex().filter { it.value == '1' }.map { it.index }
 
     private fun animateDispensers(binaryData: String) {
         val activeIndices = getActiveIndices(binaryData)
@@ -399,17 +417,11 @@ class DispenserProgress : AppCompatActivity() {
         finalContainer.scaleY = 0.9f
         finalContainer.translationY = 30f
 
-        finalContainer.animate()
-            .alpha(1f)
-            .scaleX(1f)
-            .scaleY(1f)
-            .translationY(0f)
-            .setDuration(600)
-            .setInterpolator(AccelerateInterpolator())
-            .withEndAction {
+        finalContainer.animate().alpha(1f).scaleX(1f).scaleY(1f).translationY(0f).setDuration(600)
+            .setInterpolator(AccelerateInterpolator()).withEndAction {
                 coffeeCup.playAnimation()
 
-                lastActivityToSetWatchdog =  1
+                lastActivityToSetWatchdog = 1
 
                 coffeeCup.addAnimatorListener(object : Animator.AnimatorListener {
                     override fun onAnimationStart(animation: Animator) {}
@@ -429,8 +441,7 @@ class DispenserProgress : AppCompatActivity() {
 
                     override fun onAnimationRepeat(animation: Animator) {}
                 })
-            }
-            .start()
+            }.start()
     }
 
     private fun canFinishActivity(): Boolean {
@@ -454,7 +465,7 @@ class DispenserProgress : AppCompatActivity() {
             return false
         }
 
-        Log.d ("canFinishActivity", "YESSS")
+        Log.d("canFinishActivity", "YESSS")
         return true // Safe to finish
     }
 
@@ -471,6 +482,7 @@ class DispenserProgress : AppCompatActivity() {
                     finish()
                 }
             }
+
             else -> {
                 Log.d("finishThisActivity", "Finishing by ELSE")
                 helpDialog?.dismiss()
@@ -484,7 +496,7 @@ class DispenserProgress : AppCompatActivity() {
         val capsule = ImageView(this)
         capsule.setImageResource(resource)
 
-        Log.d ("launchCapsule", index.toString() )
+        Log.d("launchCapsule", index.toString())
 
         val size = capsuleContainer.width / flavorsQty // dynamically calculated
 
@@ -496,14 +508,10 @@ class DispenserProgress : AppCompatActivity() {
 
         capsuleContainer.addView(capsule)
 
-        capsule.animate()
-            .translationY(capsuleContainer.height.toFloat())
-            .setInterpolator(AccelerateInterpolator())
-            .setDuration(1500)
-            .withEndAction { capsuleContainer.removeView(capsule) }
-            .start()
+        capsule.animate().translationY(capsuleContainer.height.toFloat())
+            .setInterpolator(AccelerateInterpolator()).setDuration(1500)
+            .withEndAction { capsuleContainer.removeView(capsule) }.start()
     }
-
 
 
     private fun updateProgress() {
@@ -514,8 +522,8 @@ class DispenserProgress : AppCompatActivity() {
         }
     }
 
-    private fun resetWatchdog(){
-        lastDataReceivedTime =  System.currentTimeMillis()
+    private fun resetWatchdog() {
+        lastDataReceivedTime = System.currentTimeMillis()
     }
 
     private fun startUsbIdleMonitor() {
@@ -527,11 +535,13 @@ class DispenserProgress : AppCompatActivity() {
                     if (!coffeeCup.isAnimating || coffeeCup.progress >= 1f) {
                         Log.w("Watchdog", "No USB activity and animation finished. Exiting.")
                         runOnUiThread {
-                            Log.w("Watchdog runOnUiThread", "No USB activity and animation finished. Exiting.")
+                            Log.w(
+                                "Watchdog runOnUiThread",
+                                "No USB activity and animation finished. Exiting."
+                            )
                             finishThisActivity(2)
                         }
-                    }
-                    else resetWatchdog()
+                    } else resetWatchdog()
 
                     break
                 }
@@ -544,7 +554,7 @@ class DispenserProgress : AppCompatActivity() {
         Thread {
             Thread.sleep(watchdogTimeout)
             runOnUiThread {
-                Log.d ("FinishAfterDelay", "finish")
+                Log.d("FinishAfterDelay", "finish")
                 finishThisActivity(3)
             }
         }.start()
