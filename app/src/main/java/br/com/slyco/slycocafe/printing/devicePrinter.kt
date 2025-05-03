@@ -4,8 +4,9 @@ import android.content.Context
 import android.os.Build
 
 interface DevicePrinter {
-    fun print(context: Context, text: String)
+    fun print(context: Context, text: String, onDialogDismissed: () -> Unit = {})
 }
+
 
 
 object DevicePrinterFactory {

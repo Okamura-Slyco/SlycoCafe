@@ -67,7 +67,7 @@ class Receipt(
     Preço: R$10,00
 """.trimIndent()
 
-        printer.print(context, receiptText)  // `this` = Activity or context
+        printer.print(context, receiptText, ) {dismiss()} // `this` = Activity or context
     }
 
     fun showDeliveryOptions(receiptText: String) {
@@ -93,10 +93,15 @@ class Receipt(
             promptPhoneNumber("WhatsApp") { number -> sendWhatsApp(receiptText, number) }
         }
 
-        view.findViewById<LinearLayout>(R.id.buttonPrint).setOnClickListener {
-            //dialog?.dismiss()
-            printReceipt(receiptText)
+        val printButton = view.findViewById<LinearLayout>(R.id.buttonPrint)
+        if (hasPrinter) {
+            printButton.setOnClickListener {
+                printReceipt(receiptText)
+            }
+        } else {
+            printButton.visibility = LinearLayout.GONE
         }
+
 
         dialog?.setOnDismissListener {
             onDismiss?.invoke()

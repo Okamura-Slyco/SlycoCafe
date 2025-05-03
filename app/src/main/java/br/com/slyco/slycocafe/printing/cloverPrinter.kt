@@ -26,7 +26,7 @@ import kotlinx.coroutines.*
 
 class CloverPrinter : DevicePrinter {
 
-    override fun print(context: Context, text: String) {
+    override fun print(context: Context, text: String, onDialogDismissed: () -> Unit) {
         if (!Build.MANUFACTURER.equals("clover", ignoreCase = true)) {
             Toast.makeText(context, "Not a Clover device", Toast.LENGTH_SHORT).show()
             return
@@ -51,9 +51,13 @@ class CloverPrinter : DevicePrinter {
 
                 withContext(Dispatchers.Main) {
                     job.print(context, account)
-                    showPrintSuccessDialog(context) {
-                        print(context, text) // reprint callback
-                    }
+
+                    Log.d("CloverPrinter", "Bitmap: width=${receiptBitmap.width}, height=${receiptBitmap.height}")
+                    showPrintSuccessDialog(
+                        context,
+                        onReprint = { print(context, text, onDialogDismissed) },
+                        onDismiss = onDialogDismissed
+                    )
                 }
 
                 Log.d("CloverPrinter", "🖨️ All-in-one print job sent")
@@ -64,6 +68,7 @@ class CloverPrinter : DevicePrinter {
                 Log.e("CloverPrinter", "Print error", e)
             }
         }
+
     }
 
     private fun generateQRCode(data: String, width: Int, height: Int): Bitmap? {
@@ -142,12 +147,20 @@ class CloverPrinter : DevicePrinter {
         return result
     }
 
-    private fun showPrintSuccessDialog(context: Context, onReprint: () -> Unit) {
+    private fun showPrintSuccessDialog(
+        context: Context,
+        onReprint: () -> Unit,
+        onDismiss: () -> Unit = {}
+    ) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_print_status, null)
         val dialog = AlertDialog.Builder(context)
             .setView(dialogView)
             .setCancelable(false)
             .create()
+
+        dialog.setOnDismissListener {
+            onDismiss()  // ✅ notify external logic when dialog is dismissed
+        }
 
         val animPrint = dialogView.findViewById<LottieAnimationView>(R.id.animationPrint)
         val animCheck = dialogView.findViewById<LottieAnimationView>(R.id.animationCheck)

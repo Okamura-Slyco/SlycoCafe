@@ -39,13 +39,15 @@
             android:id="@+id/buttonClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fechar" />
+            android:backgroundTint="#228800"
+            android:text="FECHAR" />
 
         <Button
             android:id="@+id/buttonReprint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reimprimir"
-            android:layout_marginStart="12dp" />
+            android:layout_marginStart="12dp"
+            android:backgroundTint="#228800"
+            android:text="REIMPRIMIR" />
     </LinearLayout>
 </LinearLayout>
