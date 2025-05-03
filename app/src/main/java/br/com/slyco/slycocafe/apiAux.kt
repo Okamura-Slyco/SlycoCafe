@@ -217,7 +217,9 @@ data class deviceDC (
     @SerializedName("main_view_attributes")
     var mainViewAttributes: MAIN_VIEW_ATTRIBUTES,
     @SerializedName("screen_format")
-    var screenFormat: String
+    var screenFormat: String,
+    @SerializedName("has_printer")
+    var hasPrinter: Boolean
 )
 
 data class merchantDC (

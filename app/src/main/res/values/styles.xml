@@ -5,4 +5,17 @@
         <item name="android:windowFullscreen">true</item>
     </style>
     <color name="colorPrimary">#FFFFFF</color>
+
+    <style name="PillButtonStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@drawable/bg_button_pill</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
 </resources>

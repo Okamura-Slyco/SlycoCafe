@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/receiptDialogLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- WhatsApp -->
+
+    <!-- SMS -->
+    <LinearLayout
+        android:id="@+id/buttonWhatsApp"
+        style="@style/PillButtonStyle"
+        android:layout_width="200dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_whatsapp"
+            android:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WhatsApp"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonSms"
+        style="@style/PillButtonStyle"
+        android:layout_width="200dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_sms"
+            android:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SMS"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Email -->
+    <LinearLayout
+        android:id="@+id/buttonEmail"
+        style="@style/PillButtonStyle"
+        android:layout_width="200dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_email"
+            android:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="E-mail"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Print -->
+    <LinearLayout
+        android:id="@+id/buttonPrint"
+        style="@style/PillButtonStyle"
+        android:layout_width="200dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_print"
+            android:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Imprimir"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

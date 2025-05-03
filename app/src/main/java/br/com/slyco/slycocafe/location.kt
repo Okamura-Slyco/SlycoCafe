@@ -64,13 +64,14 @@ class location(private var myLoc: String, private var myBrand:String="", private
                 capacityPerFlavor = 50
             ),
             paymentDevice = deviceDC(
-                id = 1,
+                id = 0,
                 brand = myBrand,
                 model = myModel,
                 name = "${myBrand} ${myModel}",
                 paymentDevice = true,
                 posDevice = true,
                 screenFormat = "portrait",
+                hasPrinter = false,
                 mainViewAttributes = MAIN_VIEW_ATTRIBUTES(
                     plusMinusHeigth = 0,
                     tagAlpha = 0.8f,
@@ -95,13 +96,14 @@ class location(private var myLoc: String, private var myBrand:String="", private
             ),
 
             pos = deviceDC(
-                id = 1,
+                id = 0,
                 brand = myBrand,
                 model = myModel,
                 name = "${myBrand} ${myModel}",
                 paymentDevice = true,
                 posDevice = true,
                 screenFormat = "portrait",
+                hasPrinter = false,
                 mainViewAttributes = MAIN_VIEW_ATTRIBUTES(
                     plusMinusHeigth = 0,
                     tagAlpha = 0.8f,

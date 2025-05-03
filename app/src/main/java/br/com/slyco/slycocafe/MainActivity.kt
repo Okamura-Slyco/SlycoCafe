@@ -964,6 +964,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 GlobalVariables.dispenserElements[i].id+AppConstants.dispenserFlavorNameSufix,
                 shoppingCart.getCartItemName(i)
             )
+            intent.putExtra ( AppConstants.deviceBrandFieldName, myLocation.getLocation().pos.brand)
+            intent.putExtra ( AppConstants.deviceModelFieldName, myLocation.getLocation().pos.model)
+            intent.putExtra ( AppConstants.deviceHasPrinterFieldName, myLocation.getLocation().pos.hasPrinter)
         }
 
         intent.putExtra(

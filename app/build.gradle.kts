@@ -92,6 +92,9 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.6.2")
     implementation ("com.amazonaws:aws-android-sdk-iot:2.78.0")
     implementation ("com.google.zxing:core:3.5.2")
+    implementation ("com.googlecode.libphonenumber:libphonenumber:8.13.25")
+
+    implementation ("com.clover.sdk:clover-android-sdk:293") // or latest version
 
     //implementation(com.clover.sdk:clover-android-sdk:228.3)
     //implementation("androidx.room:room-runtime:2.6.1")

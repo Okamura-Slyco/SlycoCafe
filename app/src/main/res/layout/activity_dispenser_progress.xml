@@ -85,9 +85,23 @@
         android:layout_above="@id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="Preparing..."
+        android:text="Preparando..."
         android:textColor="#AAAAAA"
         android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/buttonPrintReceipt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/statusText"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:backgroundTint="#228800"
+        android:text="RECIBO"
+        android:textSize="20sp"
+        app:icon="@drawable/receipt" />
+
+
 
 
 </RelativeLayout>

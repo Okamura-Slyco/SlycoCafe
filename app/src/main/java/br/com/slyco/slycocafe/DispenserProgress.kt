@@ -1,7 +1,6 @@
 package br.com.slyco.slycocafe
 
 import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -20,7 +19,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
@@ -33,10 +31,12 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.BounceInterpolator
-import android.view.animation.LinearInterpolator
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBar
-import java.net.URLEncoder
+
+import android.widget.Button
+import android.widget.Toast
+import br.com.slyco.slycocafe.utils.Receipt
 
 data class DISPENSER_ELEMENTS(
     var counter: Int = 0, var id: String = "", var flavor: Int = 0, var flavorName: String = ""
@@ -115,6 +115,8 @@ class DispenserProgress : AppCompatActivity() {
     private var helpBlockUntil: Long = 0
     private var capsulesStillFalling = false
 
+    private lateinit var  receipt: Receipt
+
 
     private lateinit var helpIcon: ImageView
 
@@ -168,7 +170,7 @@ class DispenserProgress : AppCompatActivity() {
         capsuleContainer = findViewById(R.id.capsuleContainer)
 
         progressBar.visibility = View.GONE
-        statusText.text = "Initializing dispenser..."
+        statusText.text = "Inicializando dispenser..."
 
         finalContainer = findViewById(R.id.finalContainer)
         finalMessage = findViewById(R.id.finalMessage)
@@ -227,6 +229,11 @@ class DispenserProgress : AppCompatActivity() {
             finishThisActivity(4)  // Or a dedicated code for help dismiss
         }
 
+        val deviceBrand = intent.getStringExtra(AppConstants.deviceBrandFieldName)
+        val deviceModel = intent.getStringExtra(AppConstants.deviceModelFieldName)
+        val deviceHasPrinter = intent.getBooleanExtra(AppConstants.deviceHasPrinterFieldName, false)
+
+        Log.d ("DispenserProgress PosInfo","brand: $deviceBrand\nmodel: $deviceModel\nhas printer: $deviceHasPrinter")
 
         manager = getSystemService(USB_SERVICE) as UsbManager
         val usbPermissionIntent = PendingIntent.getBroadcast(
@@ -254,6 +261,16 @@ class DispenserProgress : AppCompatActivity() {
         for (device in deviceList.values) {
             if (!manager.hasPermission(device)) {
                 manager.requestPermission(device, usbPermissionIntent)
+            }
+        }
+
+        val buttonPrint = findViewById<Button>(R.id.buttonPrintReceipt)
+        buttonPrint.setOnClickListener {
+            receipt = Receipt(this, deviceBrand.toString(), deviceModel.toString(), deviceHasPrinter)
+            receipt.showDeliveryOptions("Sale: R$10,00\nObrigado pela compra!")
+            receipt.onDismiss = {
+                Log.d("Print Dialog", "Print dialog dismissed")
+                finishThisActivity(4)
             }
         }
 
@@ -290,7 +307,7 @@ class DispenserProgress : AppCompatActivity() {
 
             progressBar.progress = 0
             progressBar.visibility = View.VISIBLE
-            statusText.text = "Dispensing... please wait"
+            statusText.text = "Liberando cápsulas... por favor aguarde..."
 
             startUsbReader()
             resetWatchdog()
@@ -384,7 +401,7 @@ class DispenserProgress : AppCompatActivity() {
                 }
 
                 message.startsWith("Rf") -> {
-                    statusText.text = "Dispense completed!"
+                    statusText.text = "Operação finalizada!"
                     progressBar.progress = progressBar.max
                     showFinalMessage()
                     finishAfterDelay()
@@ -465,6 +482,11 @@ class DispenserProgress : AppCompatActivity() {
             return false
         }
 
+        if (receipt.isShowing()) {
+            Log.d("canFinishActivity", "Blocked: showing something related to receipt")
+            return false // or perform whatever closing logic
+        }
+
         Log.d("canFinishActivity", "YESSS")
         return true // Safe to finish
     }
@@ -478,16 +500,22 @@ class DispenserProgress : AppCompatActivity() {
                 if (id == lastActivityToSetWatchdog) {
                     Log.d("finishThisActivity", "Finishing by ID $id")
                     helpDialog?.dismiss()
+                    receipt?.dismiss()
                     safeCloseUsb()
-                    finish()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        finish()
+                    }, 1000) // Delay in milliseconds (1000 ms = 1 second)
                 }
             }
 
             else -> {
                 Log.d("finishThisActivity", "Finishing by ELSE")
                 helpDialog?.dismiss()
+                receipt?.dismiss()
                 safeCloseUsb()
-                finish()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    finish()
+                }, 1000) // Delay in milliseconds (1000 ms = 1 second)
             }
         }
     }

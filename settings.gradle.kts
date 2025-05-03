@@ -10,6 +10,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+
     }
 }
 dependencyResolutionManagement {
@@ -18,6 +19,9 @@ dependencyResolutionManagement {
         maven(url = "https://jitpack.io")
         google()
         mavenCentral()
+        maven (
+            url = "https://s3.amazonaws.com/sdk.clover.com/android/maven"
+        )
     }
 }
 

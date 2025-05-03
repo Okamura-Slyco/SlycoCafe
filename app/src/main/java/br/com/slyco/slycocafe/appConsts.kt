@@ -11,5 +11,8 @@ object AppConstants {
     const val dispenserFlavorNameSufix = "_itemName"
     const val locationNameFieldName = "location_name"
     const val locationCodeFieldName = "location_code"
+    const val deviceModelFieldName = "device_model"
+    const val deviceBrandFieldName = "device_brand"
+    const val deviceHasPrinterFieldName = "device_has_printer"
     const val isvTaxId = "55833084000136"
 }

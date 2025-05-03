@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@drawable/rounded_white_bg">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationPrint"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:lottie_rawRes="@raw/print"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="false" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationCheck"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:visibility="gone"
+        app:lottie_rawRes="@raw/check"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false" />
+
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/buttonClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fechar" />
+
+        <Button
+            android:id="@+id/buttonReprint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reimprimir"
+            android:layout_marginStart="12dp" />
+    </LinearLayout>
+</LinearLayout>
