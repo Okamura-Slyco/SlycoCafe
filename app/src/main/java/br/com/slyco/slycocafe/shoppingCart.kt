@@ -5,7 +5,7 @@ import java.util.Date
 import java.util.Locale
 
 class shoppingCart {
-    private lateinit var itens :MutableList<ITEM>
+    lateinit var itens :MutableList<ITEM>
     private var total = 0.0
 
     private val customDateFormat: String

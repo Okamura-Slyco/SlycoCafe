@@ -36,7 +36,7 @@ import androidx.appcompat.app.ActionBar
 
 import android.widget.Button
 import android.widget.Toast
-import br.com.slyco.slycocafe.utils.Receipt
+import br.com.slyco.slycocafe.utils.ReceiptDelivery
 
 data class DISPENSER_ELEMENTS(
     var counter: Int = 0, var id: String = "", var flavor: Int = 0, var flavorName: String = ""
@@ -115,7 +115,7 @@ class DispenserProgress : AppCompatActivity() {
     private var helpBlockUntil: Long = 0
     private var capsulesStillFalling = false
 
-    private lateinit var  receipt: Receipt
+    private lateinit var  receiptDelivery: ReceiptDelivery
 
 
     private lateinit var helpIcon: ImageView
@@ -164,6 +164,11 @@ class DispenserProgress : AppCompatActivity() {
         if (actionBar != null) actionBar.hide()
         window.decorView.systemUiVisibility =
             (View.SYSTEM_UI_FLAG_LOW_PROFILE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+
+        val originalBitmap = ReceiptHolder.bitmap
+        ReceiptHolder.bitmap = null  // optional: free memory immediately
+
+        val safeBitmap = originalBitmap?.copy(Bitmap.Config.ARGB_8888, false)
 
         progressBar = findViewById(R.id.progressBar)
         statusText = findViewById(R.id.statusText)
@@ -264,13 +269,21 @@ class DispenserProgress : AppCompatActivity() {
             }
         }
 
-        val buttonPrint = findViewById<Button>(R.id.buttonPrintReceipt)
-        buttonPrint.setOnClickListener {
-            receipt = Receipt(this, deviceBrand.toString(), deviceModel.toString(), deviceHasPrinter)
-            receipt.showDeliveryOptions("Sale: R$10,00\nObrigado pela compra!")
-            receipt.onDismiss = {
-                Log.d("Print Dialog", "Print dialog dismissed")
-                finishThisActivity(4)
+        if (safeBitmap != null) {
+            val buttonPrint = findViewById<Button>(R.id.buttonPrintReceipt)
+            buttonPrint.setOnClickListener {
+                receiptDelivery = ReceiptDelivery(
+                    this,
+                    deviceBrand.toString(),
+                    deviceModel.toString(),
+                    deviceHasPrinter,
+                    safeBitmap
+                )
+                receiptDelivery.showDeliveryOptions("https://urlformessaging")
+                receiptDelivery.onDismiss = {
+                    Log.d("Print Dialog", "Print dialog dismissed")
+                    finishThisActivity(4)
+                }
             }
         }
 
@@ -482,7 +495,7 @@ class DispenserProgress : AppCompatActivity() {
             return false
         }
 
-        if (receipt.isShowing()) {
+        if (receiptDelivery.isShowing()) {
             Log.d("canFinishActivity", "Blocked: showing something related to receipt")
             return false // or perform whatever closing logic
         }
@@ -500,7 +513,7 @@ class DispenserProgress : AppCompatActivity() {
                 if (id == lastActivityToSetWatchdog) {
                     Log.d("finishThisActivity", "Finishing by ID $id")
                     helpDialog?.dismiss()
-                    receipt?.dismiss()
+                    //receiptDelivery?.dismiss()
                     safeCloseUsb()
                     Handler(Looper.getMainLooper()).postDelayed({
                         finish()
@@ -511,7 +524,7 @@ class DispenserProgress : AppCompatActivity() {
             else -> {
                 Log.d("finishThisActivity", "Finishing by ELSE")
                 helpDialog?.dismiss()
-                receipt?.dismiss()
+                //receiptDelivery?.dismiss()
                 safeCloseUsb()
                 Handler(Looper.getMainLooper()).postDelayed({
                     finish()

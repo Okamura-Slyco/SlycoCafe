@@ -329,7 +329,13 @@ data class saleResponseDC(
     var merchantID: String,
 
     @SerializedName("sale_items")
-    var saleItems: String
+    var saleItems: String,
+
+    @SerializedName("merchant_receipt")
+    var merchantReceipt: String,
+
+    @SerializedName("customer_receipt")
+    var customerReceipt: String
 )
 
 data class ItemDC(
@@ -440,4 +446,32 @@ val retrofit: Retrofit by lazy {
 
 val apiService: ApiService by lazy {
     retrofit.create(ApiService::class.java)
+}
+
+fun parseTransactionTimestamp(transactionTimestamp: String?): Pair<String, String> {
+    return try {
+        if (transactionTimestamp != null && transactionTimestamp.length >= 14) {
+            val year = transactionTimestamp.substring(0, 4)
+            val month = transactionTimestamp.substring(4, 6)
+            val day = transactionTimestamp.substring(6, 8)
+            val hour = transactionTimestamp.substring(8, 10)
+            val minute = transactionTimestamp.substring(10, 12)
+            val second = transactionTimestamp.substring(12, 14)
+
+            val formattedDate = "$day/$month/$year"
+            val formattedTime = "$hour:$minute:$second"
+            Pair(formattedDate, formattedTime)
+        } else {
+            getCurrentDateTimeFallback()
+        }
+    } catch (e: Exception) {
+        getCurrentDateTimeFallback()
+    }
+}
+
+private fun getCurrentDateTimeFallback(): Pair<String, String> {
+    val now = java.util.Date()
+    val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.ROOT)
+    val timeFormat = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.ROOT)
+    return Pair(dateFormat.format(now), timeFormat.format(now))
 }

@@ -1,13 +1,12 @@
 package br.com.slyco.slycocafe.printing
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Build
 
 interface DevicePrinter {
-    fun print(context: Context, text: String, onDialogDismissed: () -> Unit = {})
+    fun print(context: Context, receiptBitmap: Bitmap, onDialogDismissed: () -> Unit = {})
 }
-
-
 
 object DevicePrinterFactory {
     fun getPrinter(): DevicePrinter {

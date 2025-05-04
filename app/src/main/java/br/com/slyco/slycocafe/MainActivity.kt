@@ -34,7 +34,7 @@ import com.google.gson.reflect.TypeToken
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
-
+import java.util.*
 
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
@@ -507,7 +507,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 sitefIf = "", //if sitef,
                 cardBrandID = "", // sitef cardbrand id
                 invoiceAuthorizationCode = "", // invoice authorization code
-                saleItems = ""
+                saleItems = "",
+                merchantReceipt = "",
+                customerReceipt = ""
             )
             finishTransaction(mySaleResponseData)
             Log.d("DemoMode", "shoppingCart.clearCart()")
@@ -515,7 +517,43 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     }
 
 
-    private fun finishTransaction(mySaleResponse: saleResponseDC){
+    private fun finishTransaction(mySaleResponse: saleResponseDC,customerReceipt: String=""){
+        val (date, time) = parseTransactionTimestamp(mySaleResponse.transactionTimestamp.toString())
+
+        val myReceipt = Receipt(this,spacing = 8)
+
+        val headerBitmap = myReceipt.generateMerchantReceiptHeaderBitmap(
+            cnpj = myLocation.getLocation().merchant.taxId,
+            merchantName = "Slyco Cafè - #${myLocation.getLocation().merchant.id}",
+            locationName = myLocation.getLocation().name,
+            date = date,
+            time = time,
+            locationId = android_id
+        )
+        val bodyBitmap = myReceipt.generateReceiptBodyBitmap(shoppingCart.itens,0,0,300)
+
+        val customerReceiptBitmap = myReceipt.generateCustomerReceiptBitmap(customerReceipt)
+
+        val footerBitmap = myReceipt.generateFooterBitmap("Bom café!")
+
+        val qrCodeBitmap = myReceipt.generateQrCodeBitmap("https://www.slyco.com.br/receipt/AAAA-AAAA-AAAA-AAAA?key=ajsdhfluawvluawnvluaoiçanwviweasd123456789012345678901234567890")
+
+        val postQrCodeBitmap = qrCodeBitmap?.let {
+            myReceipt.generatePostQrCodeBitmap("Seu recibo digital?\nEscaneie este QR Code!", fontSize = 16f)
+        }
+
+        val fullBitmap = myReceipt.generateFullReceiptBitmap(
+            context = this,
+            logoResId = R.drawable.slyco_icon,
+            headerBitmap = headerBitmap,
+            bodyBitmap = bodyBitmap,
+            footerBitmap = footerBitmap,
+            customerReceiptBitmap = customerReceiptBitmap, // nullable
+            qrCodeBitmap = qrCodeBitmap,                // nullable
+            postQrCodeBitmap = postQrCodeBitmap         // nullable
+        )
+        ReceiptHolder.bitmap = fullBitmap
+
         releaseCoffee()
 
         myInventory.patchtInventoryQty(myLocation.getLocation().id,myLocation.getLocation().items)
@@ -850,6 +888,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 val genericMap: Map<String, Any> = gson.fromJson(returnedFields, mapType)
                 println(genericMap)
 
+                var merchantReceipt: String = data?.getStringExtra(paymentReturnFields.merchantReceipt)?:""
+                var customerReceipt: String = data?.getStringExtra(paymentReturnFields.customerReceipt)?:""
+
                 val mySaleResponseData = saleResponseDC(
                     locationId = android_id,
                     transactionType = data?.getStringExtra(paymentReturnFields.transactionType) as? String ?: "",
@@ -876,17 +917,19 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     sitefIf = (genericMap["131"] as? ArrayList<String>)?.getOrNull(0) ?: "", //if sitef
                     cardBrandID = (genericMap["132"] as? ArrayList<String>)?.getOrNull(0) ?: "", // sitef cardbrand id
                     invoiceAuthorizationCode = (genericMap["952"] as? ArrayList<String>)?.getOrNull(0) ?: "", // invoice authorization code
-                    saleItems = ""
+                    saleItems = "",
+                    merchantReceipt = merchantReceipt,
+                    customerReceipt = customerReceipt
                 )
 
                 myLog.log(mySaleResponseData.toString())
 
-                var merchantReceipt: String? = data?.getStringExtra(paymentReturnFields.merchantReceipt)
-                var customerReceipt: String? = data?.getStringExtra(paymentReturnFields.customerReceipt)
+
 
                 if ((merchantReceipt != null)||
                     (customerReceipt != null)){
-                    finishTransaction(mySaleResponseData)
+
+                    finishTransaction(mySaleResponseData,customerReceipt)
                 }
             }
             catch (e: Exception)  {
@@ -895,6 +938,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 //shoppingCart.clearCart()
                 updateView(0)
             }
+        }
+        else if (requestCode == 2){
+            ReceiptHolder.bitmap = null
         }
         else if (requestCode == 3) {
             try {
@@ -936,6 +982,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             }
         }
     }
+
     fun releaseCoffee (){
         disableWatchdog()
         val intent: Intent = Intent(this, DispenserProgress::class.java)

@@ -133,5 +133,32 @@
         android:background="@android:color/transparent" />
 
 
+    <ImageView
+        android:id="@+id/headerImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bodyImageView"
+        android:contentDescription="Header Bitmap" />
+    <ImageView
+        android:id="@+id/bodyImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerImageView"
+        app:layout_constraintBottom_toTopOf="@id/footerImageView"
+        android:contentDescription="Body Bitmap" />
+    <ImageView
+        android:id="@+id/footerImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bodyImageView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:contentDescription="Footer Bitmap" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

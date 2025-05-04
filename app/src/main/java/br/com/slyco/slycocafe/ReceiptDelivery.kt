@@ -3,11 +3,11 @@ package br.com.slyco.slycocafe.utils
 import br.com.slyco.slycocafe.R
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Bitmap
+import android.media.Image
 import android.text.Editable
-import android.text.InputFilter
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Button
 import android.widget.Toast
 import android.widget.EditText
 import android.text.InputType
@@ -20,13 +20,15 @@ import com.google.i18n.phonenumbers.NumberParseException
 
 import android.util.TypedValue
 import android.view.Gravity
+import android.widget.ImageView
 import br.com.slyco.slycocafe.printing.DevicePrinterFactory
 
-class Receipt(
+class ReceiptDelivery(
     private val context: Context,
     private val brand: String,
     private val model: String,
-    private val hasPrinter: Boolean
+    private val hasPrinter: Boolean,
+    private val receiptBitmap: Bitmap
 ) {
     private var dialog: AlertDialog? = null
     var onDismiss: (() -> Unit)? = null
@@ -61,17 +63,14 @@ class Receipt(
 
         val printer = DevicePrinterFactory.getPrinter()
 
-        val receiptText = """
-    Slyco Café
-    Produto: Espresso
-    Preço: R$10,00
-""".trimIndent()
-
-        printer.print(context, receiptText, ) {dismiss()} // `this` = Activity or context
+        printer.print(context, receiptBitmap ) {dismiss()} // `this` = Activity or context
     }
 
     fun showDeliveryOptions(receiptText: String) {
         val view = LayoutInflater.from(context).inflate(R.layout.receipt_delivery_dialog, null)
+
+        val receiptImage = view.findViewById<ImageView>(R.id.receiptImageView)
+        receiptImage.setImageBitmap(receiptBitmap)
 
         dialog = AlertDialog.Builder(context)
             .setView(view)
@@ -102,6 +101,10 @@ class Receipt(
             printButton.visibility = LinearLayout.GONE
         }
 
+        val closeDialogButton = view.findViewById<ImageView>(R.id.closeDialogButton)
+        closeDialogButton.setOnClickListener{
+            dialog.run { dismiss() }
+        }
 
         dialog?.setOnDismissListener {
             onDismiss?.invoke()
