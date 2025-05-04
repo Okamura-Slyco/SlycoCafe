@@ -72,18 +72,6 @@ object GlobalVariables {
     )
 }
 
-fun generateQrCodeBitmap(content: String, size: Int = 512): Bitmap {
-    val bits = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size)
-    val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565)
-    for (x in 0 until size) {
-        for (y in 0 until size) {
-            bmp.setPixel(
-                x, y, if (bits[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE
-            )
-        }
-    }
-    return bmp
-}
 
 class DispenserProgress : AppCompatActivity() {
 
@@ -181,6 +169,8 @@ class DispenserProgress : AppCompatActivity() {
 
         val originalBitmap = ReceiptHolder.bitmap
         ReceiptHolder.bitmap = null  // optional: free memory immediately
+        val imageTimestamp = ReceiptHolder.timestamp
+        ReceiptHolder.timestamp = null
 
         val safeBitmap = originalBitmap?.copy(Bitmap.Config.ARGB_8888, false)
 
@@ -292,7 +282,9 @@ class DispenserProgress : AppCompatActivity() {
                     deviceBrand.toString(),
                     deviceModel.toString(),
                     deviceHasPrinter,
-                    safeBitmap
+                    safeBitmap,
+                    locationCode,
+                    imageTimestamp.toString()
                 )
                 receiptDelivery.showDeliveryOptions("https://urlformessaging")
 

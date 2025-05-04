@@ -262,6 +262,7 @@ class Receipt {
         // 5. Create final composite bitmap
         val finalBitmap = Bitmap.createBitmap(receiptWidth, totalHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(finalBitmap)
+
         canvas.drawColor(Color.WHITE)
 
         // 6. Draw bitmaps vertically

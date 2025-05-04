@@ -530,13 +530,13 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             time = time,
             locationId = android_id
         )
-        val bodyBitmap = myReceipt.generateReceiptBodyBitmap(shoppingCart.itens,0,0,300)
+        val bodyBitmap = myReceipt.generateReceiptBodyBitmap(shoppingCart.itens,0,0,paymentParameters.amountStr.toInt())
 
         val customerReceiptBitmap = myReceipt.generateCustomerReceiptBitmap(customerReceipt)
 
         val footerBitmap = myReceipt.generateFooterBitmap("Recibo sem valor fiscal.\nBom café!")
 
-        val qrCodeBitmap = myReceipt.generateQrCodeBitmap("https://www.slyco.com.br/receipt/AAAA-AAAA-AAAA-AAAA?key=ajsdhfluawvluawnvluaoiçanwviweasd123456789012345678901234567890")
+        val qrCodeBitmap = myReceipt.generateQrCodeBitmap("https://web.slyco.com.br/receipts/${android_id}/${mySaleResponse.transactionTimestamp.toString()}.png")
 
         val postQrCodeBitmap = qrCodeBitmap?.let {
             myReceipt.generatePostQrCodeBitmap("Seu recibo digital?\nEscaneie este QR Code!", fontSize = 16f)
@@ -553,6 +553,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             postQrCodeBitmap = postQrCodeBitmap         // nullable
         )
         ReceiptHolder.bitmap = fullBitmap
+        ReceiptHolder.timestamp = mySaleResponse.transactionTimestamp.toString()
 
         releaseCoffee()
 

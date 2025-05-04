@@ -371,6 +371,26 @@ data class patchInventoryQtyKeysDC (
     val dispenser_number: Int
 )
 
+data class postReceiptDC(
+    val method: String,               // "whatsapp_template", "sms", or "email"
+    val target: String,               // recipient phone/email
+    val content: String? = null,      // used for SMS or Email
+    val contentSid: String? = null,   // optional for Twilio template
+    val variables: List<String>? = null,
+    val base64Image: String? = null,  // base64-encoded PNG
+    val filename: String? = null      // e.g. "receipt.png"
+)
+
+
+
+data class postReceiptResponseDC(
+    val message: String,
+    val initialStatus: String? = null,
+    val path: String? = null,
+    val error: String? = null
+)
+
+
 
 interface ApiService {
 
@@ -392,6 +412,8 @@ interface ApiService {
     @POST("sale/{id}")
     fun postSale(@Path("id") inventoryId: String,@Body postInventory: saleResponseDC): Call<saleResponseDC>
 
+    @POST("receipts/{id}")
+    fun postReceipt(@Path("id") locationId: String,@Body postReceipt: postReceiptDC): Call<postReceiptResponseDC>
 }
 
 //class HeaderInterceptor : Interceptor {

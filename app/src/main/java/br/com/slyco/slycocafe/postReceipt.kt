@@ -5,15 +5,15 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 
-class postSale {
+class postReceipt {
 
     val myLog = log(javaClass.simpleName)
 
-    constructor(mySaleId: String, mySaleResponseData:saleResponseDC){
+    constructor(mySaleId: String, receiptDC: postReceiptDC){
         try {
             runBlocking {
                 val result = async(Dispatchers.IO) {
-                    intPostSale(mySaleId, mySaleResponseData)
+                    intPostReceipt(mySaleId, receiptDC)
                 }.await()
             }
         } catch(e: Exception){
@@ -22,13 +22,13 @@ class postSale {
         }
 
     }
-    fun intPostSale(mySaleId: String, mySaleResponseData:saleResponseDC){
+    fun intPostReceipt(mySaleId: String, receiptDC:postReceiptDC){
 
-        val call = apiService.postSale(mySaleId,mySaleResponseData)
+        val call = apiService.postReceipt(mySaleId,receiptDC)
         try {
-            myLog.log("mySaleResponseData: ${mySaleResponseData.toString()}")
-            var callReturn: Response<saleResponseDC> = call.execute()
-            myLog.log("PUT " + callReturn.body()?.toString())
+            myLog.log("receiptDC: ${receiptDC.toString()}")
+            var callReturn: Response<postReceiptResponseDC> = call.execute()
+            myLog.log("POST " + callReturn.body()?.toString())
         }
         catch (e: Exception){
             myLog.log("${e.printStackTrace().toString()}")

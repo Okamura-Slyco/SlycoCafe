@@ -22,7 +22,11 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
+import br.com.slyco.slycocafe.postReceipt
+import br.com.slyco.slycocafe.postReceiptDC
 import br.com.slyco.slycocafe.printing.DevicePrinterFactory
+import java.io.ByteArrayOutputStream
+import android.util.Base64
 
 class ReceiptDelivery(
     private val context: Context,
@@ -30,7 +34,9 @@ class ReceiptDelivery(
     private val brand: String,
     private val model: String,
     private val hasPrinter: Boolean,
-    private val receiptBitmap: Bitmap
+    private val receiptBitmap: Bitmap,
+    private val locationId: String,
+    private val imageId: String
 ) {
     private var dialog: AlertDialog? = null
     var onDismiss: (() -> Unit)? = null
@@ -67,42 +73,64 @@ class ReceiptDelivery(
 
         printer.print(context, receiptBitmap ) {} // `this` = Activity or context
     }
+    fun cleanPhoneNumber(input: String): String {
+        return input.replace(Regex("[^\\d+]"), "")
+            .replace(Regex("(?<!^)\\+"), "") // remove any extra '+' not at start
+    }
 
     fun showDeliveryOptions(receiptText: String) {
 
         val receiptImage = rootView.findViewById<ImageView>(R.id.receiptImageView)
         receiptImage.setImageBitmap(receiptBitmap)
 
-//        dialog = AlertDialog.Builder(context)
-//            .setView(view)
-//            .setCancelable(true)
-//            .create()
-
-        rootView.findViewById<LinearLayout>(R.id.buttonSms).setOnClickListener {
-            //dialog?.dismiss()
+        var button = rootView.findViewById<LinearLayout>(R.id.buttonSms)
+        button.setOnClickListener {
             promptPhoneNumber("SMS") { number -> sendSms(receiptText, number) }
         }
+        button.alpha = 0.5f // makes it look disabled
+        button.isEnabled = false
 
-        rootView.findViewById<LinearLayout>(R.id.buttonEmail).setOnClickListener {
-            //dialog?.dismiss()
+        button = rootView.findViewById<LinearLayout>(R.id.buttonEmail)
+        button.setOnClickListener {
             sendEmail(receiptText)
         }
+        button.alpha = 0.5f // makes it look disabled
+        button.isEnabled = false
 
-        rootView.findViewById<LinearLayout>(R.id.buttonWhatsApp).setOnClickListener {
-            //dialog?.dismiss()
-            promptPhoneNumber("WhatsApp") { number -> sendWhatsApp(receiptText, number) }
+        button = rootView.findViewById<LinearLayout>(R.id.buttonWhatsApp)
+        button.setOnClickListener {
+            promptPhoneNumber("WhatsApp") { number ->
+                // Convert Bitmap to PNG base64
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                receiptBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                val base64Image = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
+
+                // Build the request
+                val receiptPayload = postReceiptDC(
+                    method = "whatsapp_template",
+                    target = cleanPhoneNumber(number),
+                    content = null,
+                    contentSid = null, // or use default from server env
+                    variables = null,  // or use additional template variables
+                    base64Image = base64Image,
+                    filename = "${imageId}.png"
+                )
+
+                // Send the request
+                postReceipt(locationId, receiptPayload)
+            }
         }
 
-        val printButton = rootView.findViewById<LinearLayout>(R.id.buttonPrint)
+        button = rootView.findViewById<LinearLayout>(R.id.buttonPrint)
         if (hasPrinter) {
-            printButton.setOnClickListener {
+            button.setOnClickListener {
                 Log.d ("ReceiptDelivery" , "printButton.setOnClickListener")
                 printReceipt(receiptText)
-                printButton.alpha = 0.5f // makes it look disabled
-                printButton.isEnabled = false
+                button.alpha = 0.5f // makes it look disabled
+                button.isEnabled = false
             }
         } else {
-            printButton.visibility = LinearLayout.GONE
+            button.visibility = LinearLayout.GONE
         }
 
 //        val closeDialogButton = view.findViewById<ImageView>(R.id.closeDialogButton)
