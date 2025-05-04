@@ -86,7 +86,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation ("com.google.zxing:core:3.4.1")
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
-    implementation ("androidx.core:core-ktx:1.6.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.google.android.material:material:1.11.0")
     implementation ("com.airbnb.android:lottie:6.6.2")

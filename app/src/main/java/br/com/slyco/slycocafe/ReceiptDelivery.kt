@@ -63,19 +63,19 @@ class ReceiptDelivery(
 
         val printer = DevicePrinterFactory.getPrinter()
 
-        printer.print(context, receiptBitmap ) {dismiss()} // `this` = Activity or context
+        printer.print(context, receiptBitmap ) {} // `this` = Activity or context
     }
 
     fun showDeliveryOptions(receiptText: String) {
-        val view = LayoutInflater.from(context).inflate(R.layout.receipt_delivery_dialog, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.activity_dispenser_progress, null)
 
         val receiptImage = view.findViewById<ImageView>(R.id.receiptImageView)
         receiptImage.setImageBitmap(receiptBitmap)
 
-        dialog = AlertDialog.Builder(context)
-            .setView(view)
-            .setCancelable(true)
-            .create()
+//        dialog = AlertDialog.Builder(context)
+//            .setView(view)
+//            .setCancelable(true)
+//            .create()
 
         view.findViewById<LinearLayout>(R.id.buttonSms).setOnClickListener {
             //dialog?.dismiss()
@@ -101,21 +101,21 @@ class ReceiptDelivery(
             printButton.visibility = LinearLayout.GONE
         }
 
-        val closeDialogButton = view.findViewById<ImageView>(R.id.closeDialogButton)
-        closeDialogButton.setOnClickListener{
-            dialog.run { dismiss() }
-        }
-
-        dialog?.setOnDismissListener {
-            onDismiss?.invoke()
-        }
-
-        dialog?.show()
+//        val closeDialogButton = view.findViewById<ImageView>(R.id.closeDialogButton)
+//        closeDialogButton.setOnClickListener{
+//            dialog.run { dismiss() }
+//        }
+//
+//        dialog?.setOnDismissListener {
+//            onDismiss?.invoke()
+//        }
+//
+//        dialog?.show()
     }
 
-    fun dismiss() {
-        dialog?.dismiss()
-    }
+//    fun dismiss() {
+//        dialog?.dismiss()
+//    }
 
     private fun promptPhoneNumber(label: String, onConfirm: (String) -> Unit) {
         var input = EditText(context).apply {

@@ -534,7 +534,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
         val customerReceiptBitmap = myReceipt.generateCustomerReceiptBitmap(customerReceipt)
 
-        val footerBitmap = myReceipt.generateFooterBitmap("Bom café!")
+        val footerBitmap = myReceipt.generateFooterBitmap("Recibo sem valor fiscal.\nBom café!")
 
         val qrCodeBitmap = myReceipt.generateQrCodeBitmap("https://www.slyco.com.br/receipt/AAAA-AAAA-AAAA-AAAA?key=ajsdhfluawvluawnvluaoiçanwviweasd123456789012345678901234567890")
 

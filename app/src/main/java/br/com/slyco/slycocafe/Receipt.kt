@@ -18,12 +18,14 @@ class Receipt {
     private lateinit var context: Context
     var spacing:Int
     var padding:Int
+    private lateinit var dashed: String
 
     constructor(context: Context, printerColumns: Int = 27,padding: Int = 10,spacing: Int = 12) {
         this.context = context
         this.maxChars = printerColumns
         this.padding = padding
         this.spacing = spacing
+        this.dashed = "-".repeat(maxChars)
         // Additional logic here
     }
 
@@ -83,10 +85,10 @@ class Receipt {
             center("CNPJ $cnpj".take(maxChars)),
             "", // Blank line
             center(locationName.take(maxChars)),
+            center("($locationId)"),
             "", // Blank line
             right("Data: $date"),
-            right("Hora:   $time"),
-            right("DID: $locationId")
+            right("Hora:   $time")
         )
 
         // Create and return the bitmap from the formatted lines
@@ -103,13 +105,12 @@ class Receipt {
         }
 
         val headerText = "QT ITEM       (PRECO) TOTAL"
-        val separator = "-".repeat(maxChars)
 
         // Create the list of lines for the body
         val lines = mutableListOf<String>()
-        lines.add(separator)
+        lines.add(dashed)
         lines.add(headerText)
-        lines.add(separator)
+        lines.add(dashed)
 
         // Add each inventory item
         inventoryList.forEach { item ->
@@ -147,7 +148,7 @@ class Receipt {
 
 
         // Add the final separator
-        lines.add(separator)
+        lines.add(dashed)
 
         // Add subtotal, discount, and total if necessary
         if (discount > 0) {
@@ -184,33 +185,9 @@ class Receipt {
             isAntiAlias = true
         }
 
-        val lines = mutableListOf<String>()
-        val maxChars = this.maxChars // assumes it's a class property like 27
 
-        // --- Break message into lines (if too long)
-        val boldMessage = "${message}"  // Wrap the entire message in ...
 
-        val words = boldMessage.split(" ")
-        var currentLine = ""
-
-        for (word in words) {
-            if ((currentLine + " " + word).trim().length > maxChars) {
-                lines.add(currentLine.trim())
-                currentLine = word
-            } else {
-                currentLine += " $word"
-            }
-        }
-        if (currentLine.isNotBlank()) lines.add(currentLine.trim())
-
-        // --- Add dashed lines and formatted message lines
-        val dashed = "-".repeat(maxChars)
-        val fullLines = mutableListOf<String>()
-        fullLines.add(dashed)
-        fullLines.addAll(lines.map { center(it) })
-        fullLines.add(dashed)
-
-        return createBitmapFromLines(fullLines, textPaint)
+        return createBitmapFromLines(preRenderingMuitlilineText("${dashed}\n${message}\n${dashed}"), textPaint)
     }
 
     fun generateCustomerReceiptBitmap(textBlock: String): Bitmap {
@@ -332,14 +309,7 @@ class Receipt {
         }
     }
 
-    fun generatePostQrCodeBitmap(message: String, fontSize: Float = 18f): Bitmap {
-        val textPaint = TextPaint().apply {
-            color = Color.BLACK
-            textSize = fontSize
-            typeface = Typeface.MONOSPACE
-            isAntiAlias = true
-        }
-
+    private fun preRenderingMuitlilineText (message: String): List<String>{
         val lines = mutableListOf<String>()
         val maxChars = this.maxChars  // Assumes it's a class property
 
@@ -365,8 +335,19 @@ class Receipt {
         }
 
         // Center and render
-        val fullLines = lines.map { center(it) }
-        return createBitmapFromLines(fullLines, textPaint)
+        return lines.map { center(it) }
+    }
+    fun generatePostQrCodeBitmap(message: String, fontSize: Float = 18f): Bitmap {
+
+        val textPaint = TextPaint().apply {
+            color = Color.BLACK
+            textSize = fontSize
+            typeface = Typeface.MONOSPACE
+            isAntiAlias = true
+        }
+
+
+        return createBitmapFromLines(preRenderingMuitlilineText(message), textPaint)
     }
 
 }

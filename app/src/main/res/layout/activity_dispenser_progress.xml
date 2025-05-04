@@ -3,105 +3,227 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:gravity="center">
+    android:background="#FFFFFF">
 
-    <FrameLayout
-        android:id="@+id/capsuleContainer"
+    <!-- Horizontal split: left (receiptStack), right (capsuleContainer) -->
+    <LinearLayout
+        android:id="@+id/mainHorizontalLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    </FrameLayout>
+        <!-- Left: Receipt + Buttons vertically stacked -->
+        <LinearLayout
+            android:id="@+id/receiptStack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="60dp"
+            android:gravity="bottom">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="300dp"
-        android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
-        android:progressDrawable="@drawable/progress_bar_colors"
-        android:visibility="gone"/>
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:fillViewport="true"
+                android:scrollbars="vertical">
 
+                <ImageView
+                    android:id="@+id/receiptImageView"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Receipt preview"
+                    android:scaleType="centerInside" />
+            </ScrollView>
+
+            <LinearLayout
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="12dp">
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Como deseja\nreceber seu recibo?"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/buttonWhatsApp"
+                    style="@style/PillButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="8dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_whatsapp"
+                        app:tint="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="WhatsApp"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/buttonSms"
+                    style="@style/PillButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="8dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_sms"
+                        app:tint="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SMS"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/buttonEmail"
+                    style="@style/PillButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="8dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_email"
+                        app:tint="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="E-mail"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/buttonPrint"
+                    style="@style/PillButtonStyle"
+                    android:layout_width="match_parent">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_print"
+                        app:tint="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Imprimir"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Right: capsuleContainer -->
+        <FrameLayout
+            android:id="@+id/capsuleContainer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <!-- Inserted elements -->
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="56dp"
+                android:text="Preparando..."
+                android:textColor="#AAAAAA"
+                android:textSize="18sp" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:progressDrawable="@drawable/progress_bar_colors"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/finalContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/finalMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bom café!"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="#6D4C41"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/coffeeCup"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:src="@raw/coffee"
+                    app:lottie_rawRes="@raw/coffee"
+                    app:lottie_autoPlay="false"
+                    app:lottie_loop="false" />
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Footer elements -->
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="150dp"
         android:layout_height="40dp"
-        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="5dp"
         android:alpha="0.5"
         android:src="@drawable/poweredbyslyco" />
 
-    <LinearLayout
-        android:id="@+id/finalContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/finalMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bom café!"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#6D4C41"
-            android:gravity="center"
-            android:layout_marginBottom="16dp"/>
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/coffeeCup"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@raw/coffee"
-            app:lottie_rawRes="@raw/coffee"
-            app:lottie_autoPlay="false"
-            app:lottie_loop="false"/>
-    </LinearLayout>
-
     <ImageView
         android:id="@+id/helpIcon"
         android:layout_width="56dp"
         android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/customer_support"
-    android:layout_alignParentEnd="true"
-    android:layout_alignParentBottom="true"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="16dp"
-    android:background="?android:selectableItemBackgroundBorderless"
-    android:contentDescription="Need Help?"
-    android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/statusText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/progressBar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:text="Preparando..."
-        android:textColor="#AAAAAA"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/buttonPrintReceipt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/statusText"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:backgroundTint="#228800"
-        android:text="RECIBO"
-        android:textSize="20sp"
-        app:icon="@drawable/receipt" />
-
-
-
-
+        android:background="?android:selectableItemBackgroundBorderless"
+        android:contentDescription="Need Help?"
+        android:visibility="gone" />
 </RelativeLayout>

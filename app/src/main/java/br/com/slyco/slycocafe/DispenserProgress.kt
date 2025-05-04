@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.view.animation.AccelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -31,11 +32,12 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.BounceInterpolator
+import android.view.animation.LinearInterpolator
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBar
+import androidx.core.animation.doOnEnd
 
-import android.widget.Button
-import android.widget.Toast
 import br.com.slyco.slycocafe.utils.ReceiptDelivery
 
 data class DISPENSER_ELEMENTS(
@@ -145,6 +147,7 @@ class DispenserProgress : AppCompatActivity() {
                     } else {
                         Log.i("Slyco-USB", "Permission denied for device $device")
                         updateStatus("Permission denied.")
+                        doErrorAnimationAndClose()
                     }
                 }
             }
@@ -154,7 +157,17 @@ class DispenserProgress : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_dispenser_progress)
+
+        val isLandscape = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
+        if (isLandscape) {
+            // Landscape mode
+
+            setContentView(R.layout.activity_dispenser_progress)
+        } else {
+            // Portrait mode
+            setContentView(R.layout.activity_dispenser_progress_portrait)
+        }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.setFlags(
@@ -252,6 +265,8 @@ class DispenserProgress : AppCompatActivity() {
         if (availableDrivers.isEmpty()) {
             Log.i("Slyco-USB", "No USB Driver found")
             updateStatus("No USB Dispenser detected.")
+
+            doErrorAnimationAndClose()
         } else {
             driver = availableDrivers[0]
             if (manager.hasPermission(driver.device)) {
@@ -270,8 +285,6 @@ class DispenserProgress : AppCompatActivity() {
         }
 
         if (safeBitmap != null) {
-            val buttonPrint = findViewById<Button>(R.id.buttonPrintReceipt)
-            buttonPrint.setOnClickListener {
                 receiptDelivery = ReceiptDelivery(
                     this,
                     deviceBrand.toString(),
@@ -280,12 +293,32 @@ class DispenserProgress : AppCompatActivity() {
                     safeBitmap
                 )
                 receiptDelivery.showDeliveryOptions("https://urlformessaging")
-                receiptDelivery.onDismiss = {
-                    Log.d("Print Dialog", "Print dialog dismissed")
-                    finishThisActivity(4)
-                }
-            }
+
+            val receiptImage = findViewById<ImageView>(R.id.receiptImageView)
+            receiptImage.setImageBitmap(safeBitmap)
         }
+
+    }
+
+    private fun doErrorAnimationAndClose(){
+        val animator = ValueAnimator.ofInt(100, 0)
+        animator.duration = 10_000 // 10 seconds
+        animator.interpolator = LinearInterpolator() // optional for smooth decay
+
+        animator.addUpdateListener { valueAnimator ->
+            val progress = valueAnimator.animatedValue as Int
+            progressBar.progress = progress
+        }
+
+        animator.doOnEnd {
+            finishThisActivity(5)
+        }
+
+        progressBar.max = 100
+        progressBar.progress = 100
+        progressBar.visibility = View.VISIBLE
+
+        animator.start()
 
     }
     private fun handleErrorAndReturn(message: String) {
