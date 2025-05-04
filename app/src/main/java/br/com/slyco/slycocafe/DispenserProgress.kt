@@ -37,6 +37,7 @@ import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBar
 import androidx.core.animation.doOnEnd
+import android.view.LayoutInflater
 
 import br.com.slyco.slycocafe.utils.ReceiptDelivery
 
@@ -118,7 +119,7 @@ class DispenserProgress : AppCompatActivity() {
     private var capsulesStillFalling = false
 
     private lateinit var  receiptDelivery: ReceiptDelivery
-
+    private lateinit var rootView: View
 
     private lateinit var helpIcon: ImageView
 
@@ -162,12 +163,12 @@ class DispenserProgress : AppCompatActivity() {
 
         if (isLandscape) {
             // Landscape mode
-
-            setContentView(R.layout.activity_dispenser_progress)
+            rootView = layoutInflater.inflate(R.layout.activity_dispenser_progress,null)
         } else {
             // Portrait mode
-            setContentView(R.layout.activity_dispenser_progress_portrait)
+            rootView = layoutInflater.inflate(R.layout.activity_dispenser_progress_portrait,null)
         }
+        setContentView(rootView)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.setFlags(
@@ -287,6 +288,7 @@ class DispenserProgress : AppCompatActivity() {
         if (safeBitmap != null) {
                 receiptDelivery = ReceiptDelivery(
                     this,
+                    rootView,
                     deviceBrand.toString(),
                     deviceModel.toString(),
                     deviceHasPrinter,

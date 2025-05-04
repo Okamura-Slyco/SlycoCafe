@@ -20,11 +20,13 @@ import com.google.i18n.phonenumbers.NumberParseException
 
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.widget.ImageView
 import br.com.slyco.slycocafe.printing.DevicePrinterFactory
 
 class ReceiptDelivery(
     private val context: Context,
+    private val rootView: View,
     private val brand: String,
     private val model: String,
     private val hasPrinter: Boolean,
@@ -67,9 +69,8 @@ class ReceiptDelivery(
     }
 
     fun showDeliveryOptions(receiptText: String) {
-        val view = LayoutInflater.from(context).inflate(R.layout.activity_dispenser_progress, null)
 
-        val receiptImage = view.findViewById<ImageView>(R.id.receiptImageView)
+        val receiptImage = rootView.findViewById<ImageView>(R.id.receiptImageView)
         receiptImage.setImageBitmap(receiptBitmap)
 
 //        dialog = AlertDialog.Builder(context)
@@ -77,25 +78,28 @@ class ReceiptDelivery(
 //            .setCancelable(true)
 //            .create()
 
-        view.findViewById<LinearLayout>(R.id.buttonSms).setOnClickListener {
+        rootView.findViewById<LinearLayout>(R.id.buttonSms).setOnClickListener {
             //dialog?.dismiss()
             promptPhoneNumber("SMS") { number -> sendSms(receiptText, number) }
         }
 
-        view.findViewById<LinearLayout>(R.id.buttonEmail).setOnClickListener {
+        rootView.findViewById<LinearLayout>(R.id.buttonEmail).setOnClickListener {
             //dialog?.dismiss()
             sendEmail(receiptText)
         }
 
-        view.findViewById<LinearLayout>(R.id.buttonWhatsApp).setOnClickListener {
+        rootView.findViewById<LinearLayout>(R.id.buttonWhatsApp).setOnClickListener {
             //dialog?.dismiss()
             promptPhoneNumber("WhatsApp") { number -> sendWhatsApp(receiptText, number) }
         }
 
-        val printButton = view.findViewById<LinearLayout>(R.id.buttonPrint)
+        val printButton = rootView.findViewById<LinearLayout>(R.id.buttonPrint)
         if (hasPrinter) {
             printButton.setOnClickListener {
+                Log.d ("ReceiptDelivery" , "printButton.setOnClickListener")
                 printReceipt(receiptText)
+                printButton.alpha = 0.5f // makes it look disabled
+                printButton.isEnabled = false
             }
         } else {
             printButton.visibility = LinearLayout.GONE
