@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Base64
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,10 +32,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 import java.util.*
+import kotlin.experimental.xor
 
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
@@ -509,7 +513,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 invoiceAuthorizationCode = "", // invoice authorization code
                 saleItems = "",
                 merchantReceipt = "",
-                customerReceipt = ""
+                customerReceipt = "",
+                receiptImage = "",
             )
             finishTransaction(mySaleResponseData)
             Log.d("DemoMode", "shoppingCart.clearCart()")
@@ -536,7 +541,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
 
         val footerBitmap = myReceipt.generateFooterBitmap("Recibo sem valor fiscal.\nBom café!")
 
-        val qrCodeBitmap = myReceipt.generateQrCodeBitmap("https://web.slyco.com.br/receipts/${android_id}/${mySaleResponse.transactionTimestamp.toString()}.png")
+        val urlKey = generateAccessToken(android_id,mySaleResponse.transactionTimestamp.toString())
+
+        val qrCodeBitmap = myReceipt.generateQrCodeBitmap("https://www.slyco.com.br/receipts/${android_id}/${mySaleResponse.transactionTimestamp.toString()}?key=${urlKey}")
 
         val postQrCodeBitmap = qrCodeBitmap?.let {
             myReceipt.generatePostQrCodeBitmap("Seu recibo digital?\nEscaneie este QR Code!", fontSize = 16f)
@@ -554,8 +561,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         )
         ReceiptHolder.bitmap = fullBitmap
         ReceiptHolder.timestamp = mySaleResponse.transactionTimestamp.toString()
-
-        releaseCoffee()
+        ReceiptHolder.qrCodeBitmap = qrCodeBitmap
 
         myInventory.patchtInventoryQty(myLocation.getLocation().id,myLocation.getLocation().items)
 
@@ -569,11 +575,37 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
         Log.d ("Sale Items" , saleItems)
         mySaleResponse.saleItems = saleItems
+
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        fullBitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+
+        val base64Image = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
+
+        mySaleResponse.receiptImage = base64Image
         postSale (android_id,mySaleResponse)
+
+        releaseCoffee()
+
         shoppingCart.clearCart()
 
         updateView(0)
     }
+
+    fun generateAccessToken(path: String, timestamp: String): String {
+        val base = "$path+$timestamp+SlycoReceipt"
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hash = digest.digest(base.toByteArray(Charsets.UTF_8))
+
+        val half = hash.size / 2
+        val xor = ByteArray(half) { i ->
+            (hash[i].toInt() xor hash[i + half].toInt()).toByte()
+        }
+
+        return xor.joinToString("") { "%02x".format(it) } // 128-bit token (32 hex chars)
+    }
+
+
+
 
     private fun isCallable(intent: Intent): Boolean {
         val list = packageManager.queryIntentActivities(
@@ -920,7 +952,8 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                     invoiceAuthorizationCode = (genericMap["952"] as? ArrayList<String>)?.getOrNull(0) ?: "", // invoice authorization code
                     saleItems = "",
                     merchantReceipt = merchantReceipt,
-                    customerReceipt = customerReceipt
+                    customerReceipt = customerReceipt,
+                    receiptImage = ""
                 )
 
                 myLog.log(mySaleResponseData.toString())

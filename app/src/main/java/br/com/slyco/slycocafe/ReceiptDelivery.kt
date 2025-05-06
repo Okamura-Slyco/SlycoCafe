@@ -1,10 +1,14 @@
 package br.com.slyco.slycocafe.utils
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import br.com.slyco.slycocafe.R
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.Image
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,102 +26,118 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import br.com.slyco.slycocafe.postReceipt
 import br.com.slyco.slycocafe.postReceiptDC
 import br.com.slyco.slycocafe.printing.DevicePrinterFactory
-import java.io.ByteArrayOutputStream
-import android.util.Base64
+import com.airbnb.lottie.LottieAnimationView
 
-class ReceiptDelivery(
-    private val context: Context,
-    private val rootView: View,
-    private val brand: String,
-    private val model: String,
-    private val hasPrinter: Boolean,
-    private val receiptBitmap: Bitmap,
-    private val locationId: String,
-    private val imageId: String
-) {
+
+class ReceiptDelivery {
+    private lateinit var context: Context
+    private lateinit var rootView: View
+    private lateinit var brand: String
+    private lateinit var model: String
+    private var hasPrinter: Boolean = false
+    private lateinit var receiptBitmap: Bitmap
+    private lateinit var locationId: String
+    private lateinit var imageId: String
     private var dialog: AlertDialog? = null
+
+    var onDismissCallback: (() -> Unit)? = null
+
     var onDismiss: (() -> Unit)? = null
 
+    private var b_isShowing = false
 
     fun isShowing(): Boolean {
-        return dialog?.isShowing == true
+        return this.b_isShowing
     }
 
-    fun sendEmail(text: String) {
-        Log.i("Receipt", "📧 Sending Email with:\n$text")
-        // TODO: Implement actual email logic
-    }
-
-    fun sendSms(text: String, phone: String) {
-        Log.i("Receipt", "📲 Sending SMS to $phone:\n$text")
-        // TODO: Launch SMS intent or API
-    }
-
-    fun sendWhatsApp(text: String, phone: String) {
-        Log.i("Receipt", "💬 Sending WhatsApp to $phone:\n$text")
-        // TODO: Open WhatsApp Intent with message
-    }
-
-    fun printReceipt(text: String) {
+    private fun printReceipt() {
         if (!hasPrinter) {
             Log.e("Receipt", "❌ No printer available.")
             return
         }
-        Log.i("Receipt", "🖨 Printing from $brand $model:\n$text")
+        Log.i("Receipt", "🖨 Printing from $brand $model")
         // TODO: Implement actual printing logic
 
         val printer = DevicePrinterFactory.getPrinter()
 
         printer.print(context, receiptBitmap ) {} // `this` = Activity or context
     }
-    fun cleanPhoneNumber(input: String): String {
+
+    private fun cleanPhoneNumber(input: String): String {
         return input.replace(Regex("[^\\d+]"), "")
             .replace(Regex("(?<!^)\\+"), "") // remove any extra '+' not at start
     }
 
-    fun showDeliveryOptions(receiptText: String) {
+    constructor(
+        context: Context,
+        rootView: View,
+        brand: String,
+        model: String,
+        hasPrinter: Boolean,
+        receiptBitmap: Bitmap,
+        locationId: String,
+        imageId: String
+    )  {
+        this.context = context
+        this.rootView = rootView
+        this.brand = brand
+        this.model = model
+        this.hasPrinter = hasPrinter
+        this.receiptBitmap = receiptBitmap
+        this.locationId = locationId
+        this.imageId = imageId
 
         val receiptImage = rootView.findViewById<ImageView>(R.id.receiptImageView)
-        receiptImage.setImageBitmap(receiptBitmap)
+        receiptImage.setImageBitmap(this.receiptBitmap)
 
-        var button = rootView.findViewById<LinearLayout>(R.id.buttonSms)
-        button.setOnClickListener {
-            promptPhoneNumber("SMS") { number -> sendSms(receiptText, number) }
-        }
-        button.alpha = 0.5f // makes it look disabled
-        button.isEnabled = false
-
-        button = rootView.findViewById<LinearLayout>(R.id.buttonEmail)
-        button.setOnClickListener {
-            sendEmail(receiptText)
-        }
-        button.alpha = 0.5f // makes it look disabled
-        button.isEnabled = false
-
-        button = rootView.findViewById<LinearLayout>(R.id.buttonWhatsApp)
-        button.setOnClickListener {
+        var button = rootView.findViewById<LinearLayout>(R.id.buttonWhatsApp)
+        button.setOnClickListener{
+            this.b_isShowing = true
             promptPhoneNumber("WhatsApp") { number ->
-                // Convert Bitmap to PNG base64
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                receiptBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                val base64Image = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
+                val cleaned = cleanPhoneNumber(number)
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_confirm_send, null)
+                val messageText = dialogView.findViewById<TextView>(R.id.dialogMessage)
 
-                // Build the request
-                val receiptPayload = postReceiptDC(
-                    method = "whatsapp_template",
-                    target = cleanPhoneNumber(number),
-                    content = null,
-                    contentSid = null, // or use default from server env
-                    variables = null,  // or use additional template variables
-                    base64Image = base64Image,
-                    filename = "${imageId}.png"
-                )
+                messageText.text = "Enviar para:\n$number?"
 
-                // Send the request
-                postReceipt(locationId, receiptPayload)
+                this.dialog = AlertDialog.Builder(context)
+                    .setView(dialogView)
+                    .setPositiveButton("Enviar", null)
+                    .setNegativeButton("Cancelar", null)
+                    .create()
+
+                this.dialog?.setOnDismissListener {
+                    onDismissCallback?.invoke()
+                }
+
+                val dlg = this.dialog
+                dlg?.setOnShowListener {
+                    val buttonPositive = dlg.getButton(AlertDialog.BUTTON_POSITIVE)
+                    buttonPositive.setOnClickListener {
+                        // Build the request
+                        val receiptPayload = postReceiptDC(
+                            method = "whatsapp_template",
+                            target = cleaned,
+                            content = null,
+                            contentSid = null,
+                            variables = null,
+                            filename = "$imageId.png"
+                        )
+
+                        postReceipt(locationId, receiptPayload)
+
+                        // Disable buttons while animating
+                        dlg.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                        dlg.getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = false
+                        showSendAnimation()
+
+                    }
+                }
+                dlg?.show()
             }
         }
 
@@ -125,7 +145,7 @@ class ReceiptDelivery(
         if (hasPrinter) {
             button.setOnClickListener {
                 Log.d ("ReceiptDelivery" , "printButton.setOnClickListener")
-                printReceipt(receiptText)
+                printReceipt()
                 button.alpha = 0.5f // makes it look disabled
                 button.isEnabled = false
             }
@@ -138,9 +158,9 @@ class ReceiptDelivery(
 //            dialog.run { dismiss() }
 //        }
 //
-//        dialog?.setOnDismissListener {
-//            onDismiss?.invoke()
-//        }
+        this.dialog?.setOnDismissListener {
+            onDismiss?.invoke()
+        }
 //
 //        dialog?.show()
     }
@@ -148,6 +168,30 @@ class ReceiptDelivery(
 //    fun dismiss() {
 //        dialog?.dismiss()
 //    }
+private fun showSendAnimation() {
+    val rootView = dialog?.window?.decorView
+    val lottieView = rootView?.findViewById<LottieAnimationView>(R.id.sendLottie)
+
+    lottieView?.setAnimation(R.raw.send)
+    lottieView?.visibility = View.VISIBLE
+    lottieView?.playAnimation()
+
+    lottieView?.addAnimatorListener(object : AnimatorListenerAdapter() {
+        override fun onAnimationStart(animation: Animator) {}
+        override fun onAnimationEnd(animation: Animator) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                b_isShowing = false
+                dialog?.dismiss()
+            }, 1000)
+        }
+
+        override fun onAnimationCancel(animation: Animator) {}
+
+        override fun onAnimationRepeat(animation: Animator) {}
+    })
+}
+
+
 
     private fun promptPhoneNumber(label: String, onConfirm: (String) -> Unit) {
         var input = EditText(context).apply {

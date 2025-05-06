@@ -24,7 +24,8 @@ class postReceipt {
     }
     fun intPostReceipt(mySaleId: String, receiptDC:postReceiptDC){
 
-        val call = apiService.postReceipt(mySaleId,receiptDC)
+        val filename = receiptDC.filename.toString().substringBeforeLast(".")
+        val call = apiService.postReceipt(mySaleId,filename,receiptDC)
         try {
             myLog.log("receiptDC: ${receiptDC.toString()}")
             var callReturn: Response<postReceiptResponseDC> = call.execute()

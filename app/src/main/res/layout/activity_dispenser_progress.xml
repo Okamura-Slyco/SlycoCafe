@@ -20,11 +20,12 @@
             android:orientation="vertical"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="60dp"
-            android:gravity="bottom">
+            android:gravity="top">
 
             <ScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="200dp"
+                android:layout_marginTop="6dp"
                 android:fillViewport="true"
                 android:scrollbars="vertical">
 
@@ -38,25 +39,26 @@
             </ScrollView>
 
             <LinearLayout
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="12dp">
+                android:layout_marginStart="16dp">
 
                 <TextView
                     android:id="@+id/textView15"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Como deseja\nreceber seu recibo?"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="Deseja receber\nseu recibo?"
                     android:textAlignment="center"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp" />
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:id="@+id/buttonWhatsApp"
                     style="@style/PillButtonStyle"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_marginBottom="8dp">
 
                     <ImageView
@@ -75,49 +77,6 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/buttonSms"
-                    style="@style/PillButtonStyle"
-                    android:layout_width="match_parent"
-                    android:layout_marginBottom="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="12dp"
-                        android:src="@drawable/ic_sms"
-                        app:tint="@android:color/white" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SMS"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/buttonEmail"
-                    style="@style/PillButtonStyle"
-                    android:layout_width="match_parent"
-                    android:layout_marginBottom="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="12dp"
-                        android:src="@drawable/ic_email"
-                        app:tint="@android:color/white" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="E-mail"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/buttonPrint"
@@ -139,7 +98,27 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
             </LinearLayout>
+            <TextView
+                android:id="@+id/textViewQrCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:text="Escaneie o QR Code\n para acessar\n seu recibo"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/imageReceiptQRCode"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/coffee_beans" />
+
         </LinearLayout>
 
         <!-- Right: capsuleContainer -->

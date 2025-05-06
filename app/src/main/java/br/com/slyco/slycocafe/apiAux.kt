@@ -335,7 +335,10 @@ data class saleResponseDC(
     var merchantReceipt: String,
 
     @SerializedName("customer_receipt")
-    var customerReceipt: String
+    var customerReceipt: String,
+
+    @SerializedName("receipt_image")
+    var receiptImage: String
 )
 
 data class ItemDC(
@@ -366,6 +369,7 @@ data class patchInventoryQtyValuesDC(
     val price: Int?,
     val qty: Int?
 )
+
 data class patchInventoryQtyKeysDC (
     val id:String,
     val dispenser_number: Int
@@ -377,11 +381,8 @@ data class postReceiptDC(
     val content: String? = null,      // used for SMS or Email
     val contentSid: String? = null,   // optional for Twilio template
     val variables: List<String>? = null,
-    val base64Image: String? = null,  // base64-encoded PNG
     val filename: String? = null      // e.g. "receipt.png"
 )
-
-
 
 data class postReceiptResponseDC(
     val message: String,
@@ -412,8 +413,8 @@ interface ApiService {
     @POST("sale/{id}")
     fun postSale(@Path("id") inventoryId: String,@Body postInventory: saleResponseDC): Call<saleResponseDC>
 
-    @POST("receipts/{id}")
-    fun postReceipt(@Path("id") locationId: String,@Body postReceipt: postReceiptDC): Call<postReceiptResponseDC>
+    @POST("receipts/{id}/{filename}")
+    fun postReceipt(@Path("id") locationId: String,@Path("filename") filename: String,@Body postReceipt: postReceiptDC): Call<postReceiptResponseDC>
 }
 
 //class HeaderInterceptor : Interceptor {

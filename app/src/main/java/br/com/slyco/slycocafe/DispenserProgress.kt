@@ -167,12 +167,12 @@ class DispenserProgress : AppCompatActivity() {
         window.decorView.systemUiVisibility =
             (View.SYSTEM_UI_FLAG_LOW_PROFILE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
 
-        val originalBitmap = ReceiptHolder.bitmap
+        val originalBitmap = ReceiptHolder.bitmap?.copy(Bitmap.Config.ARGB_8888, false)
         ReceiptHolder.bitmap = null  // optional: free memory immediately
         val imageTimestamp = ReceiptHolder.timestamp
         ReceiptHolder.timestamp = null
+        val qrCodeBitmap = ReceiptHolder.qrCodeBitmap?.copy(Bitmap.Config.ARGB_8888, false)
 
-        val safeBitmap = originalBitmap?.copy(Bitmap.Config.ARGB_8888, false)
 
         progressBar = findViewById(R.id.progressBar)
         statusText = findViewById(R.id.statusText)
@@ -275,21 +275,29 @@ class DispenserProgress : AppCompatActivity() {
             }
         }
 
-        if (safeBitmap != null) {
+        if (originalBitmap != null) {
                 receiptDelivery = ReceiptDelivery(
                     this,
                     rootView,
                     deviceBrand.toString(),
                     deviceModel.toString(),
                     deviceHasPrinter,
-                    safeBitmap,
+                    originalBitmap,
                     locationCode,
                     imageTimestamp.toString()
                 )
-                receiptDelivery.showDeliveryOptions("https://urlformessaging")
+            receiptDelivery.onDismissCallback = {
+                Log.d("receiptDelivery", "receiptDelivery dismissed")
+                finishThisActivity(8)  // Or a dedicated code for help dismiss
+            }
 
             val receiptImage = findViewById<ImageView>(R.id.receiptImageView)
-            receiptImage.setImageBitmap(safeBitmap)
+            receiptImage.setImageBitmap(originalBitmap)
+        }
+
+        if (qrCodeBitmap != null) {
+            val qrCodeImage = findViewById<ImageView>(R.id.imageReceiptQRCode)
+            qrCodeImage.setImageBitmap(qrCodeBitmap)
         }
 
     }
