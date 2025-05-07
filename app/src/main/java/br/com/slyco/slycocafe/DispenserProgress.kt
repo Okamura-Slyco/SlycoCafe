@@ -79,6 +79,8 @@ class DispenserProgress : AppCompatActivity() {
     private lateinit var driver: UsbSerialDriver
     private var dispenserPort: UsbSerialPort? = null
     private var connection: UsbDeviceConnection? = null
+    private val maxUsbRetries = 3
+    private val usbRetryDelayMs = 2000L
 
     private lateinit var progressBar: ProgressBar
     private lateinit var statusText: TextView
@@ -111,6 +113,7 @@ class DispenserProgress : AppCompatActivity() {
 
     private lateinit var helpIcon: ImageView
 
+
     companion object {
         private const val ACTION_USB_PERMISSION = "br.com.slyco.slycocafe.USB_PERMISSION"
     }
@@ -128,7 +131,7 @@ class DispenserProgress : AppCompatActivity() {
                             for (availableDriver in availableDrivers) {
                                 if (availableDriver.device.deviceId == device.deviceId) {
                                     driver = availableDriver
-                                    openDispenserConnection()
+                                    openDispenserConnectionWithRetries()
                                     break
                                 }
                             }
@@ -261,7 +264,7 @@ class DispenserProgress : AppCompatActivity() {
         } else {
             driver = availableDrivers[0]
             if (manager.hasPermission(driver.device)) {
-                openDispenserConnection()
+                openDispenserConnectionWithRetries()
             } else {
                 manager.requestPermission(driver.device, usbPermissionIntent)
             }
@@ -332,6 +335,59 @@ class DispenserProgress : AppCompatActivity() {
             startActivity(intent)
             finish()
         }, 10000) // 10 seconds delay
+    }
+
+    private fun openDispenserConnectionWithRetries(attempt: Int = 1) {
+        connection = manager.openDevice(driver.device)
+
+        if (connection == null) {
+            Log.e("Slyco-USB", "Attempt $attempt: Failed to open USB device")
+            if (attempt < maxUsbRetries) {
+                updateStatus("Retrying USB connection... ($attempt)")
+                Handler(Looper.getMainLooper()).postDelayed({
+                    openDispenserConnectionWithRetries(attempt + 1)
+                }, usbRetryDelayMs)
+            } else {
+                updateStatus("Failed to connect to dispenser after $maxUsbRetries attempts.")
+                handleErrorAndReturn("USB connection failed.")
+            }
+            return
+        }
+
+        dispenserPort = driver.ports[0]
+        try {
+            dispenserPort?.open(connection)
+            dispenserPort?.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE)
+
+            progressBar.progress = 0
+            progressBar.visibility = View.VISIBLE
+            statusText.text = "Liberando cápsulas... por favor aguarde..."
+
+            startUsbReader()
+            resetWatchdog()
+
+            var dispenserBufferString = ""
+            for (dispenserElement in GlobalVariables.dispenserElements) {
+                dispenserBufferString += dispenserElement.id.repeat(dispenserElement.counter)
+            }
+            dispenserBufferString += "\n"
+
+            Log.d("DispenserProgress", "Buffer: $dispenserBufferString")
+
+            dispenserPort?.write(dispenserBufferString.toByteArray(), 100)
+
+        } catch (e: Exception) {
+            Log.e("Slyco-USB", "Attempt $attempt: Error opening/writing to port: ${e.message}")
+            if (attempt < maxUsbRetries) {
+                updateStatus("Retrying USB connection... ($attempt)")
+                Handler(Looper.getMainLooper()).postDelayed({
+                    openDispenserConnectionWithRetries(attempt + 1)
+                }, usbRetryDelayMs)
+            } else {
+                updateStatus("USB communication error after retries.")
+                handleErrorAndReturn("USB port error.")
+            }
+        }
     }
 
     private fun openDispenserConnection() {

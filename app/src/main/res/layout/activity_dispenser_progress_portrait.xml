@@ -66,36 +66,70 @@
     <!-- Bottom-aligned and centered receiptStack -->
     <LinearLayout
         android:id="@+id/receiptStack"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/logoImage"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal"
         android:gravity="bottom"
+        android:padding="5dp"
+        android:weightSum="3"
         android:layout_marginBottom="16dp">
 
-        <!-- Receipt scroll view -->
+        <!-- First Third: QR Code Text + Image -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/textViewQrCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:text="Escaneie o QR Code\n para acessar\n seu recibo"
+                android:textAlignment="center"
+                android:textSize="12dp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/imageReceiptQRCode"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/coffee_beans" />
+        </LinearLayout>
+
+        <!-- Second Third: Receipt ScrollView -->
         <ScrollView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:fillViewport="true"
-            android:scrollbars="vertical">
+            android:scrollbars="vertical"
+            android:paddingHorizontal="5dp"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/receiptImageView"
-                android:layout_width="150dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:contentDescription="Receipt preview"
                 android:scaleType="centerInside" />
         </ScrollView>
 
-        <!-- Buttons column -->
+        <!-- Third Third: Buttons -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:layout_marginStart="8dp"
+            android:gravity="top">
 
             <TextView
                 android:id="@+id/textView15"
@@ -110,8 +144,7 @@
             <LinearLayout
                 android:id="@+id/buttonWhatsApp"
                 style="@style/PillButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_marginBottom="8dp">
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -129,11 +162,9 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/buttonPrint"
-                style="@style/PillButtonStyle"
-                android:layout_width="match_parent">
+                style="@style/PillButtonStyle">
 
                 <ImageView
                     android:layout_width="24dp"
