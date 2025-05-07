@@ -11,6 +11,7 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
+import kotlin.math.roundToInt
 
 
 class Receipt {
@@ -19,10 +20,12 @@ class Receipt {
     var spacing:Int
     var padding:Int
     private lateinit var dashed: String
+    private var textSize:Float
 
-    constructor(context: Context, printerColumns: Int = 27,padding: Int = 10,spacing: Int = 12) {
+    constructor(context: Context, printerColumns: Int = 27,padding: Int = 3,spacing: Int = 10) {
         this.context = context
         this.maxChars = printerColumns
+        this.textSize = 24f
         this.padding = padding
         this.spacing = spacing
         this.dashed = "-".repeat(maxChars)
@@ -41,13 +44,14 @@ class Receipt {
         return " ".repeat(spaces) + line
     }
 
-    private fun createBitmapFromLines(lines: List<String>, textPaint: TextPaint): Bitmap {
+    private fun createBitmapFromLines(lines: List<String>, textPaint: TextPaint,localMaxChars: Int = this.maxChars,localSpacing: Int = this.spacing): Bitmap {
+
         val lineHeight = (textPaint.fontMetrics.bottom - textPaint.fontMetrics.top).toInt()
 
-        val totalHeight = (lines.size * (lineHeight + spacing))   // Ensure room for dashed line
+        val totalHeight = (lines.size * (lineHeight + localSpacing))   // Ensure room for dashed line
 
         val charWidth = textPaint.measureText("W")
-        val imageWidth = (charWidth * maxChars).toInt() + padding * 2
+        val imageWidth = (charWidth * localMaxChars).toInt() + padding * 2
 
         val bitmap = Bitmap.createBitmap(imageWidth, totalHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -57,7 +61,7 @@ class Receipt {
         for (rawLine in lines) {
 
             canvas.drawText(rawLine, padding.toFloat(), y.toFloat(), textPaint)
-            y += lineHeight + spacing
+            y += lineHeight + localSpacing
         }
 
         return bitmap
@@ -193,16 +197,23 @@ class Receipt {
     fun generateCustomerReceiptBitmap(textBlock: String): Bitmap {
         val textPaint = TextPaint().apply {
             color = Color.BLACK
-            textSize = 24f
+            textSize = 17f
             typeface = Typeface.MONOSPACE
             isAntiAlias = true
         }
 
+        var localMaxChars:Int
+        if (textPaint.textSize != this.textSize)
+        {
+            localMaxChars = (this.maxChars.toFloat() * this.textSize/textPaint.textSize).roundToInt()
+        }
+        else localMaxChars = maxChars
+
         val lines = listOf("") + textBlock.split("\n").map { line ->
-            line.take(maxChars)  // Truncate each line to maxChars
+            line.take(localMaxChars)  // Truncate each line to maxChars
         }
 
-        return createBitmapFromLines(lines, textPaint)
+        return createBitmapFromLines(lines, textPaint,localMaxChars,5)
     }
 
     fun generateFullReceiptBitmap(

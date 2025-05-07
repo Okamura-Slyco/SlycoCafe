@@ -125,6 +125,9 @@ class ScreenSaver : AppCompatActivity() {
         var locationName = intent.getStringExtra("locationName")
         findViewById<TextView>(R.id.locationNameTextView).text = locationName
 
+        var merchanNumber = intent.getStringExtra("merchantNumber")
+        findViewById<TextView>(R.id.merchantNumberTextView).text = "MID #${merchanNumber}"
+
         val encodedLocationName = URLEncoder.encode(locationName, "UTF-8")
         val encodedDeviceId = URLEncoder.encode(deviceId, "UTF-8")
 

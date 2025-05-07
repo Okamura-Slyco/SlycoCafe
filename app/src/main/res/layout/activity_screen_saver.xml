@@ -202,6 +202,16 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        android:id="@+id/merchantNumberTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:alpha="0.6"
+        android:text="TextView"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/locationNameTextView"
+        app:layout_constraintStart_toStartOf="parent" />
+    <TextView
         android:id="@+id/locationNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

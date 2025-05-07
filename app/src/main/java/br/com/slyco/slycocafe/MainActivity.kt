@@ -382,6 +382,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         if (shoppingCart.returnTotal() == 0.0) intent.putExtra("activateContinueButton", 0)
         else intent.putExtra("activateContinueButton", 1)
         intent.putExtra("locationName", myLocation.getLocation().name)
+        intent.putExtra("merchantNumber",myLocation.getLocation().merchant.id.toString())
         startActivityForResult(intent, 3)
     }
 
@@ -703,38 +704,97 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                         paymentParameters.tlsToken = myLocation.getLocation().merchant.tlsFiservToken
                     }
 
-                    var myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "122"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
+                    var myButton: ImageView
+                    var myText: TextView
+
+                    myButton = dialogView.findViewById<ImageView>(R.id.botaoPix)
+                    if (myLocation.getLocation().merchant.enabledPaymetMethods.digitalWallet == true) {
+                        myButton.setOnClickListener {
+                            paymentParameters.functionIdStr = "122"
+                            callPaymentApp(paymentParameters)
+                            customDialog.dismiss()
+                        }
+                        myButton.alpha = AppConstants.imageAlphaEnabled
+                        myButton = dialogView.findViewById<ImageView>(R.id.imagePix)
+                        myButton.alpha = AppConstants.imageAlphaEnabled
+
+                    }
+                    else {
+                        myButton.alpha = AppConstants.imageAlphaDisabled
+                        myButton = dialogView.findViewById<ImageView>(R.id.imagePix)
+                        myButton.alpha = AppConstants.imageAlphaDisabled
                     }
 
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "0"
-                        paymentParameters.enabledTransactionsStr = "26"
-                        paymentParameters.restrictionStr = "{TransacoesHabilitadas=26}"
-                        paymentParameters.installmentsStr = "1"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
+                    myText = dialogView.findViewById<TextView>(R.id.textBotaoCredito)
+                    if (myLocation.getLocation().merchant.enabledPaymetMethods.credit == true) {
+                        myButton = dialogView.findViewById<ImageView>(R.id.botaoCredito)
+                        myButton.setOnClickListener {
+                            paymentParameters.functionIdStr = "0"
+                            paymentParameters.enabledTransactionsStr = "26"
+                            paymentParameters.restrictionStr = "{TransacoesHabilitadas=26}"
+                            paymentParameters.installmentsStr = "1"
+                            callPaymentApp(paymentParameters)
+                            customDialog.dismiss()
+                        }
+                        myButton.alpha = AppConstants.imageAlphaEnabled
+                        myText.alpha = AppConstants.imageAlphaEnabled
+                    }
+                    else {
+                        myButton.alpha = AppConstants.imageAlphaDisabled
+                        myText.alpha = AppConstants.imageAlphaDisabled
                     }
 
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoDebito)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "2"
-                        paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
+                    myText = dialogView.findViewById(R.id.textBotaoDebito)
+                    if (myLocation.getLocation().merchant.enabledPaymetMethods.debit == true) {
+                        myButton.setOnClickListener {
+                            paymentParameters.functionIdStr = "2"
+                            paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
+                            callPaymentApp(paymentParameters)
+                            customDialog.dismiss()
+                        }
+                        myButton.alpha = AppConstants.imageAlphaEnabled
+                        myText.alpha = AppConstants.imageAlphaEnabled
+                    }
+                    else {
+                        myButton.alpha = AppConstants.imageAlphaDisabled
+                        myText.alpha = AppConstants.imageAlphaDisabled
                     }
 
                     myButton = dialogView.findViewById<ImageView>(R.id.botaoVoucher)
-                    myButton.setOnClickListener{
-                        paymentParameters.functionIdStr = "2"
-                        paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
-                        callPaymentApp(paymentParameters)
-                        customDialog.dismiss()
+                    myText = dialogView.findViewById(R.id.textBotaoVoucher)
+                    if (myLocation.getLocation().merchant.enabledPaymetMethods.voucher == true) {
+                        myButton.setOnClickListener {
+                            paymentParameters.functionIdStr = "2"
+                            paymentParameters.restrictionStr = "{TransacoesHabilitadas=16}"
+                            callPaymentApp(paymentParameters)
+                            customDialog.dismiss()
+                        }
+                        myButton.alpha = AppConstants.imageAlphaEnabled
+                        myText.alpha = AppConstants.imageAlphaEnabled
                     }
+                    else {
+                        myButton.alpha = AppConstants.imageAlphaDisabled
+                        myText.alpha = AppConstants.imageAlphaDisabled
+                    }
+
+                    myButton = dialogView.findViewById<ImageView>(R.id.botaoGrandeSlycoWallet)
+                    myText = dialogView.findViewById(R.id.textBotaoSlycoWallet)
+                    if (myLocation.getLocation().merchant.enabledPaymetMethods.slycoWallet == true) {
+                        myButton = dialogView.findViewById<ImageView>(R.id.botaoGrandeSlycoWallet)
+                        myButton.setOnClickListener {
+                            toast("SlycoWallet.")
+                            customDialog.dismiss()
+                        }
+                        myButton.alpha = AppConstants.imageAlphaEnabled
+                        myText.alpha = AppConstants.imageAlphaEnabled
+                    }
+                    else {
+                        myButton.alpha = AppConstants.imageAlphaDisabled
+                        myButton.alpha = AppConstants.imageAlphaDisabled
+                    }
+
                     customDialog.show()
                     hideActionBar()
 

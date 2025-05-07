@@ -236,10 +236,23 @@ data class merchantDC (
     @SerializedName("payment_app")
     var paymentApp:String,
     @SerializedName("tls_fiserv_token")
-    var tlsFiservToken: String
+    var tlsFiservToken: String,
+    @SerializedName("enabled_payment_methods")
+    var enabledPaymetMethods: enabledPaymentMethodsDC
 )
 
-
+data class enabledPaymentMethodsDC(
+    @SerializedName("credit")
+    var credit: Boolean = false,
+    @SerializedName("debit")
+    var debit: Boolean = false,
+    @SerializedName("digital_wallet")
+    var digitalWallet: Boolean = false,
+    @SerializedName("slyco_wallet")
+    var slycoWallet: Boolean = false,
+    @SerializedName("voucher")
+    var voucher: Boolean = false
+)
 
 data class ITEM(
     var flavor: NESPRESSOFLAVORS = NESPRESSOFLAVORS.NONE,

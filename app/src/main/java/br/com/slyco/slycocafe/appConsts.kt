@@ -15,4 +15,6 @@ object AppConstants {
     const val deviceBrandFieldName = "device_brand"
     const val deviceHasPrinterFieldName = "device_has_printer"
     const val isvTaxId = "55833084000136"
+    const val imageAlphaDisabled = 0.2f
+    const val imageAlphaEnabled = 1.0f
 }
