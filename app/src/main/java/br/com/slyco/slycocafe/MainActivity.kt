@@ -5,11 +5,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Bundle
@@ -51,6 +53,9 @@ fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
 
 class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     private lateinit var myInventory : inventory
+
+    private var enabledDrawers: String = ""
+    private var disabledDrawers: String = ""
 
     private lateinit var paymentInterfaceFieldNames: PAYMENT_INTERFACE_FIELDS_NAMES
     private var paymentParameters :PAYMENT_INTERFACE_FIELDS_NAMES = PAYMENT_INTERFACE_FIELDS_NAMES()
@@ -98,7 +103,7 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
     private var screenWidth = 1280
     private var screeenHeight = 1024
 
-//    private var TAG = "GetEmployeeExample"
+        //    private var TAG = "GetEmployeeExample"
 //    private var mEmployeeConnector: EmployeeConnector? = null
 //    private var account: Account? = null
     fun hideActionBar(){
@@ -568,7 +573,6 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         ReceiptHolder.timestamp = mySaleResponse.transactionTimestamp.toString()
         ReceiptHolder.qrCodeBitmap = qrCodeBitmap
 
-        myInventory.patchtInventoryQty(myLocation.getLocation().id,myLocation.getLocation().items)
 
         var saleItems = ""
 
@@ -594,6 +598,19 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         shoppingCart.clearCart()
 
         updateView(0)
+
+
+    }
+
+    fun updateDrawersState(){
+        val (l_enabledDrawers,l_disabledDrawers) = getItemsInStock()
+        Log.d("EnabledDisabledDrawers","enabled($l_enabledDrawers) disabled($l_disabledDrawers)")
+        if (l_enabledDrawers != enabledDrawers){
+            enabledDrawers = l_enabledDrawers
+            disabledDrawers = l_disabledDrawers
+            updateDispenserState(enabledDrawers,disabledDrawers)
+        }
+
     }
 
     fun generateAccessToken(path: String, timestamp: String): String {
@@ -1039,6 +1056,9 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
         }
         else if (requestCode == 2){
             ReceiptHolder.bitmap = null
+            myInventory.patchtInventoryQty(myLocation.getLocation().id,myLocation.getLocation().items)
+
+            updateDrawersState()
         }
         else if (requestCode == 3) {
             try {
@@ -1303,31 +1323,50 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
             }
         }
 
-        initUsbDispenser()
+        val (l_enabledDrawers,l_disabledDrawers) = getItemsInStock()
+        enabledDrawers = l_enabledDrawers
+        disabledDrawers = l_disabledDrawers
+        updateDispenserState(enabledDrawers,disabledDrawers)
     }
 
-    fun initUsbDispenser(){
-        var manager = getSystemService(USB_SERVICE) as UsbManager
-        val usbPermissionIntent = PendingIntent.getBroadcast(this, 0, Intent("USB_PERMISSION"), PendingIntent.FLAG_MUTABLE)
-        val filter = IntentFilter("USB_PERMISSION")
-        registerReceiver(null, filter)
+    fun digitToChar(digit: Int): Char = 'A' + (digit)
 
-        val success = UsbDispenserManager.initialize(manager)
-        if (!success) {
-            Log.d ("initUsbDispenser" ,"INIT OK")
-            return
-        }
-
-        UsbDispenserManager.setReadCallback { message ->
-            runOnUiThread {
-                Log.d("USB Callback",message)
+    fun getItemsInStock(): Pair<String, String> {
+        var enabledItems = ""
+        var disabledItems = ""
+        for (i in 0..myLocation.getLocation().dispenserModel.flavors-1) {
+            val letter = digitToChar(i)
+            if (myInventory.getQty(i) > 0) {
+                enabledItems += letter
+            } else {
+                disabledItems += letter
             }
         }
 
-        UsbDispenserManager.enable("ACEG")
+        Log.d("getItemsInStock enabled", enabledItems)
+        Log.d("getItemsInStock disabled", disabledItems)
 
-        UsbDispenserManager.close()
+        return Pair(enabledItems, disabledItems)
     }
+
+
+    fun updateDispenserState(drawersToEnable: String, drawersToDisable: String) {
+
+        Log.d("updateDispenserState", "updating dawers state: enabled($drawersToEnable) disabled($drawersToDisable)")
+        UsbDispenserManager.attachApplicationContext(this)
+
+        UsbDispenserManager.setReadCallback { message ->
+            Log.d("USB Callback", message)
+        }
+
+        UsbDispenserManager.registerAndRequestPermission(this) {
+            // This runs only when USB is initialized and read
+            UsbDispenserManager.enable(drawersToEnable)
+            UsbDispenserManager.disable(drawersToDisable)
+        }
+
+    }
+
     private fun restartMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
