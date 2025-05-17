@@ -4,10 +4,13 @@ package br.com.slyco.slycocafe
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -30,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import br.com.slyco.slycocafe.usb.UsbDispenserManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.ByteArrayOutputStream
@@ -1298,6 +1302,31 @@ class MainActivity<Bitmap> : AppCompatActivity(),OnItemClickListener {
                 restartMainActivity()
             }
         }
+
+        initUsbDispenser()
+    }
+
+    fun initUsbDispenser(){
+        var manager = getSystemService(USB_SERVICE) as UsbManager
+        val usbPermissionIntent = PendingIntent.getBroadcast(this, 0, Intent("USB_PERMISSION"), PendingIntent.FLAG_MUTABLE)
+        val filter = IntentFilter("USB_PERMISSION")
+        registerReceiver(null, filter)
+
+        val success = UsbDispenserManager.initialize(manager)
+        if (!success) {
+            Log.d ("initUsbDispenser" ,"INIT OK")
+            return
+        }
+
+        UsbDispenserManager.setReadCallback { message ->
+            runOnUiThread {
+                Log.d("USB Callback",message)
+            }
+        }
+
+        UsbDispenserManager.enable("ACEG")
+
+        UsbDispenserManager.close()
     }
     private fun restartMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
